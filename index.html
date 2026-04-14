@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brandon Estevez — Geospatial Science & Agricultural Business</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --red: #E63946;
+            --blue: #457B9D;
+            --yellow: #F1C453;
+            --green: #2A9D8F;
+            --dark: #1D3557;
+            --light: #F8F9FA;
+            --text: #2B2D42;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            background: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            padding: 0 40px;
+        }
+
+        .name-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(4rem, 10vw, 9rem);
+            font-weight: 700;
+            color: var(--dark);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+        }
+
+        .typewriter {
+            display: inline-block;
+            border-right: 5px solid var(--dark);
+            animation: blink 0.8s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        /* FLOATING SHAPES - positioned to sides */
+        .shape {
+            position: absolute;
+            opacity: 0;
+            z-index: 5;
+        }
+
+        .shape.circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .shape.square {
+            width: 80px;
+            height: 80px;
+        }
+
+        .shape.triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 85px solid;
+        }
+
+        .shape.left {
+            animation: floatLeft 6s ease-in-out forwards;
+        }
+
+        .shape.right {
+            animation: floatRight 6s ease-in-out forwards;
+        }
+
+        @keyframes floatLeft {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(-40vw, var(--y)) rotate(360deg) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes floatRight {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(40vw, var(--y)) rotate(-360deg) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* MAP ANIMATION */
+        .map-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInMap 1s ease-in 3s forwards;
+            z-index: 1;
+        }
+
+        @keyframes fadeInMap {
+            to { opacity: 0.3; }
+        }
+
+        .map-layer {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(29, 53, 87, 0.1) 50px,
+                    rgba(29, 53, 87, 0.1) 51px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(29, 53, 87, 0.1) 50px,
+                    rgba(29, 53, 87, 0.1) 51px
+                );
+            animation: scrollMap 30s linear infinite;
+        }
+
+        @keyframes scrollMap {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .map-pins {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+        }
+
+        .pin {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: var(--dark);
+            opacity: 0.6;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* MAIN CONTENT */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 40px;
+        }
+
+        .section {
+            margin-bottom: 120px;
+        }
+
+        .section-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 60px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--red);
+        }
+
+        /* ABOUT */
+        .about-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .about-text p {
+            margin-bottom: 1.5rem;
+        }
+
+        .stats {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .stat-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--blue);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* PROJECTS */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .project-accent {
+            height: 6px;
+            width: 100%;
+        }
+
+        .project-content {
+            padding: 30px;
+        }
+
+        .project-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .project-description {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            background: var(--light);
+            border-radius: 20px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* CONNECT */
+        .connect-content {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .connect-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            color: var(--text);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: var(--blue);
+        }
+
+        .interests-box {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            text-align: left;
+        }
+
+        .interests-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .interests-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .interests-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 1rem;
+        }
+
+        .interests-list li:last-child {
+            border-bottom: none;
+        }
+
+        .interests-list li::before {
+            content: '→';
+            color: var(--red);
+            margin-right: 10px;
+            font-weight: 700;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 80px 20px;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 3.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .map-container {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="name-container">
+                <h1><span class="typewriter" id="typewriter"></span></h1>
+            </div>
+        </div>
+        <div class="map-container">
+            <div class="map-layer"></div>
+            <div class="map-pins" id="mapPins"></div>
+        </div>
+        <div class="scroll-indicator">↓ Scroll to explore</div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- ABOUT SECTION -->
+        <section class="section">
+            <h2 class="section-title">About</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>I'm a high school senior completing an Associate in Arts at Wake Technical Community College, heading to NC State this fall to study Agricultural Business Management. I lead the National 4-H Geospatial Leadership Team and run The Map Company by Estevez, a GIS consulting business focused on market intelligence, environmental data tools, and outreach visualization for nonprofits and small businesses.</p>
+                    <p>My work sits at the intersection of geospatial science, agricultural systems, and civic technology. I develop GIS curriculum for K-12 students in Wake County Public Schools, build tools that help communities visualize food access and environmental impacts, and teach youth how to use spatial data to solve real-world problems.</p>
+                    <p>I'm interested in sustainable rural infrastructure, geospatial pedagogy, and using maps as instruments for community empowerment.</p>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Current Role</div>
+                        <div class="stat-value">Lead, National 4-H Geospatial Leadership Team</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Education</div>
+                        <div class="stat-value">Wake Tech → NC State (Fall 2026)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Location</div>
+                        <div class="stat-value">Raleigh, NC</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Focus Areas</div>
+                        <div class="stat-value">GIS, AgBusiness, Civic Tech</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS SECTION -->
+        <section class="section">
+            <h2 class="section-title">Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-accent" style="background: var(--red);"></div>
+                    <div class="project-content">
+                        <h3 class="project-title">NOURISH Project</h3>
+                        <p class="project-description">A food systems mapping initiative showing how food moves from farms to tables. Creates GIS apps connecting families with healthy, affordable food while teaching youth spatial analysis and leadership skills.</p>
+                        <div class="project-tags">
+                            <span class="tag">Food Systems</span>
+                            <span class="tag">Community Mapping</span>
+                            <span class="tag">Youth Leadership</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-accent" style="background: var(--blue);"></div>
+                    <div class="project-content">
+                        <h3 class="project-title">Granja Node</h3>
+                        <p class="project-description">Strawberry variety GIS system with AI-powered plant diagnosis. Built 35-field dataset joinable to USDA Hardiness Zone polygons. Presented at Esri UC Session 1163.</p>
+                        <div class="project-tags">
+                            <span class="tag">Agriculture</span>
+                            <span class="tag">AI</span>
+                            <span class="tag">ArcGIS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-accent" style="background: var(--yellow);"></div>
+                    <div class="project-content">
+                        <h3 class="project-title">WCPSS GIS Curriculum</h3>
+                        <p class="project-description">Developing K-12 geospatial science curriculum for Wake County Public Schools. Building spatial pedagogy frameworks for 7th grade, 8th grade, and World History courses.</p>
+                        <div class="project-tags">
+                            <span class="tag">Education</span>
+                            <span class="tag">Curriculum Design</span>
+                            <span class="tag">K-12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-accent" style="background: var(--green);"></div>
+                    <div class="project-content">
+                        <h3 class="project-title">City of Raleigh Teen Outreach Analysis</h3>
+                        <p class="project-description">Mapped youth population density across Raleigh using GIS and AI tools to improve outreach for teen programs. Pilot project for data-driven civic engagement.</p>
+                        <div class="project-tags">
+                            <span class="tag">Civic Tech</span>
+                            <span class="tag">Demographics</span>
+                            <span class="tag">Municipal GIS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-accent" style="background: var(--red);"></div>
+                    <div class="project-content">
+                        <h3 class="project-title">NC General Assembly StoryMap</h3>
+                        <p class="project-description">Statewide GIS project filming short interviews with legislators about how they use maps in policymaking. Leveraging relationship with Rep. Phil Rubin.</p>
+                        <div class="project-tags">
+                            <span class="tag">Policy</span>
+                            <span class="tag">StoryMaps</span>
+                            <span class="tag">Government</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-accent" style="background: var(--blue);"></div>
+                    <div class="project-content">
+                        <h3 class="project-title">Freedmen's Villages Historical GIS</h3>
+                        <p class="project-description">Reconstructing spatial history of post-Civil War Freedmen's Villages using archival records and historical mapping techniques.</p>
+                        <div class="project-tags">
+                            <span class="tag">Historical GIS</span>
+                            <span class="tag">Research</span>
+                            <span class="tag">Archival Work</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONNECT SECTION -->
+        <section class="section">
+            <h2 class="section-title">Connect</h2>
+            <div class="connect-content">
+                <p class="connect-text">I'm interested in working on projects at the intersection of geospatial science, agricultural systems, and civic technology — particularly those involving food systems mapping, environmental data tools, outreach visualization for nonprofits, and K-12 GIS education.</p>
+
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/brandonestevez/" target="_blank" class="social-link">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://www.youtube.com/@brandonestevez" target="_blank" class="social-link">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        YouTube
+                    </a>
+                </div>
+
+                <div class="interests-box">
+                    <h3 class="interests-title">What I'm Building</h3>
+                    <ul class="interests-list">
+                        <li>Woohoo — iOS app replacing doomscrolling with curiosity-driven learning</li>
+                        <li>Map Company by Estevez — GIS consulting for nonprofits and small businesses</li>
+                        <li>National 4-H Geospatial Leadership Team — Formalizing as 501(c)(3) nonprofit</li>
+                        <li>Estevez Company — Long-term vision for sustainable real estate, rural rail, and agribusiness</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Brandon Estevez. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // TYPEWRITER EFFECT
+        const text = "Brandon Estevez";
+        const typewriterElement = document.getElementById("typewriter");
+        let index = 0;
+
+        function type() {
+            if (index < text.length) {
+                typewriterElement.textContent += text.charAt(index);
+                index++;
+                setTimeout(type, 120);
+            } else {
+                // Remove cursor after typing completes
+                setTimeout(() => {
+                    typewriterElement.style.borderRight = 'none';
+                }, 500);
+                // Trigger shapes after typing completes
+                setTimeout(triggerShapes, 600);
+            }
+        }
+
+        // FLOATING SHAPES ANIMATION - positioned to left and right sides
+        function triggerShapes() {
+            const hero = document.querySelector('.hero');
+            const colors = [
+                { name: 'red', value: '#E63946' },
+                { name: 'blue', value: '#457B9D' },
+                { name: 'yellow', value: '#F1C453' },
+                { name: 'green', value: '#2A9D8F' }
+            ];
+            const shapes = ['circle', 'square', 'triangle', 'circle'];
+            const sides = ['left', 'right', 'left', 'right'];
+
+            shapes.forEach((shape, i) => {
+                setTimeout(() => {
+                    const shapeEl = document.createElement('div');
+                    shapeEl.className = `shape ${shape} ${sides[i]}`;
+
+                    const color = colors[i % colors.length];
+                    if (shape === 'triangle') {
+                        shapeEl.style.borderBottomColor = color.value;
+                    } else {
+                        shapeEl.style.backgroundColor = color.value;
+                    }
+
+                    // Position near center, will animate to sides
+                    shapeEl.style.left = '50%';
+                    shapeEl.style.top = '50%';
+
+                    // Random vertical offset
+                    const yOffset = (Math.random() - 0.5) * 200;
+                    shapeEl.style.setProperty('--y', `${yOffset}px`);
+
+                    hero.appendChild(shapeEl);
+                }, i * 300);
+            });
+        }
+
+        // MAP PINS ANIMATION
+        function createMapPins() {
+            const mapPins = document.getElementById('mapPins');
+            const colors = ['#E63946', '#457B9D', '#F1C453', '#2A9D8F'];
+
+            // Create random pins across the map
+            for (let i = 0; i < 20; i++) {
+                const pin = document.createElement('div');
+                pin.className = 'pin';
+                pin.style.backgroundColor = colors[i % colors.length];
+                pin.style.left = `${Math.random() * 150}%`;
+                pin.style.top = `${Math.random() * 80 + 10}%`;
+                pin.style.animationDelay = `${Math.random() * 2}s`;
+                mapPins.appendChild(pin);
+            }
+        }
+
+        // Start typewriter on load
+        window.addEventListener('load', () => {
+            setTimeout(type, 500);
+            createMapPins();
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

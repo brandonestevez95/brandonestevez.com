@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V2
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+*.log
