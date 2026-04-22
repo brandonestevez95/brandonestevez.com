@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "title": "Google Photorealistic 3D Basemap Now Available in ArcGIS Online",
+    "source": "Esri Blog",
+    "date": "2026-02",
+    "category": "GIS",
+    "take": "Photorealistic 3D scenes in StoryMaps will change how community presentations feel — policy problems become tangible when you can walk through a neighborhood in 3D.",
+    "link": "https://www.esri.com/arcgis-blog"
+  },
+  {
+    "id": 2,
+    "title": "The 15-Minute City: Network Analysis vs. Euclidean Distance in Walkability Scoring",
+    "source": "Urban Studies Journal",
+    "date": "2026-01",
+    "category": "Urban Planning",
+    "take": "Using road network distance instead of straight-line radius makes walkability scores far more accurate — I need to update the scoring in my village simulator.",
+    "link": "#"
+  },
+  {
+    "id": 3,
+    "title": "Place-Based GIS Education Increases Spatial Retention by 38% in Middle School Students",
+    "source": "Journal of Geography",
+    "date": "2025-11",
+    "category": "Spatial Pedagogy",
+    "take": "Connecting GIS to students' own neighborhoods — not abstract datasets — is the core finding, and it validates everything we've been doing with the 4-H Geospatial curriculum in Wake County.",
+    "link": "#"
+  },
+  {
+    "id": 4,
+    "title": "Food Desert Identification and Grocery Access Gaps in North Carolina's Rural Counties",
+    "source": "NC Department of Agriculture",
+    "date": "2025-12",
+    "category": "Ag Policy",
+    "take": "11 Wake County census tracts meet the USDA food desert definition — the methodology here maps directly onto the NOURISH project and gives us a defensible framework for advocacy.",
+    "link": "#"
+  },
+  {
+    "id": 5,
+    "title": "AI-Assisted Crop Disease Classification from Drone Imagery at 94% Accuracy",
+    "source": "Precision Agriculture",
+    "date": "2026-03",
+    "category": "AgTech",
+    "take": "The training pipeline they used for strawberry leaf disease detection is essentially what we built in Granja Node — worth exploring transfer learning from their model weights.",
+    "link": "#"
+  }
+]

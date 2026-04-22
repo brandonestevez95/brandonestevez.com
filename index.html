@@ -3,36 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brandon Estevez — Geospatial Science & Agricultural Business</title>
+    <title>Brandon Estevez — Geospatial Science · Agriculture · Civic Tech</title>
+    <meta name="description" content="Brandon Estevez — GIS consultant, 4-H Geospatial Leadership Team lead, incoming NC State freshman. Projects at the intersection of GIS, agriculture, and education.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --red: #E63946;
             --blue: #457B9D;
-            --yellow: #F1C453;
+            --yellow: #E8B94A;
             --green: #2A9D8F;
             --dark: #1D3557;
-            --light: #F8F9FA;
-            --text: #2B2D42;
+            --ink: #1A1D24;
+            --text: #3A3F4B;
+            --muted: #6B7380;
+            --faint: #9CA3AF;
+            --bg: #FDFDFD;
+            --surface: #FFFFFF;
+            --surface-2: #F7F8FA;
+            --border: #ECEEF2;
+            --border-strong: #DFE2E8;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+            --nav-h: 58px;
         }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0C0F14;
+                --surface: #12161D;
+                --surface-2: #161B24;
+                --border: #1F242E;
+                --border-strong: #2A303B;
+                --text: #D5D9E0;
+                --muted: #8A909C;
+                --faint: #5C6270;
+                --ink: #F0F2F5;
+                --dark: #F0F2F5;
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg: #0C0F14;
+            --surface: #12161D;
+            --surface-2: #161B24;
+            --border: #1F242E;
+            --border-strong: #2A303B;
+            --text: #D5D9E0;
+            --muted: #8A909C;
+            --faint: #5C6270;
+            --ink: #F0F2F5;
+            --dark: #F0F2F5;
+        }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 16px;
             color: var(--text);
-            background: var(--light);
+            background: var(--bg);
             overflow-x: hidden;
-            line-height: 1.6;
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background 0.4s var(--ease), color 0.4s var(--ease);
         }
 
-        /* HERO SECTION */
+        /* ─────────── NAV ─────────── */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 14px;
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            backdrop-filter: saturate(180%) blur(18px);
+            -webkit-backdrop-filter: saturate(180%) blur(18px);
+            border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+        }
+        .nav-brand {
+            font-family: 'Crimson Pro', serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--ink);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+        }
+        .nav-brand .dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--red);
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .nav-search {
+            flex: 1;
+            max-width: 460px;
+            position: relative;
+            margin-left: auto;
+        }
+        .nav-search input {
+            width: 100%;
+            height: 36px;
+            padding: 0 92px 0 36px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font: inherit;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
+        }
+        .nav-search input:focus {
+            border-color: color-mix(in srgb, var(--blue) 70%, var(--border));
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 14%, transparent);
+        }
+        .nav-search input::placeholder { color: var(--faint); }
+        .nav-search .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--faint);
+            pointer-events: none;
+        }
+        .nav-search .search-count {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: var(--muted);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 3px 9px;
+            opacity: 0;
+            transition: opacity 0.25s var(--ease);
+            pointer-events: none;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        .nav-search.has-query .search-count { opacity: 1; }
+        .nav-search kbd {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font: inherit;
+            font-size: 0.68rem;
+            color: var(--faint);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 2px 5px;
+            pointer-events: none;
+            transition: opacity 0.2s var(--ease);
+        }
+        .nav-search.has-query kbd { opacity: 0; }
+
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background 0.25s var(--ease), transform 0.25s var(--ease), border-color 0.25s var(--ease);
+        }
+        .theme-toggle:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+        .theme-toggle svg { width: 16px; height: 16px; }
+
+        /* ─────────── HERO ─────────── */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -40,7 +196,80 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background:
+                radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--blue) 5%, transparent) 0%, transparent 60%),
+                linear-gradient(180deg, var(--bg) 0%, var(--surface-2) 100%);
+        }
+
+        .hero-map-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1.2s var(--ease);
+        }
+        .hero-map-bg.loaded { opacity: 1; }
+
+        .hero-map-bg path, .hero-map-bg circle, .hero-map-bg line {
+            vector-effect: non-scaling-stroke;
+        }
+        .hero-map-bg .nc-outline {
+            fill: color-mix(in srgb, var(--blue) 4%, transparent);
+            stroke: color-mix(in srgb, var(--blue) 35%, transparent);
+            stroke-width: 1.2;
+            stroke-dasharray: 3000;
+            stroke-dashoffset: 3000;
+            animation: strokeDraw 1.6s var(--ease) 0.3s forwards;
+        }
+        .hero-map-bg .nc-grid line {
+            stroke: color-mix(in srgb, var(--blue) 14%, transparent);
+            stroke-width: 0.6;
+            stroke-dasharray: 2 4;
+        }
+        .hero-map-bg .wake-outline {
+            fill: color-mix(in srgb, var(--red) 10%, transparent);
+            stroke: color-mix(in srgb, var(--red) 70%, transparent);
+            stroke-width: 1.4;
+            stroke-dasharray: 400;
+            stroke-dashoffset: 400;
+            animation: strokeDraw 1.2s var(--ease) 1.8s forwards;
+        }
+        .hero-map-bg .raleigh-pin {
+            opacity: 0;
+            transform-origin: center;
+            animation: pinDrop 0.7s var(--ease) 3.0s forwards;
+        }
+        .hero-map-bg .raleigh-pulse {
+            fill: none;
+            stroke: var(--red);
+            stroke-width: 1.2;
+            opacity: 0;
+            transform-origin: center;
+            animation: pulseRing 2.6s ease-out 3.4s infinite;
+        }
+        .hero-map-bg .city-label {
+            font: 500 11px 'Inter', sans-serif;
+            fill: var(--muted);
+            letter-spacing: 0.04em;
+            opacity: 0;
+            animation: fadeInUp 0.8s var(--ease) 3.4s forwards;
+        }
+        @keyframes strokeDraw { to { stroke-dashoffset: 0; } }
+        @keyframes pinDrop {
+            0% { opacity: 0; transform: translateY(-20px) scale(0.4); }
+            60% { opacity: 1; transform: translateY(2px) scale(1.1); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes pulseRing {
+            0% { r: 3; opacity: 0.8; }
+            100% { r: 28; opacity: 0; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-content {
@@ -50,681 +279,2154 @@
             padding: 0 40px;
         }
 
-        .name-container {
-            position: relative;
-            display: inline-block;
-        }
-
         h1 {
             font-family: 'Crimson Pro', serif;
-            font-size: clamp(4rem, 10vw, 9rem);
+            font-size: clamp(3.5rem, 9vw, 8rem);
             font-weight: 700;
-            color: var(--dark);
-            letter-spacing: -0.03em;
-            line-height: 1;
-            text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+            color: var(--ink);
+            letter-spacing: -0.035em;
+            line-height: 0.95;
         }
 
         .typewriter {
             display: inline-block;
-            border-right: 5px solid var(--dark);
+            border-right: 3px solid var(--ink);
             animation: blink 0.8s step-end infinite;
         }
+        @keyframes blink { 50% { border-color: transparent; } }
 
-        @keyframes blink {
-            50% { border-color: transparent; }
-        }
-
-        /* FLOATING SHAPES - positioned to sides */
-        .shape {
-            position: absolute;
+        .hero-sub {
+            margin-top: 22px;
+            font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+            color: var(--muted);
             opacity: 0;
-            z-index: 5;
+            transform: translateY(10px);
+            transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+            letter-spacing: 0.02em;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-
-        .shape.circle {
-            width: 100px;
-            height: 100px;
+        .hero-sub.show { opacity: 1; transform: translateY(0); }
+        .hero-sub .sep {
+            display: inline-block;
+            width: 3px; height: 3px;
+            background: var(--faint);
             border-radius: 50%;
         }
 
-        .shape.square {
-            width: 80px;
-            height: 80px;
-        }
-
-        .shape.triangle {
-            width: 0;
-            height: 0;
-            border-left: 50px solid transparent;
-            border-right: 50px solid transparent;
-            border-bottom: 85px solid;
-        }
-
-        .shape.left {
-            animation: floatLeft 6s ease-in-out forwards;
-        }
-
-        .shape.right {
-            animation: floatRight 6s ease-in-out forwards;
-        }
-
-        @keyframes floatLeft {
-            0% {
-                transform: translate(0, 0) rotate(0deg) scale(0.5);
-                opacity: 0;
-            }
-            20% {
-                opacity: 0.9;
-            }
-            100% {
-                transform: translate(-40vw, var(--y)) rotate(360deg) scale(1);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes floatRight {
-            0% {
-                transform: translate(0, 0) rotate(0deg) scale(0.5);
-                opacity: 0;
-            }
-            20% {
-                opacity: 0.9;
-            }
-            100% {
-                transform: translate(40vw, var(--y)) rotate(-360deg) scale(1);
-                opacity: 0.8;
-            }
-        }
-
-        /* MAP ANIMATION */
-        .map-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
+        .hero-meta {
+            margin-top: 36px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
             opacity: 0;
-            animation: fadeInMap 1s ease-in 3s forwards;
-            z-index: 1;
+            transform: translateY(10px);
+            transition: opacity 0.9s var(--ease) 0.2s, transform 0.9s var(--ease) 0.2s;
         }
-
-        @keyframes fadeInMap {
-            to { opacity: 0.3; }
+        .hero-meta.show { opacity: 1; transform: translateY(0); }
+        .hero-meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--muted);
+            background: color-mix(in srgb, var(--surface) 70%, transparent);
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--border);
+            border-radius: 100px;
         }
+        .hero-meta-chip svg { width: 13px; height: 13px; color: var(--blue); }
 
-        .map-layer {
+        /* Floating glyphs — fixed non-overlapping positions */
+        .glyph {
             position: absolute;
-            bottom: 0;
-            width: 200%;
-            height: 100%;
-            background:
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 50px,
-                    rgba(29, 53, 87, 0.1) 50px,
-                    rgba(29, 53, 87, 0.1) 51px
-                ),
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 50px,
-                    rgba(29, 53, 87, 0.1) 50px,
-                    rgba(29, 53, 87, 0.1) 51px
-                );
-            animation: scrollMap 30s linear infinite;
+            opacity: 0;
+            color: var(--faint);
+            z-index: 2;
+            animation: glyphFade 0.9s var(--ease) forwards, glyphBob 6s ease-in-out infinite;
+            pointer-events: none;
         }
-
-        @keyframes scrollMap {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        .map-pins {
-            position: absolute;
-            width: 200%;
-            height: 100%;
-        }
-
-        .pin {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.5); opacity: 1; }
+        .glyph svg { display: block; width: 28px; height: 28px; stroke-width: 1.6; }
+        @keyframes glyphFade { to { opacity: 0.55; } }
+        @keyframes glyphBob {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50%      { transform: translateY(-10px) rotate(2deg); }
         }
 
         .scroll-indicator {
             position: absolute;
-            bottom: 40px;
+            bottom: 32px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.9rem;
-            color: var(--dark);
-            opacity: 0.6;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-
-        /* MAIN CONTENT */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 120px 40px;
-        }
-
-        .section {
-            margin-bottom: 120px;
-        }
-
-        .section-title {
-            font-family: 'Crimson Pro', serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 60px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--red);
-        }
-
-        /* ABOUT */
-        .about-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 60px;
-            align-items: start;
-        }
-
-        .about-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
-        .about-text p {
-            margin-bottom: 1.5rem;
-        }
-
-        .stats {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        }
-
-        .stat-item {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .stat-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--blue);
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        /* PROJECTS */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-        }
-
-        .project-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-        }
-
-        .project-accent {
-            height: 6px;
-            width: 100%;
-        }
-
-        .project-content {
-            padding: 30px;
-        }
-
-        .project-title {
-            font-family: 'Crimson Pro', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--dark);
-        }
-
-        .project-description {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
+            opacity: 0.65;
+            z-index: 5;
+            display: inline-flex;
+            align-items: center;
             gap: 8px;
+            animation: scrollNudge 2.2s var(--ease) infinite;
+        }
+        .scroll-indicator::after {
+            content: '';
+            width: 1px;
+            height: 26px;
+            background: linear-gradient(180deg, var(--muted), transparent);
+        }
+        @keyframes scrollNudge {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.65; }
+            50%      { transform: translateX(-50%) translateY(6px); opacity: 0.95; }
         }
 
-        .tag {
-            font-size: 0.75rem;
-            padding: 4px 12px;
-            background: var(--light);
-            border-radius: 20px;
-            color: var(--dark);
+        /* ─────────── STAGE: sticky map + scrolling content ─────────── */
+        .stage {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+            gap: 0;
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .stage-content {
+            padding: 80px 0 120px;
+            min-width: 0;
+        }
+
+        .stage-map-wrap {
+            position: sticky;
+            top: calc(var(--nav-h) + 14px);
+            height: calc(100vh - var(--nav-h) - 28px);
+            margin: 80px 0 40px 28px;
+            border-radius: 18px;
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(10,15,30,0.03), 0 10px 40px -20px rgba(10,15,30,0.10);
+        }
+
+        #map { width: 100%; height: 100%; background: var(--surface-2); }
+
+        .leaflet-container { background: var(--surface-2); font: inherit; }
+        .leaflet-control-attribution {
+            font-size: 10px !important;
+            background: color-mix(in srgb, var(--bg) 80%, transparent) !important;
+            color: var(--muted) !important;
+            backdrop-filter: blur(6px);
+            border-radius: 6px;
+            padding: 1px 6px;
+        }
+        .leaflet-control-zoom a {
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+            transition: background 0.2s var(--ease);
+        }
+        .leaflet-control-zoom a:hover { background: var(--surface-2) !important; }
+
+        .map-overlay-top {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            z-index: 500;
+            pointer-events: none;
+        }
+        .map-stage-label {
+            pointer-events: auto;
+            padding: 5px 11px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            background: color-mix(in srgb, var(--bg) 80%, transparent);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+        }
+        .map-stage-label .dot {
+            display: inline-block;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--red);
+            margin-right: 7px;
+            vertical-align: middle;
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 28%, transparent);
+        }
+        .map-stage-label.subtle {
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--faint);
             font-weight: 500;
         }
 
-        /* CONNECT */
-        .connect-content {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
+        /* Pin */
+        .pin-marker {
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            border: 2.5px solid var(--surface);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2), 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), opacity 0.35s var(--ease);
+            cursor: pointer;
         }
-
-        .connect-text {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            margin-bottom: 40px;
-            color: var(--text);
+        .pin-marker:hover,
+        .pin-marker.active {
+            transform: scale(1.35);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.25), 0 0 0 6px color-mix(in srgb, currentColor 26%, transparent);
         }
+        .pin-marker.ghost { opacity: 0.18; transform: scale(0.75); }
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 40px;
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px !important;
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            box-shadow: 0 10px 36px -12px rgba(10,15,30,0.30) !important;
+            border: 1px solid var(--border) !important;
         }
+        .leaflet-popup-tip { background: var(--surface) !important; border: 1px solid var(--border) !important; }
+        .leaflet-popup-content { margin: 12px 14px !important; font-family: inherit !important; line-height: 1.55 !important; }
+        .popup-title { font-family: 'Crimson Pro', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 5px; letter-spacing: -0.01em; }
+        .popup-desc { font-size: 0.84rem; color: var(--muted); margin-bottom: 10px; }
+        .popup-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+        .popup-tags .tag { font-size: 0.66rem; padding: 2px 7px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 100px; color: var(--muted); }
 
-        .social-link {
-            display: flex;
+        /* ─────────── SECTION BASE ─────────── */
+        .section { margin-bottom: 100px; scroll-margin-top: calc(var(--nav-h) + 16px); }
+        .section:last-of-type { margin-bottom: 40px; }
+        .eyebrow {
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--dark);
+            gap: 8px;
+            font-size: 0.72rem;
             font-weight: 600;
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-        }
-
-        .social-link:hover {
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
             color: var(--blue);
+            margin-bottom: 14px;
         }
-
-        .interests-box {
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            text-align: left;
+        .eyebrow::before {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: currentColor;
         }
-
-        .interests-title {
+        .section-title {
             font-family: 'Crimson Pro', serif;
-            font-size: 1.5rem;
+            font-size: clamp(1.7rem, 2.8vw, 2.3rem);
             font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--dark);
+            margin-bottom: 28px;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
         }
 
-        .interests-list {
+        /* ─────────── ABOUT ─────────── */
+        .about-text { font-size: 1.02rem; line-height: 1.75; color: var(--text); max-width: 58ch; }
+        .about-text p { margin-bottom: 1.1rem; }
+        .about-text strong { color: var(--ink); font-weight: 600; }
+
+        .metabar {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .meta-item {
+            background: var(--surface);
+            padding: 14px 16px;
+        }
+        .meta-item .meta-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--faint);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .meta-item .meta-label svg { width: 12px; height: 12px; color: var(--blue); }
+        .meta-item .meta-value { font-size: 0.95rem; font-weight: 500; color: var(--ink); }
+
+        /* ─────────── SKILLS ─────────── */
+        .skills-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 20px;
+        }
+        .skill-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+        }
+        .skill-chip:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+        .skill-chip svg { width: 12px; height: 12px; color: var(--blue); }
+
+        /* ─────────── FEATURED ─────────── */
+        .featured-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .featured-item {
+            display: grid;
+            grid-template-columns: 44px 1fr auto;
+            gap: 14px;
+            align-items: center;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+        }
+        .featured-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-strong);
+            box-shadow: 0 8px 28px -14px rgba(10,15,30,0.15);
+        }
+        .featured-thumb {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            background: var(--surface-2);
+            display: grid;
+            place-items: center;
+            color: var(--blue);
+            border: 1px solid var(--border);
+        }
+        .featured-thumb svg { width: 20px; height: 20px; stroke-width: 1.6; }
+        .featured-body { min-width: 0; }
+        .featured-source {
+            font-size: 0.7rem;
+            color: var(--faint);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .featured-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .featured-arrow {
+            color: var(--faint);
+            transition: color 0.25s var(--ease), transform 0.25s var(--ease);
+        }
+        .featured-item:hover .featured-arrow { color: var(--blue); transform: translate(2px, -2px); }
+        .featured-arrow svg { width: 16px; height: 16px; }
+
+        /* ─────────── FILTERS + PROJECTS ─────────── */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: -4px 0 22px;
+        }
+        .chip {
+            position: relative;
+            padding: 6px 13px;
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            cursor: pointer;
+            transition: transform 0.25s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease);
+            will-change: transform;
+        }
+        .chip:hover { border-color: var(--border-strong); }
+        .chip.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+        .chip .chip-count { display: inline-block; margin-left: 5px; font-size: 0.7rem; opacity: 0.55; }
+
+        .projects-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .project-card {
+            position: relative;
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease), opacity 0.4s var(--ease);
+        }
+        .project-card::before {
+            content: ''; position: absolute; inset: 0;
+            border-radius: 12px;
+            box-shadow: 0 0 0 0 transparent;
+            transition: box-shadow 0.4s var(--ease);
+            pointer-events: none;
+        }
+        .project-card:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: 0 8px 28px -14px rgba(10,15,30,0.12); }
+        .project-card.active { border-color: color-mix(in srgb, var(--red) 50%, var(--border)); }
+        .project-card.active::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 18%, transparent); }
+        .project-card.match::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent); }
+        .project-card.filter-hidden { opacity: 0.22; transform: scale(0.985); pointer-events: none; }
+        .project-accent { background: var(--red); }
+        .project-content { padding: 16px 20px; }
+        .project-title { font-family: 'Crimson Pro', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; color: var(--ink); letter-spacing: -0.01em; }
+        .project-description { font-size: 0.9rem; line-height: 1.6; color: var(--muted); margin-bottom: 12px; }
+        .project-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+        .tag {
+            font-size: 0.7rem;
+            padding: 2px 9px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        mark.hl {
+            background: color-mix(in srgb, var(--yellow) 58%, transparent);
+            color: inherit;
+            padding: 0 2px;
+            border-radius: 3px;
+        }
+
+        /* ─────────── CONNECT ─────────── */
+        .connect-text { font-size: 1.02rem; line-height: 1.75; margin-bottom: 24px; color: var(--text); max-width: 58ch; }
+        .social-links { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+        .social-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 14px;
+            text-decoration: none; color: var(--ink); font-weight: 500; font-size: 0.88rem;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 100px;
+            transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+        }
+        .social-link:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+        .social-link svg { width: 15px; height: 15px; }
+
+        .building-list {
             list-style: none;
             padding: 0;
+            margin-top: 8px;
         }
-
-        .interests-list li {
+        .building-list li {
             padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+            display: grid;
+            grid-template-columns: 28px 1fr;
+            gap: 10px;
+            align-items: baseline;
         }
-
-        .interests-list li:last-child {
-            border-bottom: none;
+        .building-list li:last-child { border-bottom: none; }
+        .building-list .bl-icon {
+            color: var(--blue);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
+        .building-list .bl-icon svg { width: 16px; height: 16px; stroke-width: 1.7; }
+        .building-list .bl-name { font-weight: 600; color: var(--ink); }
+        .building-list .bl-desc { color: var(--muted); font-weight: 400; }
 
-        .interests-list li::before {
-            content: '→';
-            color: var(--red);
-            margin-right: 10px;
-            font-weight: 700;
-        }
-
-        /* FOOTER */
+        /* ─────────── FOOTER ─────────── */
         footer {
-            background: var(--dark);
-            color: white;
+            border-top: 1px solid var(--border);
             text-align: center;
-            padding: 40px 20px;
-            font-size: 0.9rem;
+            padding: 32px 20px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            background: var(--bg);
+        }
+        footer a { color: var(--muted); text-decoration: none; }
+        footer a:hover { color: var(--ink); }
+
+        /* ─────────── RESPONSIVE ─────────── */
+        @media (max-width: 960px) {
+            .stage { grid-template-columns: 1fr; padding: 0 20px; }
+            .stage-content { padding: 24px 0 80px; }
+            .stage-map-wrap {
+                position: relative;
+                top: 0;
+                height: 58vh;
+                min-height: 400px;
+                margin: calc(var(--nav-h) + 16px) 0 28px;
+            }
+            .nav-brand { display: none; }
+            .nav { padding: 0 14px; }
+            .metabar { grid-template-columns: 1fr; }
+            .glyph { display: none; }
+        }
+        @media (max-width: 600px) {
+            .stage { padding: 0 14px; }
+            h1 { font-size: 3.2rem; }
+            .section { margin-bottom: 70px; }
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .container {
-                padding: 80px 20px;
-            }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+        }
 
-            .about-content {
-                grid-template-columns: 1fr;
-            }
+        /* ═══ FULL-WIDTH WRAPPER ═══ */
+        .full-w { max-width: 1380px; margin: 0 auto; padding: 80px 24px; }
+        .full-w + .full-w { border-top: 1px solid var(--border); }
 
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
+        /* ═══ FEATURE 5: BUILD-YOUR-OWN-MAP ═══ */
+        .bm-layout { display: grid; grid-template-columns: 250px 1fr; gap: 20px; align-items: start; }
+        .bm-controls { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; position: sticky; top: calc(var(--nav-h) + 16px); }
+        .bm-controls h3 { font-size: 0.88rem; font-weight: 600; color: var(--ink); margin-bottom: 16px; }
+        .bm-layer { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+        .bm-layer:last-of-type { border-bottom: none; }
+        .bm-layer input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+        .bm-layer-info { flex: 1; }
+        .bm-layer-name { font-size: 0.88rem; font-weight: 500; color: var(--ink); }
+        .bm-layer-count { font-size: 0.72rem; color: var(--faint); min-height: 1em; }
+        .bm-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .bm-spinner { width: 13px; height: 13px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; display: none; flex-shrink: 0; }
+        .bm-layer.loading .bm-spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .bm-map-wrap { height: 480px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+        #buildMapEl { width: 100%; height: 100%; background: var(--surface-2); }
+        .bm-download { width: 100%; margin-top: 16px; padding: 10px; background: var(--ink); color: var(--bg); border: none; border-radius: 100px; font: inherit; font-size: 0.83rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity 0.25s var(--ease); }
+        .bm-download:hover { opacity: 0.8; }
+        .bm-download svg { width: 14px; height: 14px; }
+        .bm-note { font-size: 0.72rem; color: var(--faint); text-align: center; margin-top: 8px; line-height: 1.4; }
 
-            h1 {
-                font-size: 3.5rem;
-            }
+        /* ═══ FEATURE 6: STORYMAP CAROUSEL ═══ */
+        .sm-wrap { position: relative; border-radius: 18px; border: 1px solid var(--border); overflow: hidden; background: var(--surface); }
+        .sm-track { display: flex; transition: transform 0.65s var(--ease); }
+        .sm-slide { min-width: 100%; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; min-height: 340px; }
+        .sm-thumb { position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 24px; }
+        .sm-thumb-bg { position: absolute; inset: 0; opacity: 0.92; }
+        .sm-thumb-grid { position: absolute; inset: 0; background-image: repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0,rgba(255,255,255,.06) 1px,transparent 1px,transparent 36px),repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0,rgba(255,255,255,.06) 1px,transparent 1px,transparent 36px); }
+        .sm-thumb-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.15; }
+        .sm-thumb-icon svg { width: 96px; height: 96px; stroke: white; }
+        .sm-thumb-label { position: relative; z-index: 2; font-size: 0.7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.75); background: rgba(0,0,0,.28); backdrop-filter: blur(8px); border-radius: 100px; padding: 4px 11px; }
+        .sm-body { padding: 32px 28px; display: flex; flex-direction: column; justify-content: center; gap: 0; }
+        .sm-source { font-size: 0.7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); margin-bottom: 8px; }
+        .sm-title { font-family: 'Crimson Pro', serif; font-size: 1.55rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.2; margin-bottom: 10px; }
+        .sm-desc { font-size: 0.88rem; line-height: 1.65; color: var(--muted); margin-bottom: 18px; }
+        .sm-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; }
+        .sm-open { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; background: var(--ink); color: var(--bg); border-radius: 100px; font: inherit; font-size: 0.83rem; font-weight: 600; cursor: pointer; text-decoration: none; width: fit-content; border: none; transition: opacity .25s var(--ease); }
+        .sm-open:hover { opacity: 0.8; }
+        .sm-open svg { width: 13px; height: 13px; }
+        .sm-footer { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 14px 20px; border-top: 1px solid var(--border); }
+        .sm-arrow { width: 34px; height: 34px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; display: grid; place-items: center; transition: background .2s var(--ease); }
+        .sm-arrow:hover { background: var(--surface-2); }
+        .sm-arrow svg { width: 15px; height: 15px; }
+        .sm-dots { display: flex; gap: 6px; align-items: center; }
+        .sm-dot { width: 7px; height: 7px; border-radius: 100px; background: var(--border-strong); cursor: pointer; transition: width .3s var(--ease), background .3s var(--ease); }
+        .sm-dot.active { width: 22px; background: var(--ink); }
+        .sm-progress { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--blue); width: 0; transition: width .1s linear; }
 
-            .section-title {
-                font-size: 2rem;
-            }
+        /* ═══ FEATURE 7: LEARNING FEED ═══ */
+        .learn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+        .learn-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: inherit; transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
+        .learn-card:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: 0 8px 28px -14px rgba(10,15,30,.12); }
+        .learn-header { display: flex; align-items: center; gap: 8px; }
+        .learn-cat { font-size: 0.7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); display: inline-flex; align-items: center; gap: 6px; }
+        .learn-cat::before { content: ''; width: 12px; height: 1px; background: currentColor; display: block; }
+        .learn-date { font-size: 0.72rem; color: var(--faint); margin-left: auto; }
+        .learn-source { font-size: 0.75rem; color: var(--faint); }
+        .learn-title { font-weight: 600; font-size: 0.93rem; color: var(--ink); line-height: 1.4; }
+        .learn-take { font-size: 0.86rem; line-height: 1.6; color: var(--muted); padding-left: 10px; border-left: 2px solid var(--border-strong); }
+        .learn-link { font-size: 0.8rem; font-weight: 600; color: var(--blue); display: inline-flex; align-items: center; gap: 5px; margin-top: auto; }
+        .learn-link svg { width: 11px; height: 11px; }
 
-            .map-container {
-                height: 150px;
-            }
+        /* ═══ FEATURE 9: BUILD A VILLAGE ═══ */
+        .village-layout { display: grid; grid-template-columns: 1fr 210px; gap: 20px; align-items: start; }
+        .village-main { display: flex; flex-direction: column; gap: 12px; }
+        .tool-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .tool-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1.5px solid var(--border); background: var(--surface); border-radius: 100px; font: inherit; font-size: 0.8rem; font-weight: 500; color: var(--text); cursor: pointer; transition: all .25s var(--ease); }
+        .tool-btn:hover { border-color: var(--border-strong); }
+        .tool-btn.active { color: #fff; border-color: transparent; }
+        .tool-swatch { width: 9px; height: 9px; border-radius: 50%; }
+        .tool-btn.erase-btn.active { background: var(--ink) !important; }
+        .village-actions { display: flex; gap: 7px; margin-left: auto; }
+        .vbtn { padding: 7px 14px; border: 1px solid var(--border); background: var(--surface); border-radius: 100px; font: inherit; font-size: 0.8rem; font-weight: 500; color: var(--text); cursor: pointer; transition: all .25s var(--ease); }
+        .vbtn:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+        .vbtn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+        .vbtn.primary:hover { opacity: 0.82; }
+        .canvas-wrap { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); cursor: crosshair; display: inline-block; background: var(--surface-2); max-width: 100%; }
+        #villageCanvas { display: block; touch-action: none; max-width: 100%; }
+        .stats-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; position: sticky; top: calc(var(--nav-h) + 16px); }
+        .stats-panel-head { font-size: 0.85rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        .score-val { font-size: 1.5rem; font-weight: 700; color: var(--ink); line-height: 1; }
+        .score-label { font-size: 0.65rem; color: var(--faint); font-weight: 500; text-align: right; }
+        .stat-row { margin-bottom: 14px; }
+        .stat-row-head { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-bottom: 5px; }
+        .stat-row-head strong { color: var(--ink); font-weight: 600; }
+        .stat-track { height: 4px; background: var(--surface-2); border-radius: 100px; overflow: hidden; border: 1px solid var(--border); }
+        .stat-fill { height: 100%; border-radius: 100px; width: 0; transition: width .4s var(--ease), background-color .4s var(--ease); }
+        .stat-fill.good { background: var(--green); }
+        .stat-fill.ok   { background: var(--yellow); }
+        .stat-fill.low  { background: var(--red); }
+        .village-hint { font-size: 0.75rem; color: var(--faint); line-height: 1.55; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+        .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--ink); color: var(--bg); padding: 10px 20px; border-radius: 100px; font-size: 0.85rem; font-weight: 500; z-index: 9999; opacity: 0; transition: opacity .3s var(--ease), transform .3s var(--ease); pointer-events: none; white-space: nowrap; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 960px) {
+            .full-w { padding: 60px 20px; }
+            .bm-layout { grid-template-columns: 1fr; }
+            .bm-controls { position: static; }
+            .bm-map-wrap { height: 340px; }
+            .sm-slide { grid-template-columns: 1fr; }
+            .sm-thumb { min-height: 160px; }
+            .village-layout { grid-template-columns: 1fr; }
+            .stats-panel { position: static; }
+        }
+        @media (max-width: 600px) {
+            .full-w { padding: 48px 16px; }
+            .learn-grid { grid-template-columns: 1fr; }
+            .tool-bar { gap: 5px; }
+            .tool-btn { padding: 6px 10px; font-size: 0.76rem; }
         }
     </style>
 </head>
 <body>
-    <!-- HERO SECTION -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="name-container">
-                <h1><span class="typewriter" id="typewriter"></span></h1>
-            </div>
+
+<!-- ───── NAV ───── -->
+<nav class="nav" id="nav">
+    <a href="#top" class="nav-brand"><span class="dot"></span>Brandon Estevez</a>
+    <div class="nav-search" id="navSearch">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Ask my work — e.g. food systems, curriculum, 4-H…" autocomplete="off" />
+        <kbd>⌘ K</kbd>
+        <span class="search-count" id="searchCount">0 results</span>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+</nav>
+
+<!-- ───── HERO ───── -->
+<section class="hero" id="top">
+
+    <!-- Hero SVG map backdrop — NC → Wake → Raleigh zoom -->
+    <svg class="hero-map-bg" id="heroMap" viewBox="0 0 1000 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.12"/>
+            </pattern>
+        </defs>
+        <rect width="1000" height="320" fill="url(#grid)" color="#457B9D"/>
+        <g id="heroMapInner">
+            <!-- NC state (stylized) -->
+            <path class="nc-outline" d="M 299,6 L 806,0 L 949,5 L 1000,174 L 876,236 L 718,320 L 651,320 L 599,298 L 523,259 L 399,209 L 369,174 L 219,161 L 74,186 L 43,154 L 39,121 L 0,61 L 72,1 Z"/>
+            <!-- Wake County -->
+            <path class="wake-outline" d="M 604,124 L 628,120 L 651,113 L 662,99 L 663,83 L 655,73 L 635,69 L 616,70 L 604,78 L 597,95 L 600,112 Z"/>
+            <!-- Raleigh pin -->
+            <g class="raleigh-pin">
+                <circle cx="641" cy="94" r="5" fill="#E63946" stroke="#fff" stroke-width="1.6"/>
+                <circle cx="641" cy="94" r="1.6" fill="#fff"/>
+            </g>
+            <circle class="raleigh-pulse" cx="641" cy="94" r="3"/>
+            <text class="city-label" x="649" y="97">Raleigh</text>
+        </g>
+    </svg>
+
+    <div class="hero-content">
+        <h1><span class="typewriter" id="typewriter"></span></h1>
+        <p class="hero-sub" id="heroSub">
+            <span>Geospatial science</span>
+            <span class="sep"></span>
+            <span>Agricultural business</span>
+            <span class="sep"></span>
+            <span>Civic technology</span>
+        </p>
+        <div class="hero-meta" id="heroMeta">
+            <span class="hero-meta-chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Lead · National 4-H Geospatial Leadership Team
+            </span>
+            <span class="hero-meta-chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                Incoming freshman · NC State
+            </span>
+            <span class="hero-meta-chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Raleigh, NC
+            </span>
         </div>
-        <div class="map-container">
-            <div class="map-layer"></div>
-            <div class="map-pins" id="mapPins"></div>
-        </div>
-        <div class="scroll-indicator">↓ Scroll to explore</div>
-    </section>
-
-    <!-- MAIN CONTENT -->
-    <div class="container">
-        <!-- ABOUT SECTION -->
-        <section class="section">
-            <h2 class="section-title">About</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>I'm a high school senior completing an Associate in Arts at Wake Technical Community College, heading to NC State this fall to study Agricultural Business Management. I lead the National 4-H Geospatial Leadership Team and run The Map Company by Estevez, a GIS consulting business focused on market intelligence, environmental data tools, and outreach visualization for nonprofits and small businesses.</p>
-                    <p>My work sits at the intersection of geospatial science, agricultural systems, and civic technology. I develop GIS curriculum for K-12 students in Wake County Public Schools, build tools that help communities visualize food access and environmental impacts, and teach youth how to use spatial data to solve real-world problems.</p>
-                    <p>I'm interested in sustainable rural infrastructure, geospatial pedagogy, and using maps as instruments for community empowerment.</p>
-                </div>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-label">Current Role</div>
-                        <div class="stat-value">Lead, National 4-H Geospatial Leadership Team</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Education</div>
-                        <div class="stat-value">Wake Tech → NC State (Fall 2026)</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Location</div>
-                        <div class="stat-value">Raleigh, NC</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Focus Areas</div>
-                        <div class="stat-value">GIS, AgBusiness, Civic Tech</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PROJECTS SECTION -->
-        <section class="section">
-            <h2 class="section-title">Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-accent" style="background: var(--red);"></div>
-                    <div class="project-content">
-                        <h3 class="project-title">NOURISH Project</h3>
-                        <p class="project-description">A food systems mapping initiative showing how food moves from farms to tables. Creates GIS apps connecting families with healthy, affordable food while teaching youth spatial analysis and leadership skills.</p>
-                        <div class="project-tags">
-                            <span class="tag">Food Systems</span>
-                            <span class="tag">Community Mapping</span>
-                            <span class="tag">Youth Leadership</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-accent" style="background: var(--blue);"></div>
-                    <div class="project-content">
-                        <h3 class="project-title">Granja Node</h3>
-                        <p class="project-description">Strawberry variety GIS system with AI-powered plant diagnosis. Built 35-field dataset joinable to USDA Hardiness Zone polygons. Presented at Esri UC Session 1163.</p>
-                        <div class="project-tags">
-                            <span class="tag">Agriculture</span>
-                            <span class="tag">AI</span>
-                            <span class="tag">ArcGIS</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-accent" style="background: var(--yellow);"></div>
-                    <div class="project-content">
-                        <h3 class="project-title">WCPSS GIS Curriculum</h3>
-                        <p class="project-description">Developing K-12 geospatial science curriculum for Wake County Public Schools. Building spatial pedagogy frameworks for 7th grade, 8th grade, and World History courses.</p>
-                        <div class="project-tags">
-                            <span class="tag">Education</span>
-                            <span class="tag">Curriculum Design</span>
-                            <span class="tag">K-12</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-accent" style="background: var(--green);"></div>
-                    <div class="project-content">
-                        <h3 class="project-title">City of Raleigh Teen Outreach Analysis</h3>
-                        <p class="project-description">Mapped youth population density across Raleigh using GIS and AI tools to improve outreach for teen programs. Pilot project for data-driven civic engagement.</p>
-                        <div class="project-tags">
-                            <span class="tag">Civic Tech</span>
-                            <span class="tag">Demographics</span>
-                            <span class="tag">Municipal GIS</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-accent" style="background: var(--red);"></div>
-                    <div class="project-content">
-                        <h3 class="project-title">NC General Assembly StoryMap</h3>
-                        <p class="project-description">Statewide GIS project filming short interviews with legislators about how they use maps in policymaking. Leveraging relationship with Rep. Phil Rubin.</p>
-                        <div class="project-tags">
-                            <span class="tag">Policy</span>
-                            <span class="tag">StoryMaps</span>
-                            <span class="tag">Government</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-accent" style="background: var(--blue);"></div>
-                    <div class="project-content">
-                        <h3 class="project-title">Freedmen's Villages Historical GIS</h3>
-                        <p class="project-description">Reconstructing spatial history of post-Civil War Freedmen's Villages using archival records and historical mapping techniques.</p>
-                        <div class="project-tags">
-                            <span class="tag">Historical GIS</span>
-                            <span class="tag">Research</span>
-                            <span class="tag">Archival Work</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CONNECT SECTION -->
-        <section class="section">
-            <h2 class="section-title">Connect</h2>
-            <div class="connect-content">
-                <p class="connect-text">I'm interested in working on projects at the intersection of geospatial science, agricultural systems, and civic technology — particularly those involving food systems mapping, environmental data tools, outreach visualization for nonprofits, and K-12 GIS education.</p>
-
-                <div class="social-links">
-                    <a href="https://www.linkedin.com/in/brandonestevez/" target="_blank" class="social-link">
-                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                        LinkedIn
-                    </a>
-                    <a href="https://www.youtube.com/@brandonestevez" target="_blank" class="social-link">
-                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                        YouTube
-                    </a>
-                </div>
-
-                <div class="interests-box">
-                    <h3 class="interests-title">What I'm Building</h3>
-                    <ul class="interests-list">
-                        <li>Woohoo — iOS app replacing doomscrolling with curiosity-driven learning</li>
-                        <li>Map Company by Estevez — GIS consulting for nonprofits and small businesses</li>
-                        <li>National 4-H Geospatial Leadership Team — Formalizing as 501(c)(3) nonprofit</li>
-                        <li>Estevez Company — Long-term vision for sustainable real estate, rural rail, and agribusiness</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Brandon Estevez. All rights reserved.</p>
-    </footer>
+    <!-- Floating glyphs — 6 fixed non-overlapping positions -->
+    <div class="glyph" style="top: 18vh; left: 10vw;  animation-delay: 0.6s, 0s;">
+        <!-- map-pin -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    </div>
+    <div class="glyph" style="top: 22vh; right: 12vw; animation-delay: 0.8s, 0.5s;">
+        <!-- globe -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+    </div>
+    <div class="glyph" style="top: 52vh; left: 5vw;  animation-delay: 1.0s, 1.0s;">
+        <!-- layers -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="glyph" style="top: 55vh; right: 6vw; animation-delay: 1.2s, 1.5s;">
+        <!-- database -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"/></svg>
+    </div>
+    <div class="glyph" style="top: 78vh; left: 14vw; animation-delay: 1.4s, 2.0s;">
+        <!-- chart -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+    </div>
+    <div class="glyph" style="top: 74vh; right: 16vw; animation-delay: 1.6s, 2.5s;">
+        <!-- compass -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polygon points="16.2,7.8 13.4,13.4 7.8,16.2 10.6,10.6"/></svg>
+    </div>
 
-    <script>
-        // TYPEWRITER EFFECT
-        const text = "Brandon Estevez";
-        const typewriterElement = document.getElementById("typewriter");
-        let index = 0;
+    <div class="scroll-indicator">Scroll to explore</div>
+</section>
 
-        function type() {
-            if (index < text.length) {
-                typewriterElement.textContent += text.charAt(index);
-                index++;
-                setTimeout(type, 120);
-            } else {
-                // Remove cursor after typing completes
-                setTimeout(() => {
-                    typewriterElement.style.borderRight = 'none';
-                }, 500);
-                // Trigger shapes after typing completes
-                setTimeout(triggerShapes, 600);
+<!-- ───── STAGE: sticky map + scrolling sections ───── -->
+<div class="stage">
+
+    <!-- LEFT: content -->
+    <div class="stage-content">
+
+        <!-- ABOUT -->
+        <section class="section" id="about" data-stage="about">
+            <div class="eyebrow">About</div>
+            <h2 class="section-title">Working at the intersection of GIS, agriculture, and education.</h2>
+            <div class="about-text" data-searchable>
+                <p>I'm a high school senior dually enrolled at <strong>Wake Technical Community College</strong>, heading to <strong>NC State</strong> this fall. I lead the <strong>National 4-H Geospatial Leadership Team</strong> — now active in three states — and run <strong>The Map Company by Estevez</strong>, a GIS consulting practice focused on market intelligence, environmental data tools, and outreach visualization for nonprofits and small businesses.</p>
+                <p>My work centers on one question: how can we use data and spatial storytelling to build more just, connected communities? I've partnered with city agencies, rural stakeholders, and K–12 systems to design tools that make policy problems visible — and solvable.</p>
+                <p>Long term, I'm building toward a multidisciplinary firm spanning sustainable real estate, rail infrastructure, GIS consulting, agribusiness innovation, and workforce development — with a focus on rural America and Latin America.</p>
+            </div>
+
+            <div class="metabar">
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Role
+                    </div>
+                    <div class="meta-value">Lead · 4-H Geospatial Leadership Team</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        Education
+                    </div>
+                    <div class="meta-value">Wake Tech → NC State · Fall 2026</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Location
+                    </div>
+                    <div class="meta-value">Raleigh, North Carolina</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .4 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.4 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.4l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .4-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.4-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.4H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.4l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.4 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+                        Focus
+                    </div>
+                    <div class="meta-value">GIS · AgBiz · Civic Tech</div>
+                </div>
+            </div>
+
+            <div class="skills-row" data-searchable>
+                <span class="skill-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                    GIS
+                </span>
+                <span class="skill-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                    AutoCAD
+                </span>
+                <span class="skill-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    Google Workspace
+                </span>
+                <span class="skill-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Communication
+                </span>
+                <span class="skill-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Teamwork
+                </span>
+                <span class="skill-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                    AI + Spatial Analysis
+                </span>
+            </div>
+        </section>
+
+        <!-- FEATURED -->
+        <section class="section" id="featured" data-stage="about">
+            <div class="eyebrow">Featured</div>
+            <h2 class="section-title">Press, talks, and recognition.</h2>
+            <div class="featured-grid" data-searchable>
+
+                <a class="featured-item" href="https://www.youtube.com/@brandonestevez" target="_blank" rel="noopener">
+                    <div class="featured-thumb" style="color: var(--red);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </div>
+                    <div class="featured-body">
+                        <div class="featured-source">TEDxYouth @ ChavisWay</div>
+                        <div class="featured-title">GIS for All: How Any Student Can Research, Learn, and Lead</div>
+                    </div>
+                    <span class="featured-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
+                </a>
+
+                <a class="featured-item" href="https://www.esri.com/about/newsroom/arcnews" target="_blank" rel="noopener">
+                    <div class="featured-thumb" style="color: var(--blue);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                    </div>
+                    <div class="featured-body">
+                        <div class="featured-source">Esri · ArcWatch</div>
+                        <div class="featured-title">The New Mapmakers: How 4-H Is Transforming 21st-Century Education</div>
+                    </div>
+                    <span class="featured-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
+                </a>
+
+                <a class="featured-item" href="https://wake.granicus.com/player/clip/3110" target="_blank" rel="noopener">
+                    <div class="featured-thumb" style="color: var(--green);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+                    </div>
+                    <div class="featured-body">
+                        <div class="featured-source">Wake County Board of Commissioners</div>
+                        <div class="featured-title">Speech: Career and Workforce Development in K-12 Schools</div>
+                    </div>
+                    <span class="featured-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
+                </a>
+
+                <a class="featured-item" href="https://wake.ces.ncsu.edu/2024/08/summer-2024-recap-unforgettable-moments-and-lifelong-memories/" target="_blank" rel="noopener">
+                    <div class="featured-thumb" style="color: var(--yellow);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <div class="featured-body">
+                        <div class="featured-source">NC Cooperative Extension</div>
+                        <div class="featured-title">GIS Workshop on Community Equity with Dr. Thomas Ray</div>
+                    </div>
+                    <span class="featured-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
+                </a>
+
+                <a class="featured-item" href="https://www.newsobserver.com/" target="_blank" rel="noopener">
+                    <div class="featured-thumb" style="color: var(--dark);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4H8v16a2 2 0 0 1-2 2 2 2 0 0 1-2-2V10"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+                    </div>
+                    <div class="featured-body">
+                        <div class="featured-source">Raleigh News &amp; Observer</div>
+                        <div class="featured-title">WCPSS students provide input on changing parent consent rules</div>
+                    </div>
+                    <span class="featured-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section class="section" id="projects" data-stage="projects">
+            <div class="eyebrow">Projects</div>
+            <h2 class="section-title">Maps built to make policy problems visible — and solvable.</h2>
+
+            <div class="filter-bar" id="filterBar" role="tablist">
+                <button class="chip active" data-filter="all">All <span class="chip-count"></span></button>
+                <button class="chip" data-filter="gis">GIS <span class="chip-count"></span></button>
+                <button class="chip" data-filter="agriculture">Agriculture <span class="chip-count"></span></button>
+                <button class="chip" data-filter="civic">Civic Tech <span class="chip-count"></span></button>
+                <button class="chip" data-filter="education">Education <span class="chip-count"></span></button>
+            </div>
+
+            <div class="projects-grid" id="projectsGrid"></div>
+        </section>
+
+        <!-- CONNECT -->
+        <section class="section" id="connect" data-stage="connect">
+            <div class="eyebrow">Connect</div>
+            <h2 class="section-title">Let's build something together.</h2>
+            <div data-searchable>
+                <p class="connect-text">I'm open to partnerships, internships, and public projects where maps, equity, and innovation meet — especially in food systems mapping, environmental data tools, outreach visualization for nonprofits, and K-12 GIS education.</p>
+            </div>
+
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/brandonestevez/" target="_blank" class="social-link">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    LinkedIn
+                </a>
+                <a href="https://www.youtube.com/@brandonestevez" target="_blank" class="social-link">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    YouTube
+                </a>
+                <a href="mailto:brandon@mapcompanybyestevez.com" class="social-link">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
+                    Email
+                </a>
+            </div>
+
+            <div class="eyebrow" style="margin-top: 20px;">What I'm Building</div>
+            <ul class="building-list" data-searchable>
+                <li>
+                    <span class="bl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span>
+                    <div><span class="bl-name">Woohoo</span> — <span class="bl-desc">iOS app replacing doomscrolling with curiosity-driven learning.</span></div>
+                </li>
+                <li>
+                    <span class="bl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                    <div><span class="bl-name">Map Company by Estevez</span> — <span class="bl-desc">GIS consulting for nonprofits and small businesses.</span></div>
+                </li>
+                <li>
+                    <span class="bl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                    <div><span class="bl-name">National 4-H Geospatial Leadership Team</span> — <span class="bl-desc">Formalizing as a 501(c)(3); active in three states.</span></div>
+                </li>
+                <li>
+                    <span class="bl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></span>
+                    <div><span class="bl-name">Estevez Company</span> — <span class="bl-desc">Long-term vision for sustainable real estate, rural rail, and agribusiness.</span></div>
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+    <!-- RIGHT: sticky map -->
+    <aside class="stage-map-wrap" aria-label="Interactive project map">
+        <div id="map"></div>
+        <div class="map-overlay-top">
+            <div class="map-stage-label" id="mapStageLabel"><span class="dot"></span>Wake County</div>
+            <div class="map-stage-label subtle" id="mapStageHint">Click a pin</div>
+        </div>
+    </aside>
+</div>
+
+<!-- ═══ FEATURE 5: BUILD-YOUR-OWN-MAP ═══ -->
+<section id="build-map" class="full-w">
+    <div class="eyebrow">Interactive Tool</div>
+    <h2 class="section-title" style="margin-bottom:8px;">Build a Custom Map</h2>
+    <p style="font-size:.95rem;color:var(--muted);margin-bottom:32px;max-width:55ch;">Explore Wake County's public data infrastructure. Toggle layers pulled live from OpenStreetMap via the Overpass API.</p>
+    <div class="bm-layout">
+        <div class="bm-controls">
+            <h3>Data Layers</h3>
+            <label class="bm-layer" id="bml-schools">
+                <input type="checkbox" data-layer="schools">
+                <span class="bm-dot" style="background:#E63946;"></span>
+                <span class="bm-layer-info">
+                    <span class="bm-layer-name">Schools</span>
+                    <span class="bm-layer-count" id="cnt-schools">Not loaded</span>
+                </span>
+                <span class="bm-spinner" id="sp-schools"></span>
+            </label>
+            <label class="bm-layer" id="bml-libraries">
+                <input type="checkbox" data-layer="libraries">
+                <span class="bm-dot" style="background:#457B9D;"></span>
+                <span class="bm-layer-info">
+                    <span class="bm-layer-name">Libraries</span>
+                    <span class="bm-layer-count" id="cnt-libraries">Not loaded</span>
+                </span>
+                <span class="bm-spinner" id="sp-libraries"></span>
+            </label>
+            <label class="bm-layer" id="bml-food">
+                <input type="checkbox" data-layer="food">
+                <span class="bm-dot" style="background:#2A9D8F;"></span>
+                <span class="bm-layer-info">
+                    <span class="bm-layer-name">Food Access</span>
+                    <span class="bm-layer-count" id="cnt-food">Not loaded</span>
+                </span>
+                <span class="bm-spinner" id="sp-food"></span>
+            </label>
+            <label class="bm-layer" id="bml-demographics">
+                <input type="checkbox" data-layer="demographics">
+                <span class="bm-dot" style="background:#E8B94A;"></span>
+                <span class="bm-layer-info">
+                    <span class="bm-layer-name">Demographics</span>
+                    <span class="bm-layer-count" id="cnt-demographics">Population density</span>
+                </span>
+                <span class="bm-spinner" id="sp-demographics"></span>
+            </label>
+            <button class="bm-download" id="bmDownload">
+                <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download PNG
+            </button>
+            <p class="bm-note">Tiles may appear blank in export — use OS screenshot for full fidelity.</p>
+        </div>
+        <div class="bm-map-wrap">
+            <div id="buildMapEl"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ FEATURE 6: STORYMAP CAROUSEL ═══ -->
+<section id="storymaps" class="full-w">
+    <div class="eyebrow">StoryMaps</div>
+    <h2 class="section-title" style="margin-bottom:8px;">Spatial stories I've built.</h2>
+    <p style="font-size:.95rem;color:var(--muted);margin-bottom:32px;max-width:55ch;">Projects built in ArcGIS StoryMaps combining maps, narrative, and data for public audiences.</p>
+    <div class="sm-wrap" id="smWrap">
+        <div class="sm-track" id="smTrack">
+            <!-- slides injected by JS -->
+        </div>
+        <div class="sm-progress" id="smProgress"></div>
+        <div class="sm-footer">
+            <button class="sm-arrow" id="smPrev" aria-label="Previous">
+                <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="sm-dots" id="smDots"></div>
+            <button class="sm-arrow" id="smNext" aria-label="Next">
+                <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ FEATURE 7: LEARNING FEED ═══ -->
+<section id="learning" class="full-w">
+    <div class="eyebrow">What I'm Learning</div>
+    <h2 class="section-title" style="margin-bottom:8px;">Reading list — updated monthly.</h2>
+    <p style="font-size:.95rem;color:var(--muted);margin-bottom:32px;max-width:55ch;">Articles and papers on GIS, agricultural policy, and spatial pedagogy with my honest take on each.</p>
+    <div class="learn-grid" id="learnGrid">
+        <p style="color:var(--faint);font-size:.9rem;">Loading…</p>
+    </div>
+</section>
+
+<!-- ═══ FEATURE 9: BUILD A VILLAGE ═══ -->
+<section id="village" class="full-w">
+    <div class="eyebrow">Interactive Simulation</div>
+    <h2 class="section-title" style="margin-bottom:8px;">Build a Village.</h2>
+    <p style="font-size:.95rem;color:var(--muted);margin-bottom:28px;max-width:55ch;">Place buildings, roads, and parks on a grid. Real-time New Urbanism scores show how design choices affect walkability, density, and green space.</p>
+    <div class="village-layout">
+        <div class="village-main">
+            <div class="tool-bar" id="toolBar">
+                <button class="tool-btn active" data-tool="residential" style="--tc:#3B82F6;">
+                    <span class="tool-swatch" style="background:#DBEAFE;border:1.5px solid #3B82F6;"></span>Residential
+                </button>
+                <button class="tool-btn" data-tool="commercial" style="--tc:#EF4444;">
+                    <span class="tool-swatch" style="background:#FEE2E2;border:1.5px solid #EF4444;"></span>Commercial
+                </button>
+                <button class="tool-btn" data-tool="road" style="--tc:#6B7280;">
+                    <span class="tool-swatch" style="background:#D1D5DB;border:1.5px solid #6B7280;"></span>Road
+                </button>
+                <button class="tool-btn" data-tool="rail" style="--tc:#374151;">
+                    <span class="tool-swatch" style="background:#4B5563;border:1.5px solid #374151;"></span>Rail
+                </button>
+                <button class="tool-btn" data-tool="park" style="--tc:#10B981;">
+                    <span class="tool-swatch" style="background:#D1FAE5;border:1.5px solid #10B981;"></span>Park
+                </button>
+                <button class="tool-btn erase-btn" data-tool="empty">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                    Erase
+                </button>
+                <div class="village-actions">
+                    <button class="vbtn" id="villageClear">Clear</button>
+                    <button class="vbtn primary" id="villageShare">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+            <div class="canvas-wrap">
+                <canvas id="villageCanvas"></canvas>
+            </div>
+        </div>
+        <div class="stats-panel">
+            <div class="stats-panel-head">
+                Score
+                <div style="text-align:right;">
+                    <div class="score-val" id="villageScore">—</div>
+                    <div class="score-label">/ 100</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-row-head"><span>Walkability</span><strong id="walkVal">0%</strong></div>
+                <div class="stat-track"><div class="stat-fill" id="walkFill"></div></div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-row-head"><span>Density</span><strong id="densityVal">0%</strong></div>
+                <div class="stat-track"><div class="stat-fill" id="densityFill"></div></div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-row-head"><span>Green Space</span><strong id="greenVal">0%</strong></div>
+                <div class="stat-track"><div class="stat-fill" id="greenFill"></div></div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-row-head"><span>Connectivity</span><strong id="connectVal">0%</strong></div>
+                <div class="stat-track"><div class="stat-fill" id="connectFill"></div></div>
+            </div>
+            <p class="village-hint">Based on New Urbanism principles: mix uses, prioritize walking, add green space within a 5-minute walk of every home.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Brandon Estevez · Raleigh, NC · <a href="mailto:brandon@mapcompanybyestevez.com">brandon@mapcompanybyestevez.com</a></p>
+</footer>
+
+<script>
+/* ================================================================
+   DATA
+   ================================================================ */
+const HOME = [35.7796, -78.6382];
+
+const ABOUT_PLACES = [
+    { id: 'home',     name: 'Raleigh (home base)',             coords: [35.7796, -78.6382], color: '#E63946' },
+    { id: 'waketech', name: 'Wake Technical Community College', coords: [35.6946, -78.7167], color: '#457B9D' },
+    { id: 'ncstate',  name: 'NC State University',              coords: [35.7847, -78.6821], color: '#E8B94A' },
+    { id: 'wcpss',    name: 'Wake County Public Schools HQ',    coords: [35.7589, -78.7844], color: '#2A9D8F' }
+];
+
+const PROJECTS = [
+    { id: 'nourish',            title: 'NOURISH Project',
+      description: 'A food systems mapping initiative showing how food moves from farms to tables. Creates GIS apps connecting families with healthy, affordable food while teaching youth spatial analysis and leadership skills.',
+      tags: ['Food Systems', 'Community Mapping', 'Youth Leadership'],
+      categories: ['gis', 'agriculture', 'education'], color: '#E63946', coords: [35.7850, -78.6450], link: '#' },
+    { id: 'granja',             title: 'Granja Node',
+      description: 'Strawberry variety GIS system with AI-powered plant diagnosis. Built a 35-field dataset joinable to USDA Hardiness Zone polygons. Presented at Esri UC Session 1163.',
+      tags: ['Agriculture', 'AI', 'ArcGIS'],
+      categories: ['gis', 'agriculture'], color: '#457B9D', coords: [35.7847, -78.6821], link: '#' },
+    { id: 'caps-mun',           title: 'CAPS Model UN 2025',
+      description: 'Full-scale Model UN conference — 170 delegates, 10 schools — built from scratch using Esri tools (StoryMaps, ArcGIS Online, Business Analyst, Living Atlas) to turn diplomacy into a spatial experience.',
+      tags: ['StoryMaps', 'Diplomacy', 'Design'],
+      categories: ['civic', 'education', 'gis'], color: '#2A9D8F', coords: [35.7960, -78.6950], link: '#' },
+    { id: 'wcpss-curriculum',   title: 'WCPSS GIS Curriculum',
+      description: 'Developing K-12 geospatial science curriculum for Wake County Public Schools. Building spatial pedagogy frameworks for 7th grade, 8th grade, and World History courses.',
+      tags: ['Education', 'Curriculum Design', 'K-12'],
+      categories: ['education', 'gis'], color: '#E8B94A', coords: [35.7589, -78.7844], link: '#' },
+    { id: 'raleigh-teens',      title: 'City of Raleigh Teen Outreach Analysis',
+      description: 'Mapped youth population density across Raleigh using GIS and AI tools to improve outreach for teen programs. Pilot project for data-driven civic engagement.',
+      tags: ['Civic Tech', 'Demographics', 'Municipal GIS'],
+      categories: ['civic', 'gis'], color: '#2A9D8F', coords: [35.7770, -78.6391], link: '#' },
+    { id: 'nc-ga-story',        title: 'NC General Assembly StoryMap',
+      description: 'Statewide GIS project filming short interviews with legislators about how they use maps in policymaking. Partnership with Rep. Phil Rubin.',
+      tags: ['Policy', 'StoryMaps', 'Government'],
+      categories: ['civic', 'gis'], color: '#E63946', coords: [35.7812, -78.6387], link: '#' },
+    { id: 'freedmens-villages', title: "Freedmen's Villages Historical GIS",
+      description: "Reconstructing spatial history of post-Civil War Freedmen's Villages using archival records and historical mapping techniques.",
+      tags: ['Historical GIS', 'Research', 'Archival Work'],
+      categories: ['gis', 'education'], color: '#457B9D', coords: [35.7965, -78.7084], link: '#' }
+];
+
+const WAKE_COUNTY_OUTLINE = [
+    [35.515, -78.954], [35.555, -78.740], [35.615, -78.535], [35.740, -78.440],
+    [35.880, -78.430], [35.965, -78.505], [36.000, -78.680], [35.990, -78.850],
+    [35.925, -78.955], [35.780, -79.020], [35.625, -78.990], [35.515, -78.954]
+];
+
+/* ================================================================
+   THEME
+   ================================================================ */
+const THEME_KEY = 'be-theme';
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+function currentTheme() {
+    return document.documentElement.getAttribute('data-theme')
+        || (prefersDark.matches ? 'dark' : 'light');
+}
+function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    try { localStorage.setItem(THEME_KEY, t); } catch(e){}
+    updateTileLayer();
+    updateThemeIcon(t);
+}
+function updateThemeIcon(t) {
+    const icon = document.getElementById('themeIcon');
+    icon.innerHTML = t === 'dark'
+        ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+        : '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>';
+}
+document.getElementById('themeToggle').addEventListener('click', () => {
+    applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+});
+try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+} catch(e){}
+updateThemeIcon(currentTheme());
+
+/* ================================================================
+   HERO — typewriter + SVG map animation + glyphs
+   ================================================================ */
+const text = "Brandon Estevez";
+const typewriterElement = document.getElementById("typewriter");
+let tIndex = 0;
+function type() {
+    if (tIndex < text.length) {
+        typewriterElement.textContent += text.charAt(tIndex);
+        tIndex++;
+        setTimeout(type, 110);
+    } else {
+        setTimeout(() => {
+            typewriterElement.style.borderRight = 'none';
+            document.getElementById('heroSub').classList.add('show');
+            setTimeout(() => document.getElementById('heroMeta').classList.add('show'), 180);
+        }, 300);
+    }
+}
+
+/* Animate SVG viewBox: zoom NC → Wake, subtly, in parallel with typewriter */
+function animateHeroMap() {
+    const svg = document.getElementById('heroMap');
+    svg.classList.add('loaded');
+    // Start fully on NC, end zoomed ~2.2x on Wake County
+    const start = { x: 0,   y: 0,   w: 1000, h: 320 };
+    const end   = { x: 420, y: -10, w: 470,  h: 150 };
+    const delay = 1400; // let NC outline draw first
+    const dur   = 2200;
+    const t0 = performance.now() + delay;
+    function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
+    function frame(now) {
+        const p = Math.min(1, Math.max(0, (now - t0) / dur));
+        const e = ease(p);
+        const vb = {
+            x: start.x + (end.x - start.x) * e,
+            y: start.y + (end.y - start.y) * e,
+            w: start.w + (end.w - start.w) * e,
+            h: start.h + (end.h - start.h) * e
+        };
+        svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+        if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+}
+
+window.addEventListener('load', () => {
+    setTimeout(type, 300);
+    animateHeroMap();
+});
+
+/* ================================================================
+   MAP — Leaflet (sticky stage)
+   ================================================================ */
+let map, tileLayer, outlineLayer, aboutPinsLayer, projectPinsLayer, homeMarker = null;
+const projectPinById = {};
+const projectCardById = {};
+let currentStage = null;
+let currentFilter = 'all';
+let currentActiveProject = null;
+
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png';
+const TILE_LABEL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png';
+const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png';
+const TILE_DARK_LABEL = 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png';
+const TILE_ATTR  = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+let labelLayer;
+function updateTileLayer() {
+    if (!map) return;
+    const dark = currentTheme() === 'dark';
+    if (tileLayer) map.removeLayer(tileLayer);
+    if (labelLayer) map.removeLayer(labelLayer);
+    tileLayer = L.tileLayer(dark ? TILE_DARK : TILE_LIGHT, { attribution: TILE_ATTR, maxZoom: 19, opacity: dark ? 0.95 : 0.92 }).addTo(map);
+    labelLayer = L.tileLayer(dark ? TILE_DARK_LABEL : TILE_LABEL, { maxZoom: 19, opacity: 0.85, pane: 'shadowPane' }).addTo(map);
+}
+
+function makePinIcon(color) {
+    return L.divIcon({
+        className: '',
+        html: `<div class="pin-marker" style="background:${color}; color:${color};"></div>`,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        popupAnchor: [0, -8]
+    });
+}
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function initMap() {
+    map = L.map('map', {
+        zoomControl: true, scrollWheelZoom: false,
+        attributionControl: true, zoomAnimation: true, fadeAnimation: true, zoomSnap: 0.25
+    }).setView(HOME, 10);
+    map.on('focus', () => map.scrollWheelZoom.enable());
+    map.on('blur',  () => map.scrollWheelZoom.disable());
+    map.getContainer().addEventListener('mouseleave', () => map.scrollWheelZoom.disable());
+
+    updateTileLayer();
+
+    outlineLayer = L.polygon(WAKE_COUNTY_OUTLINE, {
+        color: '#E63946', weight: 1.5, opacity: 0.85,
+        fillColor: '#E63946', fillOpacity: 0.04, dashArray: '3 5'
+    }).addTo(map);
+
+    aboutPinsLayer = L.layerGroup();
+    ABOUT_PLACES.forEach(p => {
+        const m = L.marker(p.coords, { icon: makePinIcon(p.color) })
+            .bindPopup(`<div class="popup-title">${escapeHtml(p.name)}</div>`);
+        aboutPinsLayer.addLayer(m);
+    });
+
+    projectPinsLayer = L.layerGroup();
+    PROJECTS.forEach(p => {
+        const m = L.marker(p.coords, { icon: makePinIcon(p.color) });
+        m.bindPopup(buildProjectPopup(p));
+        m.on('click', () => setActiveProject(p.id, { source: 'pin' }));
+        projectPinById[p.id] = m;
+        projectPinsLayer.addLayer(m);
+    });
+
+    setStage('hero', { immediate: true });
+}
+
+function buildProjectPopup(p) {
+    return `
+        <div class="popup-title">${escapeHtml(p.title)}</div>
+        <div class="popup-desc">${escapeHtml(p.description)}</div>
+        <div class="popup-tags">${p.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+    `;
+}
+
+/* ================================================================
+   STAGES
+   ================================================================ */
+const STAGE_CONFIG = {
+    hero:     { label: 'Wake County',  hint: 'Scroll to explore',      fit: { bounds: WAKE_COUNTY_OUTLINE, padding: [28, 28] }, layers: { outline: true,  about: false, projects: false, home: false } },
+    about:    { label: 'Where I work', hint: 'Click a pin',            fit: { bounds: ABOUT_PLACES.map(p => p.coords), padding: [56, 56] }, layers: { outline: true,  about: true,  projects: false, home: false } },
+    projects: { label: 'Projects',     hint: 'Click a card or pin',    fit: { bounds: PROJECTS.map(p => p.coords), padding: [72, 72] }, layers: { outline: true,  about: false, projects: true,  home: false } },
+    connect:  { label: 'Home base',    hint: 'Raleigh, NC',            fit: { center: HOME, zoom: 12 }, layers: { outline: false, about: false, projects: false, home: true } }
+};
+
+function setStage(stage, opts = {}) {
+    if (stage === currentStage) return;
+    currentStage = stage;
+    const cfg = STAGE_CONFIG[stage];
+    if (!cfg) return;
+
+    document.getElementById('mapStageLabel').innerHTML = `<span class="dot"></span>${cfg.label}`;
+    document.getElementById('mapStageHint').textContent = cfg.hint;
+
+    if (cfg.layers.outline) {
+        if (!map.hasLayer(outlineLayer)) outlineLayer.addTo(map);
+        outlineLayer.setStyle({ opacity: 0.85, fillOpacity: 0.04 });
+    } else outlineLayer.setStyle({ opacity: 0.2, fillOpacity: 0.01 });
+
+    if (cfg.layers.about) { if (!map.hasLayer(aboutPinsLayer)) aboutPinsLayer.addTo(map); }
+    else                  { if (map.hasLayer(aboutPinsLayer))  map.removeLayer(aboutPinsLayer); }
+
+    if (cfg.layers.projects) { if (!map.hasLayer(projectPinsLayer)) projectPinsLayer.addTo(map); applyFilterToPins(); }
+    else                     { if (map.hasLayer(projectPinsLayer))  map.removeLayer(projectPinsLayer); }
+
+    if (cfg.layers.home) {
+        if (!homeMarker) homeMarker = L.marker(HOME, { icon: makePinIcon('#E63946') })
+            .bindPopup('<div class="popup-title">Raleigh, NC</div><div class="popup-desc">Home base</div>');
+        if (!map.hasLayer(homeMarker)) homeMarker.addTo(map);
+    } else if (homeMarker && map.hasLayer(homeMarker)) map.removeLayer(homeMarker);
+
+    const f = cfg.fit;
+    const animate = !opts.immediate;
+    if (f.bounds) {
+        map.flyToBounds(L.latLngBounds(f.bounds), { padding: f.padding || [40, 40], duration: animate ? 1.1 : 0, easeLinearity: 0.25 });
+    } else if (f.center) {
+        map.flyTo(f.center, f.zoom || 11, { duration: animate ? 1.1 : 0 });
+    }
+}
+
+function initStageObserver() {
+    const sections = document.querySelectorAll('.hero, [data-stage]');
+    const stageFor = (el) => el.dataset.stage || 'hero';
+    const io = new IntersectionObserver(() => {
+        const vpCenter = window.innerHeight / 2;
+        let best = null, bestDist = Infinity;
+        sections.forEach(s => {
+            const r = s.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > window.innerHeight) return;
+            const c = (r.top + r.bottom) / 2;
+            const d = Math.abs(c - vpCenter);
+            if (d < bestDist) { bestDist = d; best = s; }
+        });
+        if (best) setStage(stageFor(best));
+    }, { threshold: Array.from({ length: 11 }, (_, i) => i / 10) });
+    sections.forEach(s => io.observe(s));
+}
+
+/* ================================================================
+   PROJECT CARDS
+   ================================================================ */
+function renderProjectCards() {
+    const grid = document.getElementById('projectsGrid');
+    grid.innerHTML = '';
+    PROJECTS.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'project-card';
+        card.dataset.id = p.id;
+        card.dataset.categories = p.categories.join(' ');
+        card.setAttribute('data-searchable', '');
+        card.innerHTML = `
+            <div class="project-accent" style="background: ${p.color};"></div>
+            <div class="project-content">
+                <h3 class="project-title">${escapeHtml(p.title)}</h3>
+                <p class="project-description">${escapeHtml(p.description)}</p>
+                <div class="project-tags">${p.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+            </div>`;
+        card.addEventListener('click', () => setActiveProject(p.id, { source: 'card' }));
+        grid.appendChild(card);
+        projectCardById[p.id] = card;
+    });
+    updateFilterCounts();
+}
+
+function setActiveProject(id, { source } = {}) {
+    if (currentActiveProject && projectCardById[currentActiveProject]) {
+        projectCardById[currentActiveProject].classList.remove('active');
+    }
+    currentActiveProject = id;
+    const card = projectCardById[id];
+    const pin  = projectPinById[id];
+    const p    = PROJECTS.find(x => x.id === id);
+    if (!p) return;
+    if (card) card.classList.add('active');
+    if (source !== 'pin' && pin) {
+        map.flyTo(p.coords, 13, { duration: 0.9 });
+        setTimeout(() => pin.openPopup(), 600);
+    }
+    if (source !== 'card' && card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ================================================================
+   FILTERS
+   ================================================================ */
+function applyFilterToCards() {
+    Object.entries(projectCardById).forEach(([id, card]) => {
+        const p = PROJECTS.find(x => x.id === id);
+        const match = currentFilter === 'all' || p.categories.includes(currentFilter);
+        card.classList.toggle('filter-hidden', !match);
+    });
+}
+function applyFilterToPins() {
+    if (!map.hasLayer(projectPinsLayer)) return;
+    PROJECTS.forEach(p => {
+        const m = projectPinById[p.id];
+        const match = currentFilter === 'all' || p.categories.includes(currentFilter);
+        const el = m.getElement()?.querySelector('.pin-marker');
+        if (el) el.classList.toggle('ghost', !match);
+    });
+}
+function updateFilterCounts() {
+    document.querySelectorAll('.chip').forEach(chip => {
+        const f = chip.dataset.filter;
+        const n = f === 'all' ? PROJECTS.length : PROJECTS.filter(p => p.categories.includes(f)).length;
+        chip.querySelector('.chip-count').textContent = `· ${n}`;
+    });
+}
+function initFilterBar() {
+    const bar = document.getElementById('filterBar');
+    bar.addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        bar.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentFilter = chip.dataset.filter;
+        applyFilterToCards();
+        applyFilterToPins();
+    });
+    bar.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('mousemove', (e) => {
+            const r = chip.getBoundingClientRect();
+            const x = e.clientX - r.left - r.width / 2;
+            const y = e.clientY - r.top - r.height / 2;
+            chip.style.transform = `translate(${x * 0.25}px, ${y * 0.3}px)`;
+        });
+        chip.addEventListener('mouseleave', () => { chip.style.transform = ''; });
+    });
+}
+
+/* ================================================================
+   SEARCH — "Ask my work"
+   ================================================================ */
+const searchInput = document.getElementById('searchInput');
+const searchCount = document.getElementById('searchCount');
+const navSearch   = document.getElementById('navSearch');
+
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+function tokenize(q) { return q.toLowerCase().split(/\s+/).filter(t => t.length >= 2); }
+
+function clearHighlights() {
+    document.querySelectorAll('[data-searchable] mark.hl').forEach(m => {
+        const parent = m.parentNode;
+        parent.replaceChild(document.createTextNode(m.textContent), m);
+        parent.normalize();
+    });
+    document.querySelectorAll('.project-card.match').forEach(c => c.classList.remove('match'));
+}
+
+function highlightTextInNode(node, tokens) {
+    if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.nodeValue;
+        const lower = text.toLowerCase();
+        const ranges = [];
+        tokens.forEach(tok => {
+            let idx = 0;
+            while ((idx = lower.indexOf(tok, idx)) !== -1) {
+                ranges.push([idx, idx + tok.length]);
+                idx += tok.length;
             }
+        });
+        if (!ranges.length) return 0;
+        ranges.sort((a,b) => a[0]-b[0]);
+        const merged = [];
+        ranges.forEach(r => {
+            if (merged.length && r[0] <= merged[merged.length-1][1]) merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
+            else merged.push(r.slice());
+        });
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        merged.forEach(([a,b]) => {
+            if (a > last) frag.appendChild(document.createTextNode(text.slice(last, a)));
+            const mark = document.createElement('mark');
+            mark.className = 'hl';
+            mark.textContent = text.slice(a, b);
+            frag.appendChild(mark);
+            last = b;
+        });
+        if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+        node.parentNode.replaceChild(frag, node);
+        return merged.length;
+    } else if (node.nodeType === Node.ELEMENT_NODE && !['SCRIPT','STYLE','MARK'].includes(node.tagName)) {
+        let count = 0;
+        Array.from(node.childNodes).forEach(child => count += highlightTextInNode(child, tokens));
+        return count;
+    }
+    return 0;
+}
+
+const runSearch = debounce(() => {
+    const q = searchInput.value.trim();
+    clearHighlights();
+    if (!q) { navSearch.classList.remove('has-query'); searchCount.textContent = ''; return; }
+    navSearch.classList.add('has-query');
+    const tokens = tokenize(q);
+    if (!tokens.length) { searchCount.textContent = '0 results'; return; }
+
+    let firstMatchEl = null;
+    document.querySelectorAll('[data-searchable]').forEach(container => {
+        const hits = highlightTextInNode(container, tokens);
+        if (hits > 0) {
+            if (container.classList.contains('project-card')) container.classList.add('match');
+            if (!firstMatchEl) firstMatchEl = container;
         }
+    });
 
-        // FLOATING SHAPES ANIMATION - positioned to left and right sides
-        function triggerShapes() {
-            const hero = document.querySelector('.hero');
-            const colors = [
-                { name: 'red', value: '#E63946' },
-                { name: 'blue', value: '#457B9D' },
-                { name: 'yellow', value: '#F1C453' },
-                { name: 'green', value: '#2A9D8F' }
-            ];
-            const shapes = ['circle', 'square', 'triangle', 'circle'];
-            const sides = ['left', 'right', 'left', 'right'];
+    const totalMatchNodes = document.querySelectorAll('[data-searchable] mark.hl').length;
+    const cardCount = document.querySelectorAll('.project-card.match').length;
+    searchCount.textContent = cardCount > 0
+        ? `${cardCount} project${cardCount===1?'':'s'} · ${totalMatchNodes} match${totalMatchNodes===1?'':'es'}`
+        : `${totalMatchNodes} match${totalMatchNodes===1?'':'es'}`;
 
-            shapes.forEach((shape, i) => {
-                setTimeout(() => {
-                    const shapeEl = document.createElement('div');
-                    shapeEl.className = `shape ${shape} ${sides[i]}`;
+    if (firstMatchEl) {
+        const target = firstMatchEl.closest('.section, .project-card') || firstMatchEl;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}, 120);
 
-                    const color = colors[i % colors.length];
-                    if (shape === 'triangle') {
-                        shapeEl.style.borderBottomColor = color.value;
-                    } else {
-                        shapeEl.style.backgroundColor = color.value;
-                    }
+searchInput.addEventListener('input', runSearch);
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { searchInput.value = ''; runSearch(); searchInput.blur(); }
+});
+document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault(); searchInput.focus(); searchInput.select();
+    }
+});
 
-                    // Position near center, will animate to sides
-                    shapeEl.style.left = '50%';
-                    shapeEl.style.top = '50%';
+/* ================================================================
+   FEATURE 5 — BUILD-YOUR-OWN-MAP
+   ================================================================ */
+let buildMapInst = null;
+const bmCache = {};        // layer-name → L.LayerGroup
+const bmActive = {};       // layer-name → boolean
+const OVERPASS = 'https://overpass-api.de/api/interpreter';
+const WAKE_BBOX = '35.50,-79.10,36.05,-78.38';
 
-                    // Random vertical offset
-                    const yOffset = (Math.random() - 0.5) * 200;
-                    shapeEl.style.setProperty('--y', `${yOffset}px`);
+const BM_LAYERS = {
+    schools:      { color: '#E63946', query: `[out:json][timeout:20];(node[amenity=school](${WAKE_BBOX});way[amenity=school](${WAKE_BBOX}););out center;` },
+    libraries:    { color: '#457B9D', query: `[out:json][timeout:20];(node[amenity=library](${WAKE_BBOX});way[amenity=library](${WAKE_BBOX}););out center;` },
+    food:         { color: '#2A9D8F', query: `[out:json][timeout:20];(node[shop~"^(supermarket|grocery|convenience|greengrocer|farm)$"](${WAKE_BBOX});way[shop~"^(supermarket|grocery|convenience|greengrocer|farm)$"](${WAKE_BBOX}););out center;` },
+    demographics: { color: '#E8B94A', static: true }
+};
 
-                    hero.appendChild(shapeEl);
-                }, i * 300);
-            });
-        }
+/* Wake County neighborhood pop-density estimates (2020 Census, public data) */
+const DEMO_POINTS = [
+    { name:'Downtown Raleigh', c:[35.778,-78.639], r:900, d:'high' },
+    { name:'North Hills',      c:[35.848,-78.640], r:750, d:'medium' },
+    { name:'Brier Creek',      c:[35.871,-78.773], r:1000,d:'high' },
+    { name:'Cary Town Center', c:[35.791,-78.781], r:850, d:'high' },
+    { name:'Apex',             c:[35.732,-78.850], r:700, d:'medium' },
+    { name:'Wake Forest',      c:[35.975,-78.510], r:720, d:'medium' },
+    { name:'Garner',           c:[35.712,-78.615], r:660, d:'medium' },
+    { name:'Holly Springs',    c:[35.653,-78.834], r:700, d:'medium' },
+    { name:'Fuquay-Varina',    c:[35.584,-78.800], r:600, d:'low' },
+    { name:'Knightdale',       c:[35.789,-78.490], r:550, d:'low' }
+];
+const DEMO_OPACITY = { high: 0.32, medium: 0.18, low: 0.10 };
 
-        // MAP PINS ANIMATION
-        function createMapPins() {
-            const mapPins = document.getElementById('mapPins');
-            const colors = ['#E63946', '#457B9D', '#F1C453', '#2A9D8F'];
+function initBuildMap() {
+    if (buildMapInst) return;
+    buildMapInst = L.map('buildMapEl', {
+        zoomControl: true, scrollWheelZoom: false,
+        attributionControl: true, zoomAnimation: true
+    }).setView([35.78, -78.68], 10);
 
-            // Create random pins across the map
-            for (let i = 0; i < 20; i++) {
-                const pin = document.createElement('div');
-                pin.className = 'pin';
-                pin.style.backgroundColor = colors[i % colors.length];
-                pin.style.left = `${Math.random() * 150}%`;
-                pin.style.top = `${Math.random() * 80 + 10}%`;
-                pin.style.animationDelay = `${Math.random() * 2}s`;
-                mapPins.appendChild(pin);
-            }
-        }
+    L.tileLayer(currentTheme() === 'dark' ? TILE_DARK : TILE_LIGHT, {
+        attribution: TILE_ATTR, maxZoom: 19, opacity: 0.9
+    }).addTo(buildMapInst);
 
-        // Start typewriter on load
-        window.addEventListener('load', () => {
-            setTimeout(type, 500);
-            createMapPins();
+    buildMapInst.getContainer().addEventListener('mouseenter', () => buildMapInst.scrollWheelZoom.enable());
+    buildMapInst.getContainer().addEventListener('mouseleave', () => buildMapInst.scrollWheelZoom.disable());
+
+    /* checkbox listeners */
+    document.querySelectorAll('.bm-layer input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', () => toggleBmLayer(cb.dataset.layer, cb.checked));
+    });
+
+    document.getElementById('bmDownload').addEventListener('click', downloadBuildMap);
+}
+
+async function toggleBmLayer(name, on) {
+    bmActive[name] = on;
+    const cfg = BM_LAYERS[name];
+    if (!cfg) return;
+
+    /* remove existing */
+    if (bmCache[name] && buildMapInst.hasLayer(bmCache[name])) {
+        buildMapInst.removeLayer(bmCache[name]);
+    }
+    if (!on) return;
+
+    /* demographics = static circles */
+    if (cfg.static) {
+        const lg = L.layerGroup();
+        DEMO_POINTS.forEach(pt => {
+            L.circle(pt.c, {
+                radius: pt.r,
+                color: cfg.color, weight: 1,
+                fillColor: cfg.color,
+                fillOpacity: DEMO_OPACITY[pt.d],
+                opacity: 0.6
+            }).bindPopup(`<div class="popup-title">${pt.name}</div><div class="popup-desc">Population density: <strong>${pt.d}</strong></div>`).addTo(lg);
+        });
+        bmCache[name] = lg.addTo(buildMapInst);
+        document.getElementById(`cnt-${name}`).textContent = `${DEMO_POINTS.length} neighborhoods`;
+        return;
+    }
+
+    /* Overpass fetch */
+    const label = document.getElementById(`bml-${name}`);
+    const sp    = document.getElementById(`sp-${name}`);
+    const cnt   = document.getElementById(`cnt-${name}`);
+    label.classList.add('loading');
+    cnt.textContent = 'Loading…';
+
+    try {
+        const res  = await fetch(OVERPASS, { method:'POST', body:'data=' + encodeURIComponent(cfg.query) });
+        const data = await res.json();
+        const lg   = L.layerGroup();
+
+        data.elements.forEach(el => {
+            const lat = el.lat ?? el.center?.lat;
+            const lng = el.lon ?? el.center?.lon;
+            if (!lat || !lng) return;
+            const title = el.tags?.name || el.tags?.amenity || el.tags?.shop || name;
+            L.circleMarker([lat, lng], {
+                radius: 7, color: cfg.color, weight: 2,
+                fillColor: cfg.color, fillOpacity: 0.85
+            }).bindPopup(`<div class="popup-title">${escapeHtml(title)}</div>`)
+              .addTo(lg);
         });
 
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
+        bmCache[name] = lg.addTo(buildMapInst);
+        cnt.textContent = `${data.elements.length} found`;
+    } catch (err) {
+        cnt.textContent = 'Error — try again';
+        document.querySelector(`[data-layer="${name}"]`).checked = false;
+        bmActive[name] = false;
+    } finally {
+        label.classList.remove('loading');
+    }
+}
+
+function downloadBuildMap() {
+    if (!buildMapInst) return;
+    const el = document.getElementById('buildMapEl');
+    /* Collect all canvas layers from Leaflet's map pane */
+    const canvases = el.querySelectorAll('canvas');
+    if (canvases.length) {
+        const merged = document.createElement('canvas');
+        merged.width  = el.offsetWidth;
+        merged.height = el.offsetHeight;
+        const ctx = merged.getContext('2d');
+        ctx.fillStyle = '#f7f8fa';
+        ctx.fillRect(0, 0, merged.width, merged.height);
+        canvases.forEach(c => { try { ctx.drawImage(c, 0, 0); } catch(e){} });
+        const a = document.createElement('a');
+        a.download = 'wake-county-map.png';
+        a.href = merged.toDataURL();
+        a.click();
+    } else {
+        showToast('Right-click the map → "Save Image As" to export.');
+    }
+}
+
+/* Lazy-init build map when section scrolls into view */
+const bmObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { initBuildMap(); bmObserver.disconnect(); }
+}, { threshold: 0.15 });
+bmObserver.observe(document.getElementById('build-map'));
+
+/* ================================================================
+   FEATURE 6 — STORYMAP CAROUSEL
+   ================================================================ */
+/* Update links below with your real ArcGIS StoryMap URLs */
+const STORYMAPS = [
+    {
+        title: 'CAPS Model UN 2025',
+        desc: 'A full-scale diplomatic conference built from scratch with Esri tools — StoryMaps, ArcGIS Online, and Business Analyst. 170 delegates, 10 schools, one spatial experience.',
+        tags: ['Diplomacy', 'ArcGIS', 'Design'],
+        source: 'Esri StoryMaps',
+        color: '#2A9D8F',
+        icon: `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>`,
+        link: '#'  /* TODO: replace with your StoryMap URL */
+    },
+    {
+        title: 'NOURISH: Food Systems Mapping',
+        desc: 'Mapping how food moves from farms to tables across Wake County, connecting communities with healthy and affordable food sources through interactive GIS storytelling.',
+        tags: ['Food Systems', 'Community', 'GIS'],
+        source: 'Esri StoryMaps',
+        color: '#E63946',
+        icon: `<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/>`,
+        link: '#'
+    },
+    {
+        title: 'Learning by Mapping — Esri Ed Summit',
+        desc: 'Session co-presented with Dr. Thomas Ray at the Esri Education Summit on using spatial thinking to make GIS click for K-12 students — from tool to creative discovery.',
+        tags: ['Education', 'Spatial Thinking', 'Workshop'],
+        source: 'Esri Education Summit',
+        color: '#457B9D',
+        icon: `<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>`,
+        link: '#'
+    },
+    {
+        title: "Freedmen's Villages Historical GIS",
+        desc: "Reconstructing the spatial history of post-Civil War Freedmen's Villages across North Carolina using archival land records, census data, and historical mapping techniques.",
+        tags: ['History', 'Archives', 'Research'],
+        source: 'Esri StoryMaps',
+        color: '#E8B94A',
+        icon: `<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>`,
+        link: '#'
+    }
+];
+
+let smIndex = 0, smTimer = null, smStartTime = 0, smAnimFrame = null;
+const SM_DURATION = 5000;
+
+function initCarousel() {
+    const track   = document.getElementById('smTrack');
+    const dots    = document.getElementById('smDots');
+    const progress= document.getElementById('smProgress');
+
+    /* Render slides */
+    STORYMAPS.forEach((s, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'sm-slide';
+        slide.innerHTML = `
+            <div class="sm-thumb">
+                <div class="sm-thumb-bg" style="background:${s.color};"></div>
+                <div class="sm-thumb-grid"></div>
+                <div class="sm-thumb-icon"><svg fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">${s.icon}</svg></div>
+                <span class="sm-thumb-label">${escapeHtml(s.source)}</span>
+            </div>
+            <div class="sm-body">
+                <div class="sm-source">${escapeHtml(s.source)}</div>
+                <div class="sm-title">${escapeHtml(s.title)}</div>
+                <div class="sm-desc">${escapeHtml(s.desc)}</div>
+                <div class="sm-tags">${s.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+                <a class="sm-open" href="${s.link}" target="_blank" rel="noopener">
+                    Open StoryMap
+                    <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+            </div>`;
+        track.appendChild(slide);
+
+        const dot = document.createElement('div');
+        dot.className = 'sm-dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', () => goToSlide(i));
+        dots.appendChild(dot);
+    });
+
+    document.getElementById('smPrev').addEventListener('click', () => goToSlide((smIndex - 1 + STORYMAPS.length) % STORYMAPS.length));
+    document.getElementById('smNext').addEventListener('click', () => goToSlide((smIndex + 1) % STORYMAPS.length));
+
+    const wrap = document.getElementById('smWrap');
+    wrap.addEventListener('mouseenter', stopTimer);
+    wrap.addEventListener('mouseleave', startTimer);
+
+    startTimer();
+}
+
+function goToSlide(i) {
+    smIndex = i;
+    document.getElementById('smTrack').style.transform = `translateX(-${i * 100}%)`;
+    document.querySelectorAll('.sm-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+    stopTimer(); startTimer();
+}
+
+function startTimer() {
+    stopTimer();
+    smStartTime = performance.now();
+    const progress = document.getElementById('smProgress');
+    function tick(now) {
+        const elapsed = now - smStartTime;
+        const pct = Math.min(100, (elapsed / SM_DURATION) * 100);
+        progress.style.width = pct + '%';
+        if (elapsed >= SM_DURATION) {
+            goToSlide((smIndex + 1) % STORYMAPS.length);
+            return;
+        }
+        smAnimFrame = requestAnimationFrame(tick);
+    }
+    smAnimFrame = requestAnimationFrame(tick);
+}
+
+function stopTimer() {
+    if (smAnimFrame) cancelAnimationFrame(smAnimFrame);
+    document.getElementById('smProgress').style.width = '0';
+}
+
+/* ================================================================
+   FEATURE 7 — LEARNING FEED
+   ================================================================ */
+const LEARN_FALLBACK = [
+    { id:1, title:'Google Photorealistic 3D Basemap in ArcGIS Online', source:'Esri Blog', date:'2026-02', category:'GIS', take:'3D StoryMaps will change how community presentations feel — policy problems become tangible when you can walk through a neighborhood spatially.', link:'https://www.esri.com/arcgis-blog' },
+    { id:2, title:'The 15-Minute City: Network vs. Euclidean Walkability', source:'Urban Studies Journal', date:'2026-01', category:'Urban Planning', take:'Road network distance vs straight-line radius changes walkability scores dramatically — I need to update the scoring in my village simulator.', link:'#' },
+    { id:3, title:'Place-Based GIS Education Increases Spatial Retention by 38%', source:'Journal of Geography', date:'2025-11', category:'Spatial Pedagogy', take:'Connecting GIS to students\' own neighborhoods validates everything we\'ve been doing with 4-H GIS curriculum in Wake County.', link:'#' },
+    { id:4, title:'Food Desert Identification and Grocery Access Gaps in Rural NC', source:'NC Dept. of Agriculture', date:'2025-12', category:'Ag Policy', take:'11 Wake County census tracts meet the USDA food desert definition — maps directly onto the NOURISH project methodology.', link:'#' },
+    { id:5, title:'AI-Assisted Crop Disease Classification from Drone Imagery', source:'Precision Agriculture', date:'2026-03', category:'AgTech', take:'94% accuracy on strawberry leaf disease matches what we built in Granja Node — worth exploring their transfer learning pipeline.', link:'#' }
+];
+
+async function loadLearningFeed() {
+    let items = LEARN_FALLBACK;
+    try {
+        const res = await fetch('./learning.json');
+        if (res.ok) items = await res.json();
+    } catch(e) { /* use fallback */ }
+    renderLearningFeed(items);
+}
+
+function renderLearningFeed(items) {
+    const grid = document.getElementById('learnGrid');
+    grid.innerHTML = '';
+    items.forEach(item => {
+        const a = document.createElement('a');
+        a.className = 'learn-card';
+        a.href = item.link || '#';
+        if (item.link && item.link !== '#') { a.target = '_blank'; a.rel = 'noopener'; }
+        a.innerHTML = `
+            <div class="learn-header">
+                <span class="learn-cat">${escapeHtml(item.category)}</span>
+                <span class="learn-date">${escapeHtml(item.date)}</span>
+            </div>
+            <div class="learn-title">${escapeHtml(item.title)}</div>
+            <div class="learn-source">${escapeHtml(item.source)}</div>
+            <div class="learn-take">${escapeHtml(item.take)}</div>
+            <span class="learn-link">
+                Read
+                <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </span>`;
+        grid.appendChild(a);
+    });
+}
+
+/* ================================================================
+   FEATURE 9 — BUILD A VILLAGE
+   ================================================================ */
+const V_COLS = 22, V_ROWS = 14;
+let V_CELL = 34;
+let villageGrid, villageCtx, villageTool = 'residential', villagePainting = false;
+
+const CELL_COLORS = {
+    empty:       '#F7F8FA',
+    residential: '#DBEAFE',
+    commercial:  '#FEE2E2',
+    road:        '#D1D5DB',
+    rail:        '#374151',
+    park:        '#D1FAE5'
+};
+const CELL_ACCENT = {
+    residential: '#3B82F6',
+    commercial:  '#EF4444',
+    road:        '#9CA3AF',
+    rail:        '#9CA3AF',
+    park:        '#10B981'
+};
+
+function initVillage() {
+    const canvas = document.getElementById('villageCanvas');
+    const dpr = window.devicePixelRatio || 1;
+
+    /* Responsive cell size */
+    const available = Math.min(window.innerWidth - 260, 1100);
+    V_CELL = Math.max(24, Math.min(36, Math.floor(available / V_COLS)));
+
+    canvas.width  = V_COLS * V_CELL * dpr;
+    canvas.height = V_ROWS * V_CELL * dpr;
+    canvas.style.width  = V_COLS * V_CELL + 'px';
+    canvas.style.height = V_ROWS * V_CELL + 'px';
+
+    villageCtx = canvas.getContext('2d');
+    villageCtx.scale(dpr, dpr);
+    villageGrid = Array.from({ length: V_ROWS }, () => Array(V_COLS).fill('empty'));
+
+    /* Seed a small starter layout */
+    for (let c = 0; c < V_COLS; c++) {
+        villageGrid[7][c] = 'road';           // main road across middle
+        if (c % 5 === 0) villageGrid[3][c] = 'road';  // top road
+    }
+    for (let r = 0; r < V_ROWS; r++) {
+        if (r % 4 === 0) villageGrid[r][10] = 'road'; // vertical road
+    }
+    villageGrid[2][2] = 'park'; villageGrid[2][3] = 'park'; villageGrid[3][2] = 'park';
+    villageGrid[1][5] = 'residential'; villageGrid[1][6] = 'residential';
+    villageGrid[9][3] = 'commercial'; villageGrid[9][4] = 'commercial';
+
+    villageRender();
+    villageUpdateStats();
+
+    /* Events */
+    canvas.addEventListener('mousedown', e => { villagePainting = true; villagePaint(e); });
+    canvas.addEventListener('mousemove', e => { if (villagePainting) villagePaint(e); });
+    canvas.addEventListener('mouseup',   () => villagePainting = false);
+    canvas.addEventListener('mouseleave',() => villagePainting = false);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); villagePainting = true; villagePaintTouch(e); }, { passive: false });
+    canvas.addEventListener('touchmove',  e => { e.preventDefault(); villagePaintTouch(e); }, { passive: false });
+    canvas.addEventListener('touchend',   () => villagePainting = false);
+
+    /* Tool bar */
+    document.getElementById('toolBar').addEventListener('click', e => {
+        const btn = e.target.closest('[data-tool]');
+        if (!btn) return;
+        villageTool = btn.dataset.tool;
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (villageTool !== 'empty') {
+            btn.style.background = CELL_COLORS[villageTool] || '';
+            btn.style.borderColor = CELL_ACCENT[villageTool] || '';
+            btn.style.color = CELL_ACCENT[villageTool] || '';
+        } else {
+            btn.style.background = '';
+        }
+        document.querySelectorAll('.tool-btn:not(.erase-btn)').forEach(b => {
+            if (!b.classList.contains('active')) { b.style.background = ''; b.style.borderColor = ''; b.style.color = ''; }
         });
-    </script>
+    });
+
+    document.getElementById('villageClear').addEventListener('click', () => {
+        villageGrid = Array.from({ length: V_ROWS }, () => Array(V_COLS).fill('empty'));
+        villageRender(); villageUpdateStats();
+    });
+    document.getElementById('villageShare').addEventListener('click', villageShare);
+
+    /* Load from URL hash if present */
+    if (location.hash.startsWith('#village=')) villageLoadHash();
+}
+
+function villagePaint(e) {
+    const canvas = document.getElementById('villageCanvas');
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const c = Math.floor(x / V_CELL);
+    const r = Math.floor(y / V_CELL);
+    if (r < 0 || r >= V_ROWS || c < 0 || c >= V_COLS) return;
+    if (villageGrid[r][c] === villageTool) return;
+    villageGrid[r][c] = villageTool;
+    villageRender();
+    villageUpdateStats();
+}
+
+function villagePaintTouch(e) {
+    const t = e.touches[0];
+    villagePaint({ clientX: t.clientX, clientY: t.clientY });
+}
+
+function villageRender() {
+    const ctx = villageCtx;
+    const S = V_CELL;
+    ctx.clearRect(0, 0, V_COLS * S, V_ROWS * S);
+
+    /* Background */
+    ctx.fillStyle = '#F7F8FA';
+    ctx.fillRect(0, 0, V_COLS * S, V_ROWS * S);
+
+    /* Cells */
+    villageGrid.forEach((row, r) => row.forEach((type, c) => {
+        if (type === 'empty') return;
+        villageDrawCell(ctx, r, c, type, S);
+    }));
+
+    /* Grid lines */
+    ctx.strokeStyle = '#DFE2E8';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.7;
+    for (let r = 0; r <= V_ROWS; r++) {
+        ctx.beginPath(); ctx.moveTo(0, r*S); ctx.lineTo(V_COLS*S, r*S); ctx.stroke();
+    }
+    for (let c = 0; c <= V_COLS; c++) {
+        ctx.beginPath(); ctx.moveTo(c*S, 0); ctx.lineTo(c*S, V_ROWS*S); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+}
+
+function villageDrawCell(ctx, r, c, type, S) {
+    const x = c * S, y = r * S;
+    ctx.fillStyle = CELL_COLORS[type];
+    ctx.fillRect(x, y, S, S);
+
+    const cx = x + S/2, cy = y + S/2;
+    const sc = S / 36;
+    ctx.fillStyle = CELL_ACCENT[type] || '#6B7280';
+    ctx.strokeStyle = CELL_ACCENT[type] || '#6B7280';
+
+    switch(type) {
+        case 'residential':
+            ctx.fillRect(cx-6*sc, cy-2*sc, 12*sc, 9*sc);
+            ctx.beginPath(); ctx.moveTo(cx-8*sc,cy-2*sc); ctx.lineTo(cx,cy-11*sc); ctx.lineTo(cx+8*sc,cy-2*sc); ctx.closePath(); ctx.fill();
+            ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fillRect(cx-2*sc,cy+2*sc,4*sc,5*sc);
+            break;
+        case 'commercial':
+            ctx.fillRect(cx-7*sc, cy-9*sc, 14*sc, 16*sc);
+            ctx.fillStyle='rgba(255,255,255,0.6)';
+            ctx.fillRect(cx-5*sc,cy-7*sc,4*sc,3*sc); ctx.fillRect(cx+1*sc,cy-7*sc,4*sc,3*sc);
+            ctx.fillRect(cx-5*sc,cy-2*sc,4*sc,3*sc); ctx.fillRect(cx+1*sc,cy-2*sc,4*sc,3*sc);
+            break;
+        case 'road':
+            ctx.globalAlpha = 0.55;
+            ctx.setLineDash([3*sc, 3*sc]);
+            ctx.lineWidth = 1.2*sc;
+            ctx.beginPath(); ctx.moveTo(x,cy); ctx.lineTo(x+S,cy); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.globalAlpha = 1;
+            break;
+        case 'rail':
+            ctx.lineWidth = 1.4*sc;
+            ctx.strokeStyle = '#9CA3AF';
+            ctx.beginPath();
+            ctx.moveTo(x,cy-4*sc); ctx.lineTo(x+S,cy-4*sc);
+            ctx.moveTo(x,cy+4*sc); ctx.lineTo(x+S,cy+4*sc);
+            ctx.stroke();
+            ctx.lineWidth = 1*sc;
+            for(let i=1;i<4;i++){ const tx=x+i*(S/4); ctx.beginPath(); ctx.moveTo(tx,cy-6*sc); ctx.lineTo(tx,cy+6*sc); ctx.stroke(); }
+            break;
+        case 'park':
+            ctx.fillStyle='#78350F'; ctx.fillRect(cx-1.5*sc, cy+3*sc, 3*sc, 5*sc);
+            ctx.fillStyle='#10B981';
+            ctx.beginPath(); ctx.arc(cx, cy-2*sc, 8*sc, 0, Math.PI*2); ctx.fill();
+            break;
+    }
+    ctx.lineWidth = 1; ctx.globalAlpha = 1;
+}
+
+function villageComputeStats() {
+    let res=0,com=0,road=0,rail=0,park=0,walkable=0;
+    const total = V_COLS * V_ROWS;
+    villageGrid.forEach((row,r) => row.forEach((cell,c) => {
+        if(cell==='residential') res++;
+        else if(cell==='commercial') com++;
+        else if(cell==='road') road++;
+        else if(cell==='rail') rail++;
+        else if(cell==='park') park++;
+    }));
+    villageGrid.forEach((row,r) => row.forEach((cell,c) => {
+        if(cell!=='residential') return;
+        outer: for(let dr=-3;dr<=3;dr++) for(let dc=-3;dc<=3;dc++) {
+            if(Math.abs(dr)+Math.abs(dc)>3) continue;
+            const nr=r+dr,nc=c+dc;
+            if(nr<0||nr>=V_ROWS||nc<0||nc>=V_COLS) continue;
+            if(villageGrid[nr][nc]==='commercial'||villageGrid[nr][nc]==='park'){walkable++;break outer;}
+        }
+    }));
+    const walkability  = res>0 ? Math.round(walkable/res*100) : 0;
+    const density      = Math.round((res+com)/total*100);
+    const greenSpace   = Math.round(park/total*100);
+    const connectivity = Math.round((road+rail)/total*100);
+    return { walkability, density, greenSpace, connectivity };
+}
+
+function villageUpdateStats() {
+    const s = villageComputeStats();
+    function setBar(fillId, valId, val, good, ok) {
+        const fill = document.getElementById(fillId);
+        const span = document.getElementById(valId);
+        if (!fill||!span) return;
+        fill.style.width = val + '%';
+        fill.className = 'stat-fill ' + (val>=good ? 'good' : val>=ok ? 'ok' : 'low');
+        span.textContent = val + '%';
+    }
+    setBar('walkFill',    'walkVal',    s.walkability,  65, 35);
+    setBar('densityFill', 'densityVal', s.density,      25, 10);
+    setBar('greenFill',   'greenVal',   s.greenSpace,   15,  8);
+    setBar('connectFill', 'connectVal', s.connectivity, 20, 10);
+    const score = Math.min(100, Math.round(s.walkability*.4 + Math.min(s.density*2,60)*.3 + Math.min(s.greenSpace*4,100)*.3));
+    document.getElementById('villageScore').textContent = score || '—';
+}
+
+function villageShare() {
+    const keys = {empty:'0',residential:'R',commercial:'C',road:'r',rail:'l',park:'P'};
+    const enc  = btoa(villageGrid.map(row=>row.map(c=>keys[c]||'0').join('')).join('|'));
+    const url  = location.origin+location.pathname+'#village='+enc;
+    history.replaceState(null,'',url);
+    navigator.clipboard.writeText(url).then(()=>showToast('Village link copied!')).catch(()=>{
+        const inp=document.createElement('input');inp.value=url;document.body.appendChild(inp);inp.select();document.execCommand('copy');document.body.removeChild(inp);showToast('Link copied!');
+    });
+}
+
+function villageLoadHash() {
+    try {
+        const enc=location.hash.slice('#village='.length);
+        const keys={'0':'empty','R':'residential','C':'commercial','r':'road','l':'rail','P':'park'};
+        const rows=atob(enc).split('|');
+        if(rows.length!==V_ROWS) return;
+        rows.forEach((row,r)=>row.split('').forEach((ch,c)=>{ if(c<V_COLS) villageGrid[r][c]=keys[ch]||'empty'; }));
+        villageRender(); villageUpdateStats();
+    } catch(e){}
+}
+
+/* Toast utility (shared) */
+function showToast(msg) {
+    const existing=document.getElementById('toast');
+    if(existing) existing.remove();
+    const t=document.createElement('div');
+    t.id='toast'; t.className='toast'; t.textContent=msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(()=>t.classList.add('show'));
+    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),400); },2800);
+}
+
+/* ================================================================
+   BOOT
+   ================================================================ */
+renderProjectCards();
+initFilterBar();
+initMap();
+requestAnimationFrame(() => initStageObserver());
+window.addEventListener('resize', () => { if (map) map.invalidateSize(); });
+initCarousel();
+loadLearningFeed();
+initVillage();
+</script>
+
 </body>
 </html>
