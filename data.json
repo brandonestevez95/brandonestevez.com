@@ -1,0 +1,250 @@
+{
+  "_readme": "Edit this file to update your site content. Push to GitHub and Cloudflare Pages redeploys automatically. No code changes needed.",
+  "_categories": "Science | Education | Politics | History | Agriculture | Urban Planning | Interdisciplinary | Policy",
+
+  "projects": [
+    {
+      "id": "freedmen",
+      "title": "Rediscovering Raleigh's Lost Freedmen Villages",
+      "category": "History",
+      "year": "2025",
+      "featured": true,
+      "url": "https://storymaps.arcgis.com/stories/5d30baa34e394ebdaf0a9edeffa5c59a",
+      "description": "AP African American Studies research mapping the post-Civil War Freedmen settlements that built modern Raleigh.",
+      "problem": "Raleigh's post-emancipation Black communities — Oberlin, Method, Hayti — were systematically erased from the official record by 20th-century urban renewal. Their geography is missing from most local histories.",
+      "impact": "Reconstructs five lost villages using historic plats, census records, and oral histories. Now used as supplemental material in WCPSS African American Studies classrooms.",
+      "tools": ["ArcGIS Pro", "StoryMaps", "Historic Imagery", "Census Data"],
+      "location": [35.7796, -78.6382]
+    },
+    {
+      "id": "learning-mapping",
+      "title": "Learning by Mapping: A New Kind of Curriculum",
+      "category": "Education",
+      "year": "2025",
+      "featured": true,
+      "url": "https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824",
+      "description": "Esri UC 2025 presentation — making the case for place-based GIS as a K-12 pedagogy to ~200 educators.",
+      "problem": "Geography is the most-cut subject in American K-12 education, yet spatial reasoning underlies every modern science. Few teachers have a curriculum that bridges the two.",
+      "impact": "Presented at the 2025 Esri User Conference. The framework now informs 4-H Geospatial Leadership Team curriculum across four states.",
+      "tools": ["ArcGIS Pro", "StoryMaps", "Survey123", "Field Maps"],
+      "location": [32.7157, -117.1611]
+    },
+    {
+      "id": "raleigh-neighborhoods",
+      "title": "Researching Raleigh's Neighborhoods and Communities",
+      "category": "Urban Planning",
+      "year": "2024",
+      "featured": true,
+      "url": "https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b",
+      "description": "GIS Day 2024 winning project — a block-by-block read of how Raleigh actually lives.",
+      "problem": "Raleigh's rapid growth has left residents without a public tool to understand how their own neighborhoods compare on access, demographics, and change over time.",
+      "impact": "Won the 2024 NC State GIS Day student competition. Cited by a Raleigh Planning Commission member as a model for civic spatial communication.",
+      "tools": ["ArcGIS Pro", "StoryMaps", "Census API", "Wake County Open Data"],
+      "location": [35.7896, -78.6280]
+    },
+    {
+      "id": "coastal",
+      "title": "Turning the tide for North Carolina's coastal communities",
+      "category": "Science",
+      "year": "2025",
+      "featured": false,
+      "url": "https://storymaps.arcgis.com/stories/7dd2665b88a64932a51c91f3bf333c65",
+      "description": "Sea level rise, salt marsh loss, and the working communities on the front line of NC's coast.",
+      "problem": "NC's coastal counties are losing wetland buffers faster than nearly any state on the Atlantic — but the impact is mostly framed as ecological rather than economic and human.",
+      "impact": "Shared with the NC Coastal Federation as a communication template for community outreach.",
+      "tools": ["ArcGIS Pro", "StoryMaps", "NOAA Data"],
+      "location": [34.7204, -76.6628]
+    },
+    {
+      "id": "wcpss",
+      "title": "WCPSS Students Using GIS Collection",
+      "category": "Education",
+      "year": "2025",
+      "featured": false,
+      "url": "https://storymaps.arcgis.com/collections/1a0d97bf4c314af8b29cd74b342b5ae5",
+      "description": "A curated collection of student GIS work from across Wake County Public Schools.",
+      "problem": "Teachers need a visible body of student work to make the case for GIS curriculum to administrators — but there was no central place to point to.",
+      "impact": "Distributed to WCPSS GIS staff and teacher liaisons; the canonical example portfolio for the district's GIS instruction expansion.",
+      "tools": ["StoryMaps Collections", "ArcGIS Online"],
+      "location": [35.8300, -78.6400]
+    },
+    {
+      "id": "caps-mun",
+      "title": "Behind CAPS MUN 2025: Building Model UN with GIS + AI",
+      "category": "Politics",
+      "year": "2025",
+      "featured": false,
+      "url": "https://storymaps.arcgis.com/stories/e6b6538e81ad47e2b6d2d7d9f24b19cf",
+      "description": "The first GIS-integrated Model UN conference in the United States.",
+      "problem": "Model UN crises rely on dense briefing packets that delegates rarely fully read, and almost never ground-truth with maps. Spatial context is lost.",
+      "impact": "Delegates used live maps and AI-assisted research during crisis sessions. The format is being adopted by two other NC conferences in 2026.",
+      "tools": ["ArcGIS Online", "StoryMaps", "Claude", "Custom Web Maps"],
+      "location": [35.7915, -78.7811]
+    },
+    {
+      "id": "gps-marine",
+      "title": "How GPS revolutionized marine science",
+      "category": "Science",
+      "year": "2025",
+      "featured": false,
+      "url": "https://storymaps.arcgis.com/stories/251ba32c44694f97966eeac5ffef051a",
+      "description": "A history of how satellite positioning rewrote what marine scientists could ask.",
+      "problem": "Most students learn GPS as a navigation tool, missing the deeper story: pre-GPS oceanography was bottlenecked by the inability to know your location within a hundred meters.",
+      "impact": "Archived as part of the Geography At Work interdisciplinary collection.",
+      "tools": ["StoryMaps", "Historic Imagery"],
+      "location": [34.5200, -76.4800]
+    },
+    {
+      "id": "geography-work",
+      "title": "Geography At Work",
+      "category": "Interdisciplinary",
+      "year": "2025",
+      "featured": false,
+      "url": "https://storymaps.arcgis.com/collections/a4bff65e902e4e5497efa82d900b74a1",
+      "description": "A collection showing how spatial thinking powers science, policy, ag, and history alike.",
+      "problem": "GIS is too often pitched as a single discipline. The real case for it is interdisciplinary — and that case isn't made well in any single project.",
+      "impact": "Used in 4-H Geospatial Leadership Team onboarding as the umbrella interdisciplinary collection.",
+      "tools": ["StoryMaps Collections"],
+      "location": [35.5000, -79.5000]
+    },
+    {
+      "id": "growers",
+      "title": "Growers across North Carolina",
+      "category": "Agriculture",
+      "year": "2025",
+      "featured": false,
+      "url": "https://storymaps.arcgis.com/collections/78e726bd27404df1b776e5f75be367e0",
+      "description": "NOURISH project — mapping the people behind NC's working farms.",
+      "problem": "NC ag policy is shaped at the state level, but conditions for growers vary enormously by county — a variation invisible at the policy level.",
+      "impact": "Cited by NC Ag Extension contacts as a useful frame for outreach. Core spatial layer of the NOURISH project.",
+      "tools": ["ArcGIS Pro", "StoryMaps Collections", "Survey123"],
+      "location": [35.4000, -78.5000]
+    }
+  ],
+
+  "in_progress": [
+    {
+      "title": "Supply Chain Analysis",
+      "category": "Agriculture",
+      "year": "2026",
+      "status": "In progress",
+      "percent": null,
+      "desc": "Food supply chain mapping across NC agricultural counties — tracing inputs, outputs, and chokepoints."
+    },
+    {
+      "title": "Medicare Fraud Mapped",
+      "category": "Policy",
+      "year": "2026",
+      "status": "In progress",
+      "percent": null,
+      "desc": "Geographic fraud-pattern analysis across CMS billing data — locating anomalies that evade tabular audit."
+    },
+    {
+      "title": "Sea Level Rise Impact",
+      "category": "Science",
+      "year": "2025",
+      "status": "85% complete",
+      "percent": 85,
+      "desc": "Extension of the coastal communities StoryMap with parcel-level inundation modeling under IPCC scenarios."
+    },
+    {
+      "title": "Mega Ant War GIS Project",
+      "category": "Science",
+      "year": "TBD",
+      "status": "Planning",
+      "percent": null,
+      "desc": "Invasive species spread tracking — mapping the front lines of fire ant vs. Argentine ant territory wars."
+    }
+  ],
+
+  "highlights": [
+    {
+      "type": "Speaking",
+      "icon": "🎤",
+      "title": "TEDx Talk",
+      "year": "2025",
+      "desc": "Selected to give a TEDx talk on spatial thinking and civic technology. Update this entry with your full event name, talk title, and link.",
+      "link": null,
+      "link_label": null
+    },
+    {
+      "type": "Conference",
+      "icon": "🌐",
+      "title": "Esri User Conference 2025",
+      "year": "2025",
+      "desc": "Presented 'Learning by Mapping: A New Kind of Curriculum' to ~200 GIS educators at the world's largest GIS conference.",
+      "link": "https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824",
+      "link_label": "View StoryMap"
+    },
+    {
+      "type": "Award",
+      "icon": "🏆",
+      "title": "GIS Day 2024 Champion",
+      "year": "2024",
+      "desc": "Won the NC State University GIS Day student competition for the Raleigh Neighborhoods & Communities StoryMap.",
+      "link": "https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b",
+      "link_label": "View project"
+    },
+    {
+      "type": "Leadership",
+      "icon": "🗺️",
+      "title": "National 4-H Geospatial Leadership Team",
+      "year": "2024–present",
+      "desc": "Lead the national team developing GIS curriculum and training programs for 4-H clubs across the United States.",
+      "link": null,
+      "link_label": null
+    }
+  ],
+
+  "stats": [
+    { "num": "9+",   "label": "Published StoryMaps" },
+    { "num": "200+", "label": "Educators reached at Esri UC" },
+    { "num": "4",    "label": "States with 4-H GIS curriculum" },
+    { "num": "1st",  "label": "GIS-integrated MUN in the US" }
+  ],
+
+  "about_items": [
+    { "icon": "🎓", "title": "NC State University — Fall 2026", "desc": "Agricultural Business Management · Raleigh, NC" },
+    { "icon": "🗺️", "title": "The Map Company",                  "desc": "GIS consulting — civic analytics, ag systems, outreach visualization" },
+    { "icon": "🌿", "title": "National 4-H Geospatial Leadership Team", "desc": "Lead · curriculum development across four states" },
+    { "icon": "📍", "title": "Raleigh, North Carolina",           "desc": "Built most of these projects in Wake County" }
+  ],
+
+  "learning": [
+    {
+      "title": "Google Photorealistic 3D Basemap Now Available in ArcGIS Online",
+      "source": "Esri Blog",
+      "date": "2026-02",
+      "take": "Photorealistic 3D scenes in StoryMaps will change how community presentations feel — policy problems become tangible when you can walk through a neighborhood in 3D.",
+      "link": "https://www.esri.com/arcgis-blog"
+    },
+    {
+      "title": "The 15-Minute City: Network Analysis vs. Euclidean Distance in Walkability Scoring",
+      "source": "Urban Studies Journal",
+      "date": "2026-01",
+      "take": "Using road network distance instead of straight-line radius makes walkability scores far more accurate — I need to update the scoring in my neighborhood analysis.",
+      "link": null
+    },
+    {
+      "title": "Place-Based GIS Education Increases Spatial Retention by 38% in Middle School Students",
+      "source": "Journal of Geography",
+      "date": "2025-11",
+      "take": "Connecting GIS to students' own neighborhoods — not abstract datasets — is the core finding, validating everything we've been doing with 4-H curriculum in Wake County.",
+      "link": null
+    },
+    {
+      "title": "Food Desert Identification and Grocery Access Gaps in North Carolina's Rural Counties",
+      "source": "NC Department of Agriculture",
+      "date": "2025-12",
+      "take": "11 Wake County census tracts meet the USDA food desert definition — the methodology maps directly onto NOURISH and gives us a defensible framework for advocacy.",
+      "link": null
+    },
+    {
+      "title": "AI-Assisted Crop Disease Classification from Drone Imagery at 94% Accuracy",
+      "source": "Precision Agriculture",
+      "date": "2026-03",
+      "take": "The training pipeline they used for strawberry leaf disease detection is essentially what we explored in the supply chain project — worth cross-referencing.",
+      "link": null
+    }
+  ]
+}

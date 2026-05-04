@@ -5,40 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Brandon Estevez — Spatial Science · Agricultural Systems · Civic Technology</title>
 <meta name="description" content="Brandon Estevez — high school senior, National 4-H Geospatial Leadership Team lead, founder of The Map Company. 9+ published ArcGIS StoryMaps." />
-
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-
+<!-- Leaflet loaded synchronously so height is measured correctly on init -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 /* ─── TOKENS ─── */
 :root {
-  --bg: #F8F9FA; --surface: #FFFFFF; --surface-2: #F1F3F5;
-  --text: #2B2D42; --muted: #6B7280; --faint: #9CA3AF;
-  --border: #E6E8EC; --border-strong: #D1D5DB;
-
-  --shadow-xs: 0 1px 2px rgba(20,25,35,.04);
-  --shadow-sm: 0 1px 2px rgba(20,25,35,.04),0 2px 8px rgba(20,25,35,.04);
-  --shadow-md: 0 6px 18px rgba(20,25,35,.07),0 2px 6px rgba(20,25,35,.04);
-  --shadow-lg: 0 24px 60px rgba(20,25,35,.18),0 8px 24px rgba(20,25,35,.08);
-
+  --bg:#F8F9FA; --surface:#FFFFFF; --surface-2:#F1F3F5;
+  --text:#2B2D42; --muted:#6B7280; --faint:#9CA3AF; --border:#E6E8EC;
+  --shadow-xs:0 1px 2px rgba(20,25,35,.04);
+  --shadow-sm:0 1px 2px rgba(20,25,35,.04),0 2px 8px rgba(20,25,35,.05);
+  --shadow-md:0 6px 18px rgba(20,25,35,.07),0 2px 6px rgba(20,25,35,.04);
+  --shadow-lg:0 24px 60px rgba(20,25,35,.18),0 8px 24px rgba(20,25,35,.08);
   --c-science:#457B9D; --c-education:#2A9D8F; --c-politics:#9D4EDD;
-  --c-history:#F77F00; --c-agriculture:#D4A017; --c-urban:#E63946;
+  --c-history:#F77F00; --c-agriculture:#C49A00; --c-urban:#E63946;
   --c-inter:#6C757D; --c-policy:#4A6FA5;
-
-  --ease: cubic-bezier(0.4,0.0,0.2,1);
-  --ease-out: cubic-bezier(0.16,1,0.3,1);
-  --nav-h: 64px; --max-w: 1400px;
+  --ease:cubic-bezier(0.4,0.0,0.2,1);
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --nav-h:64px; --max-w:1400px;
 }
-
-/* ─── RESET ─── */
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;
   color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  -webkit-font-smoothing:antialiased;}
 body.modal-open{overflow:hidden;}
 h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:-.01em;line-height:1.1;}
 a{color:inherit;text-decoration:none;}
@@ -49,18 +42,17 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 /* ─── NAV ─── */
 .nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:100;
   display:flex;align-items:center;padding:0 40px;
-  background:rgba(248,249,250,.72);
-  backdrop-filter:saturate(180%) blur(20px);
-  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  background:rgba(248,249,250,.8);
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
   border-bottom:1px solid transparent;
-  transition:border-color .3s var(--ease),background .3s var(--ease);}
+  transition:border-color .3s var(--ease);}
 .nav.scrolled{border-bottom-color:var(--border);}
-.nav-inner{display:flex;width:100%;max-width:var(--max-w);margin:0 auto;align-items:center;gap:24px;}
+.nav-inner{display:flex;width:100%;max-width:var(--max-w);margin:0 auto;align-items:center;}
 .nav-brand{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--text);
-  display:flex;align-items:center;gap:10px;white-space:nowrap;}
+  display:flex;align-items:center;gap:10px;}
 .nav-brand .dot{width:8px;height:8px;border-radius:50%;background:var(--c-urban);}
 .nav-links{margin-left:auto;display:flex;gap:28px;font-size:.9rem;font-weight:500;color:var(--muted);}
-.nav-links a{transition:color .2s var(--ease);}
+.nav-links a{transition:color .2s;}
 .nav-links a:hover{color:var(--text);}
 @media(max-width:768px){.nav{padding:0 20px;}.nav-links{display:none;}}
 
@@ -76,30 +68,29 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   animation:gridDrift 55s linear infinite;}
 @keyframes gridDrift{to{background-position:56px 56px;}}
 .hero-shapes{position:absolute;inset:0;pointer-events:none;}
-.shape{position:absolute;border-radius:50%;filter:blur(.5px);opacity:.8;animation:float 9s ease-in-out infinite;}
-.shape.s1{width:14px;height:14px;background:var(--c-urban);top:22%;left:7%;animation-delay:0s;}
-.shape.s2{width:10px;height:10px;background:var(--c-science);top:70%;left:11%;animation-delay:1.2s;}
-.shape.s3{width:12px;height:12px;background:var(--c-agriculture);top:28%;right:9%;animation-delay:2.4s;}
-.shape.s4{width:16px;height:16px;background:var(--c-education);top:65%;right:7%;animation-delay:3.6s;border-radius:4px;transform:rotate(45deg);}
-.shape.s5{width:8px;height:8px;background:var(--c-history);top:45%;left:3.5%;animation-delay:4.8s;}
-.shape.s6{width:9px;height:9px;background:var(--c-politics);top:16%;right:22%;animation-delay:6s;}
+.shape{position:absolute;border-radius:50%;opacity:.8;animation:float 9s ease-in-out infinite;}
+.s1{width:14px;height:14px;background:var(--c-urban);top:22%;left:7%;animation-delay:0s;}
+.s2{width:10px;height:10px;background:var(--c-science);top:70%;left:11%;animation-delay:1.2s;}
+.s3{width:12px;height:12px;background:var(--c-agriculture);top:28%;right:9%;animation-delay:2.4s;}
+.s4{width:16px;height:16px;background:var(--c-education);top:65%;right:7%;animation-delay:3.6s;border-radius:4px;transform:rotate(45deg);}
+.s5{width:8px;height:8px;background:var(--c-history);top:45%;left:3.5%;animation-delay:4.8s;}
+.s6{width:9px;height:9px;background:var(--c-politics);top:16%;right:22%;animation-delay:6s;}
 @keyframes float{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-22px) rotate(8deg);}}
 .hero-inner{position:relative;text-align:center;max-width:900px;z-index:2;}
-.hero h1{font-size:clamp(3rem,7.5vw,5.8rem);margin-bottom:1.2rem;color:var(--text);}
+.hero h1{font-size:clamp(3rem,7.5vw,5.8rem);margin-bottom:1.2rem;}
 .caret{display:inline-block;width:4px;height:.85em;background:var(--c-urban);
   margin-left:6px;vertical-align:-8%;animation:blink 1s step-end infinite;}
 @keyframes blink{50%{opacity:0;}}
-.hero-sub{font-size:clamp(1.05rem,1.6vw,1.32rem);color:var(--muted);font-weight:400;
+.hero-sub{font-size:clamp(1rem,1.6vw,1.3rem);color:var(--muted);font-weight:400;
   letter-spacing:.02em;margin-bottom:2.5rem;
   opacity:0;animation:fadeUp .8s 1.6s var(--ease) forwards;}
 .hero-sub .sep{color:var(--faint);margin:0 10px;}
-.hero-meta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+.hero-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
   opacity:0;animation:fadeUp .8s 1.9s var(--ease) forwards;}
-.hero-meta .pill{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;
-  border-radius:100px;background:var(--surface);border:1px solid var(--border);
-  font-size:.84rem;font-weight:500;}
-.pdot{width:6px;height:6px;border-radius:50%;}
-@keyframes fadeUp{to{opacity:1;transform:translateY(0);}from{opacity:0;transform:translateY(12px);}}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;
+  border-radius:100px;background:var(--surface);border:1px solid var(--border);font-size:.84rem;font-weight:500;}
+.pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 .scroll-cue{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:8px;
   font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
@@ -109,10 +100,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 @keyframes scrollPulse{0%,100%{opacity:.5;}50%{opacity:1;}}
 
 /* ─── SECTION COMMONS ─── */
-section{padding:110px 0;position:relative;}
-.section-head{margin-bottom:56px;}
-.eyebrow{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:14px;}
+section{padding:110px 0;}
+.section-head{margin-bottom:52px;}
+.eyebrow{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
 .section-title{font-size:clamp(1.9rem,3.5vw,2.7rem);color:var(--text);max-width:780px;}
 .section-sub{color:var(--muted);margin-top:12px;max-width:620px;font-size:1rem;}
 
@@ -121,77 +112,79 @@ section{padding:110px 0;position:relative;}
 .carousel{position:relative;overflow:hidden;border-radius:24px;}
 .carousel-track{display:flex;transition:transform .72s var(--ease-out);will-change:transform;}
 .carousel-slide{flex:0 0 100%;min-width:0;}
-.carousel-card{position:relative;height:clamp(400px,55vh,560px);border-radius:24px;
+.carousel-card{position:relative;height:clamp(400px,54vh,540px);border-radius:24px;
   overflow:hidden;display:flex;align-items:flex-end;padding:52px;color:white;isolation:isolate;}
+/* layer order inside isolated stacking context: thumb(-3) → grad(-2) → vignette(-1) → content(1) */
 .carousel-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   z-index:-3;opacity:0;transition:opacity .6s var(--ease);}
 .carousel-card::before{content:'';position:absolute;inset:0;z-index:-2;
-  background:linear-gradient(135deg,var(--cat-color,var(--c-history)) 0%,
-    color-mix(in srgb,var(--cat-color,var(--c-history)) 60%,#1a1a2e) 100%);}
+  background:linear-gradient(135deg,var(--cc,#F77F00) 0%,
+    color-mix(in srgb,var(--cc,#F77F00) 55%,#1a1a2e) 100%);}
 .carousel-card::after{content:'';position:absolute;inset:0;z-index:-1;
   background:radial-gradient(circle at 22% 28%,rgba(255,255,255,.16),transparent 50%),
     radial-gradient(circle at 80% 80%,rgba(0,0,0,.3),transparent 52%);}
 .carousel-card.has-thumb .carousel-thumb{opacity:1;}
 .carousel-card.has-thumb::before{background:linear-gradient(to top,
-    rgba(0,0,0,.88) 0%,rgba(0,0,0,.4) 45%,rgba(0,0,0,.12) 100%) !important;}
+    rgba(0,0,0,.9) 0%,rgba(0,0,0,.4) 45%,rgba(0,0,0,.1) 100%) !important;}
 .carousel-card.has-thumb::after{display:none;}
 .carousel-body{position:relative;z-index:1;max-width:720px;}
-.carousel-badge{display:inline-block;padding:5px 13px;
+.carousel-badge{display:inline-block;padding:5px 13px;margin-bottom:16px;
   background:rgba(255,255,255,.22);backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,.28);border-radius:100px;
-  font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
-.carousel-card h3{font-size:clamp(1.7rem,3.2vw,2.55rem);color:white;margin-bottom:14px;}
+  font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;}
+.carousel-card h3{font-size:clamp(1.7rem,3.2vw,2.5rem);color:white;margin-bottom:14px;}
 .carousel-card p{font-size:1rem;opacity:.88;margin-bottom:26px;max-width:580px;}
 .carousel-btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;
   background:white;color:var(--text);border-radius:100px;font-weight:600;font-size:.9rem;
   transition:transform .3s var(--ease),box-shadow .3s var(--ease);}
 .carousel-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.25);}
-.carousel-btn svg{transition:transform .3s var(--ease);}
+.carousel-btn svg,.carousel-btn:hover svg{transition:transform .3s var(--ease);}
 .carousel-btn:hover svg{transform:translateX(4px);}
-.carousel-controls{position:absolute;bottom:22px;right:22px;display:flex;align-items:center;gap:10px;z-index:5;}
+.carousel-controls{position:absolute;bottom:20px;right:20px;display:flex;align-items:center;gap:10px;z-index:5;}
 .car-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.38);
-  transition:all .3s var(--ease);}
+  transition:all .3s var(--ease);cursor:pointer;}
 .car-dot.active{background:white;width:24px;border-radius:100px;}
 .car-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;
   border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
   display:grid;place-items:center;z-index:5;opacity:0;
-  transition:opacity .3s var(--ease),transform .3s var(--ease);
-  box-shadow:0 4px 14px rgba(0,0,0,.15);}
+  transition:opacity .3s var(--ease),transform .3s var(--ease);box-shadow:0 4px 14px rgba(0,0,0,.15);}
 .carousel:hover .car-arrow{opacity:1;}
 .car-arrow.prev{left:18px;}
 .car-arrow.next{right:18px;}
 .car-arrow:hover{transform:translateY(-50%) scale(1.08);}
 
-/* ─── EXPLORE ─── */
-.explore-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:stretch;}
-.map-wrap{position:relative;border-radius:20px;overflow:hidden;
-  background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-md);min-height:520px;}
-#projectMap{width:100%;height:100%;min-height:520px;}
-.map-legend{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.95);
-  backdrop-filter:blur(10px);border-radius:12px;padding:9px 13px;
-  font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);box-shadow:var(--shadow-xs);z-index:1000;}
-.filter-panel{display:flex;flex-direction:column;gap:18px;}
+/* ─── EXPLORE / MAP ─── */
+.explore-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:start;}
+/* explicit height so Leaflet can measure it */
+.map-wrap{position:relative;border-radius:20px;overflow:hidden;height:520px;
+  background:var(--surface-2);border:1px solid var(--border);box-shadow:var(--shadow-md);}
+#projectMap{width:100%;height:520px;}
+.map-legend{position:absolute;bottom:14px;left:14px;z-index:1000;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(10px);
+  border-radius:12px;padding:9px 13px;
+  font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);box-shadow:var(--shadow-xs);}
+.map-unavailable{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;color:var(--faint);font-size:.9rem;
+  font-family:'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;}
+.filter-panel{display:flex;flex-direction:column;gap:18px;padding-top:4px;}
 .search-box{position:relative;}
 .search-box input{width:100%;height:48px;padding:0 18px 0 46px;border-radius:14px;
   border:1px solid var(--border);background:var(--surface);font:inherit;font-size:.95rem;
-  color:var(--text);outline:none;transition:border-color .25s var(--ease),box-shadow .25s var(--ease);}
+  color:var(--text);outline:none;transition:border-color .25s,box-shadow .25s;}
 .search-box input:focus{border-color:var(--c-science);
-  box-shadow:0 0 0 4px color-mix(in srgb,var(--c-science) 15%,transparent);}
+  box-shadow:0 0 0 4px rgba(69,123,157,.15);}
 .search-box input::placeholder{color:var(--faint);}
 .search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
 .search-count{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.1em;}
 .filter-chips{display:flex;flex-wrap:wrap;gap:8px;}
 .chip{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:100px;
   background:var(--surface);border:1px solid var(--border);font-size:.85rem;font-weight:500;
-  color:var(--muted);transition:all .22s var(--ease);}
+  color:var(--muted);transition:all .22s;}
 .chip:hover{color:var(--text);border-color:var(--faint);}
 .chip .swatch{width:7px;height:7px;border-radius:50%;}
-.chip.active{color:var(--text);
-  background:color-mix(in srgb,var(--chip-color,var(--text)) 12%,var(--surface));
-  border-color:color-mix(in srgb,var(--chip-color,var(--text)) 55%,var(--border));}
-.filter-tip{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);
-  font-size:.85rem;color:var(--muted);}
-.filter-tip strong{color:var(--text);font-weight:600;}
+.chip.active{color:var(--text);}
+.filter-tip{font-size:.85rem;color:var(--muted);}
+.filter-tip strong{color:var(--text);}
 @media(max-width:1024px){.explore-grid{grid-template-columns:1fr;}}
 
 /* ─── PORTFOLIO GRID ─── */
@@ -201,36 +194,32 @@ section{padding:110px 0;position:relative;}
   overflow:hidden;cursor:pointer;display:flex;flex-direction:column;
   opacity:0;transform:translateY(22px);
   transition:transform .42s var(--ease),box-shadow .42s var(--ease),border-color .3s var(--ease),opacity .5s var(--ease);}
-.card.in-view{opacity:1;transform:translateY(0);}
+.card.visible{opacity:1;transform:translateY(0);}
 .card.hidden{display:none;}
-.card:hover{transform:translateY(-8px);box-shadow:var(--shadow-md);
-  border-color:color-mix(in srgb,var(--card-color,var(--text)) 32%,var(--border));}
-.card-thumb{height:200px;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,var(--card-color,var(--c-history)) 0%,
-    color-mix(in srgb,var(--card-color,var(--c-history)) 55%,#22253a) 100%);}
+.card:hover{transform:translateY(-8px);box-shadow:var(--shadow-md);}
+.card-thumb{height:200px;position:relative;overflow:hidden;}
+.card-thumb-bg{position:absolute;inset:0;z-index:0;}/* gradient fallback */
 .card-thumb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;
-  transition:opacity .4s var(--ease);}
+  transition:opacity .4s;}
 .card-thumb-overlay{position:absolute;inset:0;z-index:2;
   background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,.28) 100%);}
-.card-pattern{position:absolute;inset:0;z-index:0;opacity:.16;
+.card-pattern{position:absolute;inset:0;z-index:1;opacity:.15;
   background-image:linear-gradient(to right,white 1px,transparent 1px),
     linear-gradient(to bottom,white 1px,transparent 1px);
   background-size:22px 22px;}
-.card-badge{position:absolute;top:14px;left:14px;z-index:3;
-  display:inline-block;padding:5px 11px;
+.card-badge{position:absolute;top:14px;left:14px;z-index:3;padding:5px 11px;
   background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-radius:100px;
-  font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--card-color,var(--text));}
+  font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
 .card-body{padding:22px 24px 26px;display:flex;flex-direction:column;flex:1;}
 .card-year{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);margin-bottom:7px;letter-spacing:.08em;}
-.card h3{font-size:1.22rem;line-height:1.28;margin-bottom:9px;color:var(--text);
+.card h3{font-size:1.18rem;line-height:1.28;margin-bottom:9px;
   font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:-.005em;}
 .card p{font-size:.9rem;color:var(--muted);flex:1;margin-bottom:16px;line-height:1.55;}
-.card-link{display:inline-flex;align-items:center;gap:8px;font-size:.86rem;font-weight:600;
-  color:var(--card-color,var(--text));transition:gap .25s var(--ease);}
-.card:hover .card-link{gap:12px;}
-.card-link svg{transition:transform .25s var(--ease);}
-.empty-state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted);font-size:.96rem;}
+.card-cta{display:inline-flex;align-items:center;gap:8px;font-size:.86rem;font-weight:600;
+  transition:gap .25s;}
+.card:hover .card-cta{gap:13px;}
+.card-cta svg{transition:transform .25s;}
+.empty-state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted);}
 @media(max-width:1024px){.grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:640px){.grid{grid-template-columns:1fr;}}
 
@@ -242,175 +231,164 @@ section{padding:110px 0;position:relative;}
 .modal-panel{width:100%;max-width:var(--max-w);height:92vh;background:var(--surface);
   border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
   display:grid;grid-template-columns:1fr 380px;overflow:hidden;
-  transform:translateY(100%);transition:transform .56s var(--ease-out);}
+  transform:translateY(100%);transition:transform .55s var(--ease-out);}
 .modal.open .modal-panel{transform:translateY(0);}
 .modal-iframe-wrap{position:relative;background:var(--surface-2);overflow:hidden;}
 .modal-iframe-wrap iframe{width:100%;height:100%;border:0;}
 .iframe-loader{position:absolute;inset:0;display:grid;place-items:center;
-  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--muted);
-  letter-spacing:.14em;text-transform:uppercase;background:var(--surface-2);
-  transition:opacity .4s var(--ease);}
-.iframe-loader.hidden{opacity:0;pointer-events:none;}
-.loader-spin{width:26px;height:26px;border:2px solid var(--border);
-  border-top-color:var(--c-science);border-radius:50%;
-  animation:spin .8s linear infinite;margin-bottom:14px;}
+  background:var(--surface-2);transition:opacity .4s;}
+.iframe-loader.gone{opacity:0;pointer-events:none;}
+.loader-spin{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--c-science);
+  border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.modal-close{position:absolute;top:18px;right:18px;width:38px;height:38px;
-  border-radius:50%;background:var(--surface);border:1px solid var(--border);
-  display:grid;place-items:center;z-index:5;
-  transition:transform .25s var(--ease),background .25s var(--ease);}
+.modal-close{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);display:grid;place-items:center;z-index:5;
+  transition:transform .25s,background .25s;}
 .modal-close:hover{transform:scale(1.08);background:var(--surface-2);}
 .modal-side{padding:30px;border-left:1px solid var(--border);overflow-y:auto;
   display:flex;flex-direction:column;gap:18px;}
-.modal-side .badge{display:inline-block;padding:5px 11px;border-radius:100px;
-  font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  background:color-mix(in srgb,var(--modal-color,var(--text)) 16%,transparent);
-  color:var(--modal-color,var(--text));align-self:flex-start;}
-.modal-side h2{font-size:1.55rem;font-family:'DM Serif Display',serif;color:var(--text);line-height:1.22;}
-.modal-meta{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--muted);letter-spacing:.08em;}
-.modal-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:6px;}
-.modal-side p{font-size:.92rem;color:var(--text);line-height:1.62;}
-.modal-tools{display:flex;flex-wrap:wrap;gap:6px;}
-.modal-tool{font-size:.75rem;padding:4px 10px;background:var(--surface-2);
+.ms-badge{display:inline-block;padding:5px 11px;border-radius:100px;
+  font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;align-self:flex-start;}
+.ms-title{font-size:1.5rem;line-height:1.22;}
+.ms-meta{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--muted);}
+.ms-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.ms-tools{display:flex;flex-wrap:wrap;gap:6px;}
+.ms-tool{font-size:.75rem;padding:4px 10px;background:var(--surface-2);
   border:1px solid var(--border);border-radius:100px;color:var(--muted);font-family:'DM Mono',monospace;}
-.modal-open-link{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+.ms-open{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:10px;
   padding:14px 22px;background:var(--text);color:white;border-radius:14px;
-  font-weight:600;font-size:.9rem;transition:transform .25s var(--ease),background .25s var(--ease);}
-.modal-open-link:hover{transform:translateY(-2px);}
+  font-weight:600;font-size:.9rem;transition:transform .25s,opacity .25s;}
+.ms-open:hover{transform:translateY(-2px);opacity:.9;}
 @media(max-width:1024px){.modal-panel{grid-template-columns:1fr;height:96vh;}
-  .modal-side{border-left:0;border-top:1px solid var(--border);max-height:38vh;}}
+  .modal-side{border-left:0;border-top:1px solid var(--border);max-height:42vh;}}
 
-/* ─── IN THE PIPELINE ─── */
+/* ─── PIPELINE ─── */
 .pipeline-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
-.pipeline-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:18px;
   padding:26px;display:flex;flex-direction:column;gap:12px;
   transition:transform .35s var(--ease),box-shadow .35s var(--ease);}
-.pipeline-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
-.pipeline-status{display:inline-flex;align-items:center;gap:7px;
+.pc:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.pc-status{display:inline-flex;align-items:center;gap:7px;
   font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--muted);padding:4px 10px;border-radius:100px;
-  background:var(--surface-2);border:1px solid var(--border);}
-.pipeline-status .status-dot{width:6px;height:6px;border-radius:50%;background:var(--c-science);
-  animation:statusPulse 2s ease-in-out infinite;}
-@keyframes statusPulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-.pipeline-card h3{font-family:'DM Sans',sans-serif;font-weight:600;font-size:1.1rem;color:var(--text);}
-.pipeline-cat{font-size:.78rem;color:var(--muted);font-weight:500;}
-.pipeline-desc{font-size:.88rem;color:var(--muted);line-height:1.55;}
-.progress-bar{width:100%;height:5px;background:var(--surface-2);border-radius:100px;overflow:hidden;margin-top:4px;}
-.progress-fill{height:100%;border-radius:100px;background:var(--c-science);
-  transition:width 1.2s var(--ease-out);}
-.progress-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.08em;}
+  background:var(--surface-2);border:1px solid var(--border);align-self:flex-start;}
+.pc-dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s ease-in-out infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+.pc h3{font-family:'DM Sans',sans-serif;font-weight:600;font-size:1.08rem;line-height:1.3;}
+.pc-cat{font-size:.8rem;font-weight:500;}
+.pc p{font-size:.88rem;color:var(--muted);line-height:1.55;flex:1;}
+.progress-bar{width:100%;height:5px;background:var(--surface-2);border-radius:100px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:100px;width:0%;transition:width 1.2s var(--ease-out);}
+.progress-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:6px;}
 @media(max-width:768px){.pipeline-grid{grid-template-columns:1fr;}}
 
 /* ─── HIGHLIGHTS ─── */
-.highlights{background:var(--text);color:white;padding:110px 0;}
-.highlights .section-title{color:white;max-width:660px;}
-.highlights .eyebrow{color:rgba(255,255,255,.5);}
+.highlights-section{background:var(--text);padding:110px 0;}
+.highlights-section .eyebrow{color:rgba(255,255,255,.45);}
+.highlights-section .section-title{color:white;}
 .hl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;
   border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
-.hl-card{background:rgba(255,255,255,.04);padding:44px 40px;display:flex;flex-direction:column;gap:16px;
-  border:1px solid rgba(255,255,255,.06);
-  transition:background .3s var(--ease);}
-.hl-card:hover{background:rgba(255,255,255,.07);}
+.hl{background:rgba(255,255,255,.04);padding:44px 40px;display:flex;flex-direction:column;gap:14px;
+  border:1px solid rgba(255,255,255,.06);transition:background .3s;}
+.hl:hover{background:rgba(255,255,255,.07);}
 .hl-type{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.22em;
   text-transform:uppercase;color:rgba(255,255,255,.4);}
 .hl-icon{font-size:2.2rem;line-height:1;}
-.hl-card h3{font-family:'DM Serif Display',serif;font-size:1.6rem;color:white;}
-.hl-card p{font-size:.92rem;color:rgba(255,255,255,.65);line-height:1.6;flex:1;}
-.hl-year{font-family:'DM Mono',monospace;font-size:.72rem;color:rgba(255,255,255,.4);}
-.hl-link{display:inline-flex;align-items:center;gap:7px;font-size:.86rem;font-weight:600;
-  color:rgba(255,255,255,.75);margin-top:4px;transition:color .2s var(--ease);}
+.hl h3{font-family:'DM Serif Display',serif;font-size:1.55rem;color:white;line-height:1.2;}
+.hl p{font-size:.9rem;color:rgba(255,255,255,.62);line-height:1.6;flex:1;}
+.hl-year{font-family:'DM Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.38);}
+.hl-link{display:inline-flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;
+  color:rgba(255,255,255,.7);margin-top:4px;transition:color .2s;}
 .hl-link:hover{color:white;}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
   margin-top:2px;border-radius:0 0 20px 20px;overflow:hidden;}
-.stat-item{background:rgba(255,255,255,.05);padding:30px 24px;text-align:center;
+.stat{background:rgba(255,255,255,.05);padding:30px 24px;text-align:center;
   border:1px solid rgba(255,255,255,.06);}
 .stat-num{font-family:'DM Serif Display',serif;font-size:2.6rem;color:white;line-height:1;}
-.stat-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:8px;}
+.stat-label{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.42);margin-top:8px;}
 @media(max-width:900px){.hl-grid{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:500px){.stats-row{grid-template-columns:1fr;}}
 
 /* ─── ABOUT ─── */
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
-.about-bio{font-size:1.08rem;line-height:1.72;color:var(--text);}
+.about-bio{font-size:1.06rem;line-height:1.74;}
 .about-bio p+p{margin-top:16px;}
-.about-bio strong{font-weight:600;}
-.about-side{display:flex;flex-direction:column;gap:20px;}
-.about-item{display:flex;gap:16px;align-items:flex-start;padding:18px;
-  background:var(--surface);border:1px solid var(--border);border-radius:14px;}
-.about-item-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px;}
-.about-item h4{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.96rem;color:var(--text);margin-bottom:3px;}
-.about-item p{font-size:.84rem;color:var(--muted);line-height:1.5;}
+.about-bio em{font-style:italic;}
+.about-side{display:flex;flex-direction:column;gap:16px;}
+.about-card{display:flex;gap:16px;align-items:flex-start;padding:18px;
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  transition:box-shadow .3s;}
+.about-card:hover{box-shadow:var(--shadow-sm);}
+.about-card-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px;}
+.about-card h4{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.95rem;margin-bottom:3px;}
+.about-card p{font-size:.83rem;color:var(--muted);line-height:1.5;}
 @media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:48px;}}
 
 /* ─── LEARNING FEED ─── */
-.learn-track-wrap{overflow:hidden;position:relative;}
-.learn-track-wrap::before,.learn-track-wrap::after{content:'';position:absolute;top:0;bottom:0;z-index:2;width:80px;pointer-events:none;}
-.learn-track-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent);}
-.learn-track-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent);}
-.learn-track{display:flex;gap:20px;padding:8px 4px 16px;
-  overflow-x:auto;scroll-behavior:smooth;
-  scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.learn-wrap{position:relative;}
+.learn-wrap::before,.learn-wrap::after{content:'';position:absolute;top:0;bottom:16px;z-index:2;
+  width:60px;pointer-events:none;}
+.learn-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent);}
+.learn-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent);}
+.learn-track{display:flex;gap:18px;padding:6px 2px 20px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .learn-track::-webkit-scrollbar{display:none;}
-.learn-card{flex:0 0 320px;background:var(--surface);border:1px solid var(--border);
-  border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:12px;
-  transition:transform .35s var(--ease),box-shadow .35s var(--ease);}
-.learn-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
-.learn-source{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+.lc{flex:0 0 300px;background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;
+  transition:transform .35s var(--ease),box-shadow .35s;}
+.lc:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.lc-source{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);}
-.learn-card h4{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.98rem;
+.lc h4{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.96rem;
   color:var(--text);line-height:1.35;flex:1;}
-.learn-take{font-size:.85rem;color:var(--muted);line-height:1.55;font-style:italic;}
-.learn-link{display:inline-flex;align-items:center;gap:7px;font-size:.82rem;font-weight:600;
-  color:var(--c-science);transition:gap .2s var(--ease);}
-.learn-link:hover{gap:11px;}
-.learn-empty{color:var(--muted);font-size:.92rem;padding:24px 0;}
+.lc-take{font-size:.84rem;color:var(--muted);line-height:1.55;font-style:italic;}
+.lc-link{display:inline-flex;align-items:center;gap:7px;font-size:.82rem;font-weight:600;
+  color:var(--c-science);transition:gap .2s;}
+.lc-link:hover{gap:11px;}
 
 /* ─── CONTACT ─── */
-.contact{background:var(--surface-2);border-top:1px solid var(--border);}
-.contact-inner{max-width:760px;margin:0 auto;text-align:center;}
-.contact-inner .section-title{margin-bottom:14px;}
-.contact-desc{color:var(--muted);font-size:1.02rem;max-width:560px;margin:0 auto 40px;}
-.contact-interests{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:48px;}
-.interest-tag{padding:8px 16px;border-radius:100px;background:var(--surface);
+.contact-section{background:var(--surface-2);border-top:1px solid var(--border);}
+.contact-inner{max-width:720px;margin:0 auto;text-align:center;}
+.contact-desc{color:var(--muted);font-size:1rem;max-width:540px;margin:0 auto 36px;}
+.interest-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:44px;}
+.interest-chip{padding:8px 16px;border-radius:100px;background:var(--surface);
   border:1px solid var(--border);font-size:.84rem;color:var(--muted);}
-.contact-links{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}
-.contact-link{display:inline-flex;align-items:center;gap:11px;padding:14px 26px;
-  border-radius:14px;font-weight:600;font-size:.95rem;transition:transform .28s var(--ease),box-shadow .28s var(--ease);}
-.contact-link:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
-.contact-link.primary{background:var(--text);color:white;}
-.contact-link.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);}
-.contact-link svg{flex-shrink:0;}
+.contact-btns{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+.cta{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;
+  border-radius:14px;font-weight:600;font-size:.95rem;transition:transform .28s var(--ease),box-shadow .28s;}
+.cta:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.cta.primary{background:var(--text);color:white;}
+.cta.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);}
 
 /* ─── FOOTER ─── */
-footer{padding:32px 40px;border-top:1px solid var(--border);
+footer{padding:28px 40px;border-top:1px solid var(--border);
   display:flex;justify-content:space-between;align-items:center;
-  font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.08em;}
-@media(max-width:640px){footer{flex-direction:column;gap:10px;text-align:center;}}
+  font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);}
+@media(max-width:640px){footer{flex-direction:column;gap:8px;text-align:center;padding:28px 20px;}}
 
-/* ─── REDUCE MOTION ─── */
+/* ─── UTILS ─── */
+.reveal{opacity:0;transform:translateY(20px);
+  transition:opacity .7s var(--ease),transform .7s var(--ease);}
+.reveal.in{opacity:1;transform:none;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="nav-brand"><span class="dot"></span>Brandon Estevez</a>
-    <div class="nav-links">
+    <nav class="nav-links" aria-label="Site sections">
       <a href="#featured">Featured</a>
       <a href="#explore">Explore</a>
       <a href="#portfolio">Work</a>
       <a href="#highlights">Highlights</a>
       <a href="#contact">Contact</a>
-    </div>
+    </nav>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero" id="top">
   <div class="hero-grid"></div>
   <div class="hero-shapes" aria-hidden="true">
@@ -419,114 +397,101 @@ footer{padding:32px 40px;border-top:1px solid var(--border);
     <span class="shape s5"></span><span class="shape s6"></span>
   </div>
   <div class="hero-inner">
-    <h1><span id="typewriter"></span><span class="caret"></span></h1>
+    <h1><span id="typewriter"></span><span class="caret" aria-hidden="true"></span></h1>
     <p class="hero-sub">Spatial Science <span class="sep">×</span> Agricultural Systems <span class="sep">×</span> Civic Technology</p>
-    <div class="hero-meta">
-      <span class="pill"><span class="pdot" style="background:var(--c-history)"></span>9+ Published StoryMaps</span>
-      <span class="pill"><span class="pdot" style="background:var(--c-education)"></span>Esri UC 2025 Presenter</span>
-      <span class="pill"><span class="pdot" style="background:var(--c-urban)"></span>GIS Day 2024 Winner</span>
-      <span class="pill"><span class="pdot" style="background:var(--c-politics)"></span>NC State, Fall 2026</span>
-    </div>
+    <div class="hero-meta" id="heroPills"></div>
   </div>
-  <div class="scroll-cue" aria-hidden="true">
-    <span>Scroll</span><span class="scroll-line"></span>
-  </div>
+  <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-line"></span></div>
 </section>
 
-<!-- FEATURED CAROUSEL -->
 <section class="featured" id="featured">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Featured Work</div>
       <h2 class="section-title">Three projects shaping how I see the world.</h2>
     </div>
-    <div class="carousel" id="carousel" aria-roledescription="carousel">
+    <div class="carousel" id="carousel">
       <div class="carousel-track" id="carTrack"></div>
       <button class="car-arrow prev" id="carPrev" aria-label="Previous">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <button class="car-arrow next" id="carNext" aria-label="Next">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <div class="carousel-controls" id="carDots"></div>
     </div>
   </div>
 </section>
 
-<!-- EXPLORE -->
 <section id="explore">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Explore My Work</div>
       <h2 class="section-title">Pin a place. Filter by discipline. Find a story.</h2>
-      <p class="section-sub">Every project lives somewhere. Click a pin or a chip to filter the grid — search to narrow further.</p>
+      <p class="section-sub">Every project lives somewhere. Click a pin or chip to filter — search to narrow further.</p>
     </div>
     <div class="explore-grid">
       <div class="map-wrap">
         <div id="projectMap"></div>
-        <div class="map-legend">9 published projects · click a pin to view</div>
+        <div class="map-legend" id="mapLegend">9 published projects · click a pin to view</div>
       </div>
       <div class="filter-panel">
         <div class="search-box">
           <span class="search-icon">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </span>
           <input id="searchInput" type="text" placeholder="Search — coastal, curriculum, Raleigh…" autocomplete="off" />
         </div>
-        <div class="search-count" id="searchCount">9 PROJECTS · ALL CATEGORIES</div>
+        <div class="search-count" id="searchCount"></div>
         <div class="filter-chips" id="filterChips"></div>
-        <div class="filter-tip"><strong>Tip:</strong> hover a map pin to preview — click to scroll to that card.</div>
+        <p class="filter-tip"><strong>Tip:</strong> hover a pin to preview, click to scroll to that card.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PORTFOLIO GRID -->
 <section class="portfolio" id="portfolio">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Portfolio</div>
-      <h2 class="section-title">9 published StoryMaps.</h2>
+      <h2 class="section-title" id="portfolioTitle">Published StoryMaps.</h2>
     </div>
     <div class="grid" id="portfolioGrid"></div>
   </div>
 </section>
 
 <!-- MODAL -->
-<div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true">
+<div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-panel" id="modalPanel">
     <button class="modal-close" id="modalClose" aria-label="Close">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <div class="modal-iframe-wrap">
       <div class="iframe-loader" id="iframeLoader">
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div class="loader-spin"></div>
-          <span>Loading StoryMap…</span>
+        <div style="display:flex;flex-direction:column;align-items:center;font-family:'DM Mono',monospace;font-size:.76rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase">
+          <div class="loader-spin"></div>Loading StoryMap…
         </div>
       </div>
-      <iframe id="modalIframe" title="StoryMap" allowfullscreen allow="geolocation; fullscreen" loading="lazy"></iframe>
+      <iframe id="modalIframe" title="StoryMap preview" allowfullscreen allow="geolocation; fullscreen" loading="lazy"></iframe>
     </div>
     <aside class="modal-side" id="modalSide"></aside>
   </div>
 </div>
 
-<!-- IN THE PIPELINE -->
 <section id="pipeline">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">In the Pipeline</div>
       <h2 class="section-title">What I'm building now.</h2>
-      <p class="section-sub">Research and projects currently in progress — some near completion, some still in early framing.</p>
+      <p class="section-sub">Research and projects in progress — some near completion, some still in early framing.</p>
     </div>
     <div class="pipeline-grid" id="pipelineGrid"></div>
   </div>
 </section>
 
-<!-- HIGHLIGHTS -->
-<section class="highlights" id="highlights">
+<section class="highlights-section" id="highlights">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Highlights</div>
       <h2 class="section-title">A few things I'm proud of.</h2>
     </div>
@@ -535,10 +500,9 @@ footer{padding:32px 40px;border-top:1px solid var(--border);
   </div>
 </section>
 
-<!-- ABOUT -->
 <section id="about">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">About</div>
       <h2 class="section-title">Where I come from, where I'm going.</h2>
     </div>
@@ -549,47 +513,45 @@ footer{padding:32px 40px;border-top:1px solid var(--border);
         <p>I've published StoryMaps in marine science, urban history, political simulation, education, and food systems. Some have ended up in front of educators at national conferences; others live in a middle-school classroom in Wake County. All of them asked the same question: <em>what does this look like on a map?</em></p>
         <p>Outside the classroom I lead the <strong>National 4-H Geospatial Leadership Team</strong> and run <strong>The Map Company</strong>, a small GIS consulting practice focused on civic and agricultural clients.</p>
       </div>
-      <div class="about-side" id="aboutItems"></div>
+      <div id="aboutCards"></div>
     </div>
   </div>
 </section>
 
-<!-- LEARNING FEED -->
 <section id="learning">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Currently Reading</div>
       <h2 class="section-title">What's on my desk right now.</h2>
-      <p class="section-sub">Five things I'm reading or thinking about — updated monthly.</p>
+      <p class="section-sub">Five things I'm reading or thinking about — updated monthly in <code style="font-size:.9em;background:var(--surface-2);padding:2px 6px;border-radius:4px;border:1px solid var(--border)">data.json</code>.</p>
     </div>
-    <div class="learn-track-wrap">
+    <div class="learn-wrap">
       <div class="learn-track" id="learnTrack"></div>
     </div>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section class="contact" id="contact">
+<section class="contact-section" id="contact">
   <div class="container">
     <div class="contact-inner">
-      <div class="eyebrow" style="text-align:center;margin-bottom:14px;">Get in touch</div>
-      <h2 class="section-title" style="margin-bottom:14px;">Let's work together.</h2>
-      <p class="contact-desc">I'm most interested in market intelligence, environmental data tools, outreach visualization, and K-12 GIS education. Open to collaborations, speaking invitations, and interesting problems.</p>
-      <div class="contact-interests">
-        <span class="interest-tag">Market intelligence</span>
-        <span class="interest-tag">Environmental data</span>
-        <span class="interest-tag">Outreach visualization</span>
-        <span class="interest-tag">K-12 GIS education</span>
-        <span class="interest-tag">Agricultural systems</span>
-        <span class="interest-tag">Civic technology</span>
+      <div class="eyebrow" style="text-align:center;margin-bottom:12px">Get in touch</div>
+      <h2 class="section-title" style="margin-bottom:14px">Let's work together.</h2>
+      <p class="contact-desc">Open to market intelligence projects, environmental data tools, outreach visualization, K-12 GIS education, and interesting problems I haven't thought of yet.</p>
+      <div class="interest-chips">
+        <span class="interest-chip">Market intelligence</span>
+        <span class="interest-chip">Environmental data</span>
+        <span class="interest-chip">Outreach visualization</span>
+        <span class="interest-chip">K-12 GIS education</span>
+        <span class="interest-chip">Agricultural systems</span>
+        <span class="interest-chip">Civic technology</span>
       </div>
-      <div class="contact-links">
-        <a class="contact-link primary" href="https://www.linkedin.com/in/brandonestevez" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      <div class="contact-btns">
+        <a class="cta primary" href="https://www.linkedin.com/in/brandonestevez" target="_blank" rel="noopener">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
-        <a class="contact-link secondary" href="mailto:brandonestevez2007@gmail.com">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <a class="cta secondary" href="mailto:brandonestevez2007@gmail.com">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           brandonestevez2007@gmail.com
         </a>
       </div>
@@ -603,541 +565,484 @@ footer{padding:32px 40px;border-top:1px solid var(--border);
 </footer>
 
 <script>
-/* ══════════════════════════════════════════
-   DATA
-══════════════════════════════════════════ */
-const CAT_COLORS = {
+/* ═══════════════════════════════════════
+   CATEGORY COLOR MAP
+═══════════════════════════════════════ */
+const CC = {
   Science:'#457B9D', Education:'#2A9D8F', Politics:'#9D4EDD',
-  History:'#F77F00', Agriculture:'#D4A017', 'Urban Planning':'#E63946',
+  History:'#F77F00', Agriculture:'#C49A00', 'Urban Planning':'#E63946',
   Interdisciplinary:'#6C757D', Policy:'#4A6FA5'
 };
 
-const PROJECTS = [
-  {
-    id:'freedmen', title:"Rediscovering Raleigh's Lost Freedmen Villages",
-    category:'History', year:'2025', featured:true,
-    url:'https://storymaps.arcgis.com/stories/5d30baa34e394ebdaf0a9edeffa5c59a',
-    description:"AP African American Studies research mapping the post-Civil War Freedmen settlements that built modern Raleigh.",
-    problem:"Raleigh's post-emancipation Black communities — Oberlin, Method, Hayti — were systematically erased from the official record by 20th-century urban renewal. Their geography is missing from most local histories.",
-    impact:"Reconstructs five lost villages using historic plats, census records, and oral histories. Now used as supplemental material in WCPSS African American Studies classrooms.",
-    tools:['ArcGIS Pro','StoryMaps','Historic Imagery','Census Data'],
-    location:[35.7796,-78.6382]
-  },
-  {
-    id:'learning-mapping', title:'Learning by Mapping: A New Kind of Curriculum',
-    category:'Education', year:'2025', featured:true,
-    url:'https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824',
-    description:"Esri UC 2025 presentation — making the case for place-based GIS as a K-12 pedagogy to ~200 educators.",
-    problem:"Geography is the most-cut subject in American K-12 education, yet spatial reasoning underlies every modern science. Few teachers have a curriculum that bridges the two.",
-    impact:"Presented at the 2025 Esri User Conference. The framework now informs 4-H Geospatial Leadership Team curriculum across four states.",
-    tools:['ArcGIS Pro','StoryMaps','Survey123','Field Maps'],
-    location:[32.7157,-117.1611]
-  },
-  {
-    id:'raleigh-neighborhoods', title:"Researching Raleigh's Neighborhoods and Communities",
-    category:'Urban Planning', year:'2024', featured:true,
-    url:'https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b',
-    description:"GIS Day 2024 winning project — a block-by-block read of how Raleigh actually lives.",
-    problem:"Raleigh's rapid growth has left residents without a public tool to understand how their own neighborhoods compare on access, demographics, and change over time.",
-    impact:"Won the 2024 NC State GIS Day student competition. Cited by a Raleigh Planning Commission member as a model for civic spatial communication.",
-    tools:['ArcGIS Pro','StoryMaps','Census API','Wake County Open Data'],
-    location:[35.7796,-78.6382]
-  },
-  {
-    id:'coastal', title:"Turning the tide for North Carolina's coastal communities",
-    category:'Science', year:'2025', featured:false,
-    url:'https://storymaps.arcgis.com/stories/7dd2665b88a64932a51c91f3bf333c65',
-    description:"Sea level rise, salt marsh loss, and the working communities on the front line of NC's coast.",
-    problem:"NC's coastal counties are losing wetland buffers faster than nearly any state on the Atlantic — but the impact is mostly framed as ecological rather than economic and human.",
-    impact:"Shared with the NC Coastal Federation as a communication template for community outreach.",
-    tools:['ArcGIS Pro','StoryMaps','NOAA Data'],
-    location:[34.7204,-76.6628]
-  },
-  {
-    id:'wcpss', title:'WCPSS Students Using GIS Collection',
-    category:'Education', year:'2025', featured:false,
-    url:'https://storymaps.arcgis.com/collections/1a0d97bf4c314af8b29cd74b342b5ae5',
-    description:"A curated collection of student GIS work from across Wake County Public Schools.",
-    problem:"Teachers need a visible body of student work to make the case for GIS curriculum to administrators — but until now there was no central place to point to.",
-    impact:"Distributed to WCPSS GIS staff and teacher liaisons; the canonical example portfolio for the district's GIS instruction expansion.",
-    tools:['StoryMaps Collections','ArcGIS Online'],
-    location:[35.8000,-78.6500]
-  },
-  {
-    id:'caps-mun', title:'Behind CAPS MUN 2025: Building Model UN with GIS + AI',
-    category:'Politics', year:'2025', featured:false,
-    url:'https://storymaps.arcgis.com/stories/e6b6538e81ad47e2b6d2d7d9f24b19cf',
-    description:"The first GIS-integrated Model UN conference in the United States.",
-    problem:"Model UN crises rely on dense briefing packets that delegates rarely fully read, and almost never ground-truth with maps. Spatial context is lost.",
-    impact:"Delegates used live maps and AI-assisted research during crisis sessions. The format is being adopted by two other NC conferences in 2026.",
-    tools:['ArcGIS Online','StoryMaps','Claude','Custom Web Maps'],
-    location:[35.7915,-78.7811]
-  },
-  {
-    id:'gps-marine', title:'How GPS revolutionized marine science',
-    category:'Science', year:'2025', featured:false,
-    url:'https://storymaps.arcgis.com/stories/251ba32c44694f97966eeac5ffef051a',
-    description:"A history of how satellite positioning rewrote what marine scientists could ask.",
-    problem:"Most students learn GPS as a navigation tool, missing the deeper story: pre-GPS oceanography was bottlenecked by the inability to know your location within a hundred meters.",
-    impact:"Archived as part of the Geography At Work interdisciplinary collection.",
-    tools:['StoryMaps','Historic Imagery'],
-    location:[34.5,-76.5]
-  },
-  {
-    id:'geography-work', title:'Geography At Work',
-    category:'Interdisciplinary', year:'2025', featured:false,
-    url:'https://storymaps.arcgis.com/collections/a4bff65e902e4e5497efa82d900b74a1',
-    description:"A collection showing how spatial thinking powers science, policy, ag, and history alike.",
-    problem:"GIS is too often pitched as a single discipline. The actual case for it is interdisciplinary — and that case isn't made well in any single project.",
-    impact:"Used in 4-H Geospatial Leadership Team onboarding as the umbrella interdisciplinary collection.",
-    tools:['StoryMaps Collections'],
-    location:[35.5,-79.5]
-  },
-  {
-    id:'growers', title:'Growers across North Carolina',
-    category:'Agriculture', year:'2025', featured:false,
-    url:'https://storymaps.arcgis.com/collections/78e726bd27404df1b776e5f75be367e0',
-    description:"NOURISH project — mapping the people behind NC's working farms.",
-    problem:"NC ag policy is shaped at the state level, but conditions for growers vary enormously by county — a variation invisible at the policy level.",
-    impact:"Cited by NC Ag Extension contacts as a useful frame for outreach. Core spatial layer of the NOURISH project.",
-    tools:['ArcGIS Pro','StoryMaps Collections','Survey123'],
-    location:[35.4,-78.5]
-  }
-];
-
-const IN_PROGRESS = [
-  { title:'Supply Chain Analysis', category:'Agriculture', year:'2026', status:'In progress', percent:null,
-    desc:'Food supply chain mapping across NC agricultural counties — tracing inputs, outputs, and chokepoints.' },
-  { title:'Medicare Fraud Mapped', category:'Policy', year:'2026', status:'In progress', percent:null,
-    desc:'Geographic fraud-pattern analysis across CMS billing data — locating anomalies that evade tabular audit.' },
-  { title:'Sea Level Rise Impact', category:'Science', year:'2025', status:'85% complete', percent:85,
-    desc:'Extension of the coastal communities StoryMap with parcel-level inundation modeling under IPCC scenarios.' },
-  { title:'Mega Ant War GIS Project', category:'Science', year:'TBD', status:'Planning', percent:null,
-    desc:'Invasive species spread tracking — mapping the front lines of fire ant vs. Argentine ant territory wars.' }
-];
-
-const HIGHLIGHTS = [
-  { type:'Speaking', icon:'🎤',
-    title:'TEDx Talk', year:'2025',
-    desc:'Selected to give a TEDx talk on spatial thinking and civic technology. Update this with your full event name and talk title.',
-    link:null, linkLabel:null },
-  { type:'Conference', icon:'🌐',
-    title:'Esri User Conference 2025', year:'2025',
-    desc:"Presented 'Learning by Mapping: A New Kind of Curriculum' to ~200 GIS educators at the world's largest GIS conference.",
-    link:'https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824', linkLabel:'View StoryMap' },
-  { type:'Award', icon:'🏆',
-    title:'GIS Day 2024 Champion', year:'2024',
-    desc:'Won the NC State University GIS Day student competition for the Raleigh Neighborhoods & Communities StoryMap.',
-    link:'https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b', linkLabel:'View project' },
-  { type:'Leadership', icon:'🗺️',
-    title:'National 4-H Geospatial Leadership Team', year:'2024–present',
-    desc:'Lead the national team developing GIS curriculum and training programs for 4-H clubs across the United States.',
-    link:null, linkLabel:null }
-];
-
-const STATS = [
-  { num:'9+', label:'Published StoryMaps' },
-  { num:'200+', label:'Educators reached (Esri UC)' },
-  { num:'4', label:'States with 4-H GIS curriculum' },
-  { num:'1st', label:'GIS-integrated MUN in the US' }
-];
-
-const ABOUT_ITEMS = [
-  { icon:'🎓', title:'NC State University — Fall 2026', desc:'Agricultural Business Management · Raleigh, NC' },
-  { icon:'🗺️', title:'The Map Company', desc:'GIS consulting — civic analytics, ag systems, outreach visualization' },
-  { icon:'🌿', title:'National 4-H Geospatial Leadership Team', desc:'Lead · curriculum development across four states' },
-  { icon:'📍', title:'Raleigh, North Carolina', desc:'Built most of these projects in Wake County and on this coast' }
-];
-
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
    UTILITIES
-══════════════════════════════════════════ */
-function getThumbUrl(url) {
+═══════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+
+function arrow() {
+  return `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+}
+
+function thumbUrl(url) {
   const m = url.match(/\/(stories|collections)\/([a-f0-9A-F]{32})/);
-  if (!m) return null;
-  return `https://www.arcgis.com/sharing/rest/content/items/${m[2]}/info/thumbnail/ago_downloaded.png`;
+  return m ? `https://www.arcgis.com/sharing/rest/content/items/${m[2]}/info/thumbnail/ago_downloaded.png` : null;
 }
 
-function arrowSvg() {
-  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+function catColor(cat) { return CC[cat] || '#6C757D'; }
+
+/* ═══════════════════════════════════════
+   BOOTSTRAP: load data.json then render
+═══════════════════════════════════════ */
+fetch('./data.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(boot)
+  .catch(err => { console.warn('data.json unavailable:', err); boot({}); });
+
+function boot(D) {
+  const projects    = D.projects     || [];
+  const inProgress  = D.in_progress  || [];
+  const highlights  = D.highlights   || [];
+  const stats       = D.stats        || [];
+  const aboutItems  = D.about_items  || [];
+  const learning    = D.learning     || [];
+
+  // Update portfolio title count
+  if (projects.length) $('portfolioTitle').textContent = `${projects.length} published StoryMaps.`;
+
+  buildHeroPills(projects);
+  buildCarousel(projects.filter(p => p.featured));
+  buildFilters(projects);
+  buildGrid(projects);
+  buildPipeline(inProgress);
+  buildHighlights(highlights, stats);
+  buildAbout(aboutItems);
+  buildLearning(learning);
+  initMap(projects);
+  applyFilters(projects);
+  setupScrollReveal();
 }
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
    TYPEWRITER
-══════════════════════════════════════════ */
+═══════════════════════════════════════ */
 (function() {
-  const el = document.getElementById('typewriter');
-  const text = 'Brandon Estevez';
+  const el = $('typewriter'), text = 'Brandon Estevez';
   let i = 0;
-  function tick() {
-    if (i <= text.length) { el.textContent = text.slice(0,i); i++; setTimeout(tick, i<4?110:72); }
-  }
-  setTimeout(tick, 350);
+  (function tick() {
+    if (i <= text.length) { el.textContent = text.slice(0, i++); setTimeout(tick, i < 4 ? 110 : 72); }
+  })();
 })();
 
-/* ══════════════════════════════════════════
-   NAV SCROLL
-══════════════════════════════════════════ */
+/* NAV scroll border */
 window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
-}, { passive:true });
+  $('nav').classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
+   HERO PILLS
+═══════════════════════════════════════ */
+function buildHeroPills(projects) {
+  const pills = [
+    { color: CC.History,   label: `${projects.length || 9}+ Published StoryMaps` },
+    { color: CC.Education, label: 'Esri UC 2025 Presenter' },
+    { color: CC['Urban Planning'], label: 'GIS Day 2024 Winner' },
+    { color: CC.Politics,  label: 'NC State, Fall 2026' }
+  ];
+  $('heroPills').innerHTML = pills.map(p =>
+    `<span class="pill"><span class="pdot" style="background:${p.color}"></span>${p.label}</span>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════
    CAROUSEL
-══════════════════════════════════════════ */
-(function() {
-  const track = document.getElementById('carTrack');
-  const dotsBox = document.getElementById('carDots');
-  const featured = PROJECTS.filter(p => p.featured);
+═══════════════════════════════════════ */
+function buildCarousel(featured) {
+  const track = $('carTrack'), dotsBox = $('carDots');
   let idx = 0, timer;
 
   featured.forEach((p, i) => {
-    const color = CAT_COLORS[p.category];
-    const thumbUrl = getThumbUrl(p.url);
+    const col = catColor(p.category);
+    const th  = thumbUrl(p.url);
 
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
     slide.innerHTML = `
-      <article class="carousel-card" style="--cat-color:${color}">
-        ${thumbUrl ? `<img class="carousel-thumb" alt="" />` : ''}
+      <article class="carousel-card" style="--cc:${col}">
+        ${th ? `<img class="carousel-thumb" alt="" />` : ''}
         <div class="carousel-body">
           <span class="carousel-badge">${p.category} · ${p.year}</span>
           <h3>${p.title}</h3>
           <p>${p.description}</p>
-          <button class="carousel-btn" data-open="${p.id}">View StoryMap ${arrowSvg()}</button>
+          <button class="carousel-btn" data-open="${p.id}">
+            View StoryMap ${arrow()}
+          </button>
         </div>
       </article>`;
     track.appendChild(slide);
 
-    if (thumbUrl) {
+    if (th) {
       const img = new Image();
       img.onload = () => {
         const el = slide.querySelector('.carousel-thumb');
-        if (el) { el.src = thumbUrl; slide.querySelector('.carousel-card').classList.add('has-thumb'); }
+        if (el) { el.src = th; slide.querySelector('.carousel-card').classList.add('has-thumb'); }
       };
-      img.src = thumbUrl;
+      img.src = th;
     }
 
     const dot = document.createElement('button');
-    dot.className = 'car-dot' + (i===0?' active':'');
-    dot.setAttribute('aria-label', `Slide ${i+1}`);
+    dot.className = 'car-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Slide ${i + 1}`);
     dot.addEventListener('click', () => go(i));
     dotsBox.appendChild(dot);
   });
 
   function go(n) {
     idx = ((n % featured.length) + featured.length) % featured.length;
-    track.style.transform = `translateX(-${idx*100}%)`;
-    [...dotsBox.children].forEach((d,i) => d.classList.toggle('active', i===idx));
+    track.style.transform = `translateX(-${idx * 100}%)`;
+    [...dotsBox.children].forEach((d, i) => d.classList.toggle('active', i === idx));
     restart();
   }
-  function restart() { clearInterval(timer); timer = setInterval(() => go(idx+1), 6000); }
+  function restart() { clearInterval(timer); timer = setInterval(() => go(idx + 1), 6000); }
 
-  document.getElementById('carPrev').addEventListener('click', () => go(idx-1));
-  document.getElementById('carNext').addEventListener('click', () => go(idx+1));
+  $('carPrev').addEventListener('click', () => go(idx - 1));
+  $('carNext').addEventListener('click', () => go(idx + 1));
 
-  const car = document.getElementById('carousel');
+  const car = $('carousel');
   car.addEventListener('mouseenter', () => clearInterval(timer));
   car.addEventListener('mouseleave', restart);
   let sx = 0;
-  car.addEventListener('touchstart', e => { sx = e.touches[0].clientX; clearInterval(timer); }, { passive:true });
+  car.addEventListener('touchstart', e => { sx = e.touches[0].clientX; clearInterval(timer); }, { passive: true });
   car.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - sx;
-    if (dx>50) go(idx-1); else if (dx<-50) go(idx+1); else restart();
+    if (dx > 50) go(idx - 1); else if (dx < -50) go(idx + 1); else restart();
   });
   car.addEventListener('click', e => {
     const b = e.target.closest('[data-open]'); if (b) openModal(b.dataset.open);
   });
   restart();
-})();
+}
 
-/* ══════════════════════════════════════════
-   PORTFOLIO GRID + FILTERS
-══════════════════════════════════════════ */
-let activeCat = 'All', searchQuery = '';
+/* ═══════════════════════════════════════
+   PORTFOLIO: FILTERS + GRID
+═══════════════════════════════════════ */
+let activeCat = 'All', searchQ = '', allProjects = [];
 
-(function buildFilters() {
-  const box = document.getElementById('filterChips');
-  const cats = ['All', ...Object.keys(CAT_COLORS).filter(c => PROJECTS.some(p => p.category===c))];
+function buildFilters(projects) {
+  const box = $('filterChips');
+  const cats = ['All', ...Object.keys(CC).filter(c => projects.some(p => p.category === c))];
   cats.forEach(c => {
+    const col = c === 'All' ? 'var(--text)' : CC[c];
     const btn = document.createElement('button');
-    btn.className = 'chip' + (c==='All'?' active':'');
+    btn.className = 'chip' + (c === 'All' ? ' active' : '');
     btn.dataset.cat = c;
-    if (c!=='All') btn.style.setProperty('--chip-color', CAT_COLORS[c]);
-    btn.innerHTML = `<span class="swatch" style="background:${c==='All'?'var(--text)':CAT_COLORS[c]}"></span>${c}`;
+    if (c !== 'All') {
+      btn.style.background = `${CC[c]}18`;
+      btn.style.borderColor = `${CC[c]}55`;
+    }
+    btn.innerHTML = `<span class="swatch" style="background:${col}"></span>${c}`;
     btn.addEventListener('click', () => {
       activeCat = c;
-      [...box.children].forEach(ch => ch.classList.toggle('active', ch.dataset.cat===c));
-      applyFilters();
+      [...box.children].forEach(ch => {
+        const isActive = ch.dataset.cat === c;
+        ch.classList.toggle('active', isActive);
+        if (ch.dataset.cat !== 'All') {
+          const cc = CC[ch.dataset.cat];
+          ch.style.background = isActive ? `${cc}22` : `${cc}18`;
+          ch.style.borderColor = isActive ? `${cc}99` : `${cc}55`;
+        }
+      });
+      applyFilters(allProjects);
     });
     box.appendChild(btn);
   });
-})();
+}
 
-(function buildGrid() {
-  const grid = document.getElementById('portfolioGrid');
-  PROJECTS.forEach((p, i) => {
-    const color = CAT_COLORS[p.category];
-    const thumbUrl = getThumbUrl(p.url);
+function buildGrid(projects) {
+  allProjects = projects;
+  const grid = $('portfolioGrid');
+  projects.forEach((p, i) => {
+    const col = catColor(p.category);
+    const th  = thumbUrl(p.url);
     const card = document.createElement('article');
     card.className = 'card';
-    card.style.setProperty('--card-color', color);
-    card.style.transitionDelay = `${(i%6)*55}ms`;
     card.dataset.id = p.id;
+    card.style.transitionDelay = `${(i % 6) * 55}ms`;
     card.innerHTML = `
       <div class="card-thumb">
-        ${thumbUrl ? `<img class="card-thumb-img" src="${thumbUrl}" alt="" loading="lazy" onerror="this.style.opacity=0" />` : ''}
+        <div class="card-thumb-bg" style="background:linear-gradient(135deg,${col},color-mix(in srgb,${col} 55%,#1e2035))"></div>
+        ${th ? `<img class="card-thumb-img" src="${th}" alt="" loading="lazy" onerror="this.style.opacity=0" />` : ''}
         <div class="card-thumb-overlay"></div>
         <div class="card-pattern"></div>
-        <span class="card-badge">${p.category}</span>
+        <span class="card-badge" style="color:${col}">${p.category}</span>
       </div>
       <div class="card-body">
         <div class="card-year">${p.year}</div>
         <h3>${p.title}</h3>
         <p>${p.description}</p>
-        <span class="card-link">View StoryMap ${arrowSvg()}</span>
+        <span class="card-cta" style="color:${col}">View StoryMap ${arrow()}</span>
       </div>`;
     card.addEventListener('click', () => openModal(p.id));
     grid.appendChild(card);
   });
 
   const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
-  }, { threshold:0.1, rootMargin:'0px 0px -32px 0px' });
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
   grid.querySelectorAll('.card').forEach(c => io.observe(c));
-})();
+}
 
-function applyFilters() {
-  const grid = document.getElementById('portfolioGrid');
-  const q = searchQuery.trim().toLowerCase();
+function applyFilters(projects) {
+  if (!projects) projects = allProjects;
+  const q = searchQ.trim().toLowerCase();
+  const grid = $('portfolioGrid');
   let vis = 0;
-  PROJECTS.forEach(p => {
+  projects.forEach(p => {
     const card = grid.querySelector(`.card[data-id="${p.id}"]`);
     if (!card) return;
-    const mc = activeCat==='All' || p.category===activeCat;
-    const mq = !q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
-    card.classList.toggle('hidden', !(mc && mq));
-    if (mc && mq) vis++;
+    const mc = activeCat === 'All' || p.category === activeCat;
+    const mq = !q || [p.title, p.description, p.category].some(s => s.toLowerCase().includes(q));
+    const show = mc && mq;
+    card.classList.toggle('hidden', !show);
+    if (show) vis++;
   });
   let empty = grid.querySelector('.empty-state');
-  if (vis===0) { if (!empty) { empty=document.createElement('div'); empty.className='empty-state'; empty.textContent='No projects match that filter.'; grid.appendChild(empty); } }
-  else if (empty) empty.remove();
-  document.getElementById('searchCount').textContent = `${vis} ${vis===1?'PROJECT':'PROJECTS'} · ${activeCat==='All'?'ALL CATEGORIES':activeCat.toUpperCase()}`;
+  if (vis === 0) {
+    if (!empty) { empty = document.createElement('div'); empty.className = 'empty-state'; empty.textContent = 'No projects match.'; grid.appendChild(empty); }
+  } else if (empty) empty.remove();
+  $('searchCount').textContent = `${vis} ${vis === 1 ? 'PROJECT' : 'PROJECTS'} · ${activeCat === 'All' ? 'ALL CATEGORIES' : activeCat.toUpperCase()}`;
   updateMapPins();
 }
 
 let searchTimer;
-document.getElementById('searchInput').addEventListener('input', e => {
+$('searchInput').addEventListener('input', e => {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { searchQuery = e.target.value; applyFilters(); }, 220);
+  searchTimer = setTimeout(() => { searchQ = e.target.value; applyFilters(); }, 220);
 });
-applyFilters();
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
    MAP
-══════════════════════════════════════════ */
-let map, mapMarkers = {};
-function initMap() {
-  if (typeof L === 'undefined') { setTimeout(initMap, 100); return; }
-  map = L.map('projectMap', { center:[35.5,-79.0], zoom:6, zoomControl:true, scrollWheelZoom:false, attributionControl:false });
-  L.control.attribution({ prefix:false }).addAttribution('© OpenStreetMap, © CARTO').addTo(map);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom:18, subdomains:'abcd' }).addTo(map);
+═══════════════════════════════════════ */
+let mapObj, mapMarkers = {};
 
-  const counts = {}, seen = {};
-  PROJECTS.forEach(p => { const k = p.location.join(','); counts[k] = (counts[k]||0)+1; });
-  PROJECTS.forEach(p => {
-    const k = p.location.join(','); seen[k] = (seen[k]||0)+1;
-    let [lat,lng] = p.location;
-    if (counts[k]>1) { const a = (seen[k]/counts[k])*Math.PI*2; lat+=Math.cos(a)*.055; lng+=Math.sin(a)*.055; }
-    const color = CAT_COLORS[p.category];
-    const icon = L.divIcon({
-      className:'project-pin',
-      html:`<div style="width:20px;height:20px;border-radius:50%;background:${color};border:3px solid white;box-shadow:0 2px 10px rgba(0,0,0,.22);transition:transform .25s ease;"></div>`,
-      iconSize:[20,20], iconAnchor:[10,10]
+function initMap(projects) {
+  if (typeof L === 'undefined') {
+    $('projectMap').innerHTML = '<div class="map-unavailable">Map loading…</div>';
+    // retry once after a moment (CDN sometimes slow)
+    setTimeout(() => {
+      if (typeof L !== 'undefined') initMap(projects);
+    }, 1500);
+    return;
+  }
+
+  try {
+    mapObj = L.map('projectMap', {
+      center: [35.5, -79.0], zoom: 6,
+      scrollWheelZoom: false, attributionControl: false
     });
-    const m = L.marker([lat,lng], { icon, riseOnHover:true }).addTo(map)
-      .bindTooltip(`<strong style="font-family:'DM Sans',sans-serif">${p.title}</strong><br><span style="color:#888;font-size:.78rem">${p.category} · ${p.year}</span>`, { direction:'top', offset:[0,-8] });
-    m.on('click', () => {
-      const card = document.querySelector(`.card[data-id="${p.id}"]`);
-      if (card && !card.classList.contains('hidden')) {
-        card.scrollIntoView({ behavior:'smooth', block:'center' });
-        card.style.boxShadow = `0 0 0 3px ${color},var(--shadow-md)`;
-        setTimeout(() => { card.style.boxShadow = ''; }, 1800);
-      } else openModal(p.id);
+    L.control.attribution({ prefix: false }).addAttribution('© OpenStreetMap, © CARTO').addTo(mapObj);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 18, subdomains: 'abcd'
+    }).addTo(mapObj);
+
+    // jitter pins with same coordinates
+    const counts = {}, seen = {};
+    projects.forEach(p => { const k = p.location.join(','); counts[k] = (counts[k] || 0) + 1; });
+    projects.forEach(p => {
+      const k = p.location.join(','); seen[k] = (seen[k] || 0) + 1;
+      let [lat, lng] = p.location;
+      if (counts[k] > 1) { const a = (seen[k] / counts[k]) * Math.PI * 2; lat += Math.cos(a) * .06; lng += Math.sin(a) * .06; }
+      const col = catColor(p.category);
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="map-pin" style="width:20px;height:20px;border-radius:50%;background:${col};border:3px solid white;box-shadow:0 2px 10px rgba(0,0,0,.22);transition:transform .22s ease;cursor:pointer"></div>`,
+        iconSize: [20, 20], iconAnchor: [10, 10]
+      });
+      const m = L.marker([lat, lng], { icon, riseOnHover: true })
+        .addTo(mapObj)
+        .bindTooltip(`<strong style="font-family:'DM Sans',sans-serif;font-size:.88rem">${p.title}</strong><br><span style="color:#888;font-size:.75rem">${p.category} · ${p.year}</span>`,
+          { direction: 'top', offset: [0, -8] });
+      m.on('click', () => {
+        const card = document.querySelector(`.card[data-id="${p.id}"]`);
+        if (card && !card.classList.contains('hidden')) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const prev = card.style.transition;
+          card.style.outline = `3px solid ${col}`;
+          card.style.outlineOffset = '3px';
+          setTimeout(() => { card.style.outline = ''; card.style.outlineOffset = ''; }, 1800);
+        } else openModal(p.id);
+      });
+      m.on('mouseover', e => { const d = e.target.getElement()?.firstChild; if (d) d.style.transform = 'scale(1.45)'; });
+      m.on('mouseout',  e => { const d = e.target.getElement()?.firstChild; if (d) d.style.transform = ''; });
+      mapMarkers[p.id] = { marker: m, project: p };
     });
-    m.on('mouseover', e => { const d = e.target.getElement()?.firstChild; if (d) d.style.transform='scale(1.45)'; });
-    m.on('mouseout', e => { const d = e.target.getElement()?.firstChild; if (d) d.style.transform=''; });
-    mapMarkers[p.id] = { marker:m, project:p };
-  });
+  } catch(err) {
+    console.warn('Map init error:', err);
+    $('projectMap').innerHTML = '<div class="map-unavailable">Map unavailable</div>';
+  }
 }
+
 function updateMapPins() {
-  if (!map) return;
-  const q = searchQuery.trim().toLowerCase();
-  Object.values(mapMarkers).forEach(({ marker, project:p }) => {
-    const mc = activeCat==='All' || p.category===activeCat;
-    const mq = !q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
-    if (mc && mq) { if (!map.hasLayer(marker)) marker.addTo(map); }
-    else { if (map.hasLayer(marker)) map.removeLayer(marker); }
+  if (!mapObj) return;
+  const q = searchQ.trim().toLowerCase();
+  Object.values(mapMarkers).forEach(({ marker, project: p }) => {
+    const mc = activeCat === 'All' || p.category === activeCat;
+    const mq = !q || [p.title, p.description, p.category].some(s => s.toLowerCase().includes(q));
+    if (mc && mq) { if (!mapObj.hasLayer(marker)) marker.addTo(mapObj); }
+    else          { if (mapObj.hasLayer(marker))  mapObj.removeLayer(marker); }
   });
 }
-window.addEventListener('load', initMap);
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
    MODAL
-══════════════════════════════════════════ */
-const modal = document.getElementById('modal');
-const modalIframe = document.getElementById('modalIframe');
-const modalSide = document.getElementById('modalSide');
-const iframeLoader = document.getElementById('iframeLoader');
-
+═══════════════════════════════════════ */
 function openModal(id) {
-  const p = PROJECTS.find(x => x.id===id); if (!p) return;
-  const color = CAT_COLORS[p.category];
-  modalSide.style.setProperty('--modal-color', color);
-  modalSide.innerHTML = `
-    <span class="badge">${p.category}</span>
-    <div><h2>${p.title}</h2><div class="modal-meta" style="margin-top:8px">${p.year}</div></div>
-    <div><div class="modal-label">Problem</div><p>${p.problem}</p></div>
-    <div><div class="modal-label">Tools</div><div class="modal-tools">${p.tools.map(t=>`<span class="modal-tool">${t}</span>`).join('')}</div></div>
-    <div><div class="modal-label">Impact</div><p>${p.impact}</p></div>
-    <a class="modal-open-link" href="${p.url}" target="_blank" rel="noopener">Open in new tab ${arrowSvg()}</a>`;
-  iframeLoader.classList.remove('hidden');
-  modalIframe.onload = () => iframeLoader.classList.add('hidden');
-  modalIframe.src = p.url;
-  modal.classList.add('open');
-  modal.setAttribute('aria-hidden','false');
+  const p = allProjects.find(x => x.id === id); if (!p) return;
+  const col = catColor(p.category);
+  const side = $('modalSide');
+  side.innerHTML = `
+    <span class="ms-badge" style="background:${col}22;color:${col}">${p.category}</span>
+    <div><h2 class="ms-title" id="modalTitle">${p.title}</h2>
+      <div class="ms-meta" style="margin-top:8px">${p.year}</div></div>
+    <div><div class="ms-label">Problem</div><p>${p.problem}</p></div>
+    <div><div class="ms-label">Tools</div>
+      <div class="ms-tools">${(p.tools || []).map(t => `<span class="ms-tool">${t}</span>`).join('')}</div></div>
+    <div><div class="ms-label">Impact</div><p>${p.impact}</p></div>
+    <a class="ms-open" href="${p.url}" target="_blank" rel="noopener">Open in new tab ${arrow()}</a>`;
+  const loader = $('iframeLoader');
+  loader.classList.remove('gone');
+  $('modalIframe').onload = () => loader.classList.add('gone');
+  $('modalIframe').src = p.url;
+  $('modal').classList.add('open');
+  $('modal').setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
 }
 function closeModal() {
-  modal.classList.remove('open');
-  modal.setAttribute('aria-hidden','true');
+  $('modal').classList.remove('open');
+  $('modal').setAttribute('aria-hidden', 'true');
   document.body.classList.remove('modal-open');
-  setTimeout(() => { modalIframe.src='about:blank'; iframeLoader.classList.remove('hidden'); }, 500);
+  setTimeout(() => { $('modalIframe').src = 'about:blank'; $('iframeLoader').classList.remove('gone'); }, 500);
 }
-document.getElementById('modalClose').addEventListener('click', closeModal);
-modal.addEventListener('click', e => { if (e.target===modal) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key==='Escape' && modal.classList.contains('open')) closeModal(); });
+$('modalClose').addEventListener('click', closeModal);
+$('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('modal').classList.contains('open')) closeModal(); });
+// swipe down to close
 (function() {
-  let sy=null;
-  const panel = document.getElementById('modalPanel');
-  panel.addEventListener('touchstart', e => { if (panel.scrollTop>0) return; sy=e.touches[0].clientY; }, { passive:true });
-  panel.addEventListener('touchmove', e => { if (sy===null) return; const dy=e.touches[0].clientY-sy; if (dy>0) panel.style.transform=`translateY(${dy}px)`; }, { passive:true });
-  panel.addEventListener('touchend', e => { if (sy===null) return; const dy=e.changedTouches[0].clientY-sy; panel.style.transform=''; if (dy>100) closeModal(); sy=null; });
+  let sy = null;
+  const p = $('modalPanel');
+  p.addEventListener('touchstart', e => { if (p.scrollTop > 0) return; sy = e.touches[0].clientY; }, { passive: true });
+  p.addEventListener('touchmove',  e => { if (sy === null) return; const dy = e.touches[0].clientY - sy; if (dy > 0) p.style.transform = `translateY(${dy}px)`; }, { passive: true });
+  p.addEventListener('touchend',   e => { if (sy === null) return; const dy = e.changedTouches[0].clientY - sy; p.style.transform = ''; if (dy > 100) closeModal(); sy = null; });
 })();
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
    IN THE PIPELINE
-══════════════════════════════════════════ */
-(function() {
-  const grid = document.getElementById('pipelineGrid');
-  IN_PROGRESS.forEach(p => {
-    const color = CAT_COLORS[p.category] || '#6C757D';
-    const card = document.createElement('div');
-    card.className = 'pipeline-card';
-    card.innerHTML = `
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <span class="pipeline-status"><span class="status-dot" style="background:${color}"></span>${p.status}</span>
+═══════════════════════════════════════ */
+function buildPipeline(items) {
+  const grid = $('pipelineGrid');
+  items.forEach(p => {
+    const col = catColor(p.category);
+    const el = document.createElement('div');
+    el.className = 'pc';
+    el.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span class="pc-status">
+          <span class="pc-dot" style="background:${col}"></span>${p.status}
+        </span>
         <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted)">${p.year}</span>
       </div>
       <h3>${p.title}</h3>
-      <div class="pipeline-cat" style="color:${color}">${p.category}</div>
-      <p class="pipeline-desc">${p.desc}</p>
-      ${p.percent!=null ? `
+      <div class="pc-cat" style="color:${col}">${p.category}</div>
+      <p>${p.desc}</p>
+      ${p.percent != null ? `
         <div>
           <div class="progress-label" style="margin-bottom:6px">${p.percent}% complete</div>
-          <div class="progress-bar"><div class="progress-fill" style="background:${color};width:0%" data-target="${p.percent}"></div></div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="background:${col}" data-pct="${p.percent}"></div>
+          </div>
         </div>` : ''}`;
-    grid.appendChild(card);
+    grid.appendChild(el);
   });
 
-  const io = new IntersectionObserver(entries => {
+  // animate progress bars on scroll-in
+  new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        e.target.querySelectorAll('.progress-fill').forEach(bar => { bar.style.width = bar.dataset.target + '%'; });
-        io.unobserve(e.target);
+        e.target.querySelectorAll('.progress-fill').forEach(b => { b.style.width = b.dataset.pct + '%'; });
       }
     });
-  }, { threshold:0.3 });
-  grid.querySelectorAll('.pipeline-card').forEach(c => io.observe(c));
-})();
+  }, { threshold: 0.4 }).observe(grid);
+}
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
    HIGHLIGHTS + STATS
-══════════════════════════════════════════ */
-(function() {
-  const grid = document.getElementById('hlGrid');
-  HIGHLIGHTS.forEach(h => {
-    const card = document.createElement('div');
-    card.className = 'hl-card';
-    card.innerHTML = `
+═══════════════════════════════════════ */
+function buildHighlights(highlights, stats) {
+  const grid = $('hlGrid');
+  highlights.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'hl';
+    el.innerHTML = `
       <div class="hl-type">${h.type}</div>
       <div class="hl-icon">${h.icon}</div>
       <h3>${h.title}</h3>
       <p>${h.desc}</p>
       <div class="hl-year">${h.year}</div>
-      ${h.link ? `<a class="hl-link" href="${h.link}" target="_blank" rel="noopener">${h.linkLabel} ${arrowSvg()}</a>` : ''}`;
-    grid.appendChild(card);
+      ${h.link ? `<a class="hl-link" href="${h.link}" target="_blank" rel="noopener">${h.link_label} ${arrow()}</a>` : ''}`;
+    grid.appendChild(el);
   });
 
-  const statsRow = document.getElementById('statsRow');
-  STATS.forEach(s => {
-    const item = document.createElement('div');
-    item.className = 'stat-item';
-    item.innerHTML = `<div class="stat-num" data-target="${s.num}">${s.num}</div><div class="stat-label">${s.label}</div>`;
-    statsRow.appendChild(item);
-  });
-})();
-
-/* ══════════════════════════════════════════
-   ABOUT ITEMS
-══════════════════════════════════════════ */
-(function() {
-  const box = document.getElementById('aboutItems');
-  ABOUT_ITEMS.forEach(item => {
+  const row = $('statsRow');
+  stats.forEach(s => {
     const el = document.createElement('div');
-    el.className = 'about-item';
-    el.innerHTML = `<span class="about-item-icon">${item.icon}</span><div><h4>${item.title}</h4><p>${item.desc}</p></div>`;
+    el.className = 'stat';
+    el.innerHTML = `<div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div>`;
+    row.appendChild(el);
+  });
+}
+
+/* ═══════════════════════════════════════
+   ABOUT CARDS
+═══════════════════════════════════════ */
+function buildAbout(items) {
+  const box = $('aboutCards');
+  box.className = 'about-side';
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'about-card';
+    el.innerHTML = `<span class="about-card-icon">${item.icon}</span>
+      <div><h4>${item.title}</h4><p>${item.desc}</p></div>`;
     box.appendChild(el);
   });
-})();
+}
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════
    LEARNING FEED
-══════════════════════════════════════════ */
-fetch('./learning.json')
-  .then(r => r.json())
-  .then(items => {
-    const track = document.getElementById('learnTrack');
-    items.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'learn-card';
-      card.innerHTML = `
-        <div class="learn-source">${item.source} · ${item.date}</div>
-        <h4>${item.title}</h4>
-        <p class="learn-take">"${item.take}"</p>
-        ${item.link && item.link!=='#' ?
-          `<a class="learn-link" href="${item.link}" target="_blank" rel="noopener">Read ${arrowSvg()}</a>` :
-          `<span class="learn-source" style="margin-top:4px">Link coming soon</span>`}`;
-      track.appendChild(card);
-    });
-  })
-  .catch(() => {
-    document.getElementById('learnTrack').innerHTML = '<p class="learn-empty">Learning feed coming soon.</p>';
+═══════════════════════════════════════ */
+function buildLearning(items) {
+  const track = $('learnTrack');
+  if (!items.length) { track.innerHTML = '<p style="color:var(--muted);font-size:.9rem">Learning feed coming soon.</p>'; return; }
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'lc';
+    el.innerHTML = `
+      <div class="lc-source">${item.source} · ${item.date}</div>
+      <h4>${item.title}</h4>
+      <p class="lc-take">"${item.take}"</p>
+      ${item.link ? `<a class="lc-link" href="${item.link}" target="_blank" rel="noopener">Read ${arrow()}</a>`
+                  : `<span class="lc-source" style="margin-top:4px">Link coming soon</span>`}`;
+    track.appendChild(el);
   });
+}
 
-/* ══════════════════════════════════════════
-   SCROLL REVEAL (section heads)
-══════════════════════════════════════════ */
-(function() {
+/* ═══════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════ */
+function setupScrollReveal() {
   const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='none'; io.unobserve(e.target); } });
-  }, { threshold:0.15 });
-  document.querySelectorAll('.section-head').forEach(el => {
-    el.style.opacity='0'; el.style.transform='translateY(20px)';
-    el.style.transition='opacity .7s var(--ease),transform .7s var(--ease)';
-    io.observe(el);
-  });
-})();
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
 </script>
 </body>
 </html>
