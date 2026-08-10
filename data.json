@@ -185,52 +185,28 @@
   ],
   "in_progress": [
     {
-      "id": "supply-chain",
       "title": "Supply Chain Analysis",
+      "year": "2026",
       "category": "Agriculture",
-      "year": "2026",
-      "status": "In progress",
-      "percent": null,
-      "desc": "Food supply chain mapping across NC agricultural counties — tracing inputs, outputs, and chokepoints.",
-      "tools": [],
-      "next_steps": [],
-      "log": []
+      "links": []
     },
     {
-      "id": "medicare-fraud",
       "title": "Medicare Fraud Mapped",
-      "category": "Policy",
       "year": "2026",
-      "status": "In progress",
-      "percent": null,
-      "desc": "Geographic fraud-pattern analysis across CMS billing data — locating anomalies that evade tabular audit.",
-      "tools": [],
-      "next_steps": [],
-      "log": []
+      "category": "Policy",
+      "links": []
     },
     {
-      "id": "sea-level-rise",
       "title": "Sea Level Rise Impact",
-      "category": "Science",
       "year": "2025",
-      "status": "85% complete",
-      "percent": 85,
-      "desc": "Extension of the coastal communities StoryMap with parcel-level inundation modeling under IPCC scenarios.",
-      "tools": [],
-      "next_steps": [],
-      "log": []
+      "category": "Science",
+      "links": []
     },
     {
-      "id": "ant-war",
       "title": "Mega Ant War GIS Project",
-      "category": "Science",
       "year": "TBD",
-      "status": "Planning",
-      "percent": null,
-      "desc": "Invasive species spread tracking — mapping the front lines of fire ant vs. Argentine ant territory wars.",
-      "tools": [],
-      "next_steps": [],
-      "log": []
+      "category": "Science",
+      "links": []
     }
   ],
   "highlights": [

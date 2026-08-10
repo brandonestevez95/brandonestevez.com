@@ -269,33 +269,17 @@ section{padding:110px 0;}
   padding:26px;display:flex;flex-direction:column;gap:12px;
   transition:transform .35s var(--ease),box-shadow .35s var(--ease);}
 .pc:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
-.pc-status{display:inline-flex;align-items:center;gap:7px;
-  font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);padding:4px 10px;border-radius:100px;
-  background:var(--surface-2);border:1px solid var(--border);align-self:flex-start;}
-.pc-dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s ease-in-out infinite;flex-shrink:0;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+.pc-cat{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;
+  text-transform:uppercase;font-weight:500;}
 .pc h3{font-family:'DM Sans',sans-serif;font-weight:600;font-size:1.08rem;line-height:1.3;}
-.pc-cat{font-size:.8rem;font-weight:500;}
-.pc p{font-size:.88rem;color:var(--muted);line-height:1.55;flex:1;}
-.progress-bar{width:100%;height:5px;background:var(--surface-2);border-radius:100px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:100px;width:0%;transition:width 1.2s var(--ease-out);}
-.progress-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:6px;}
-.pc-steps{list-style:none;display:flex;flex-direction:column;gap:7px;margin:2px 0;}
-.pc-step{display:flex;align-items:flex-start;gap:9px;font-size:.84rem;color:var(--muted);line-height:1.45;}
-.pc-step-mark{flex-shrink:0;width:16px;height:16px;margin-top:1px;border-radius:50%;
-  border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;
-  font-size:.6rem;color:white;}
-.pc-step.done .pc-step-mark{border-color:transparent;}
-.pc-step.done span:last-child{text-decoration:line-through;opacity:.6;}
-.pc-log{border-top:1px solid var(--border);padding-top:14px;display:flex;flex-direction:column;gap:12px;}
-.pc-log-label{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--muted);}
-.pc-log-entry{display:flex;flex-direction:column;gap:6px;}
-.pc-log-date{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);opacity:.75;}
-.pc-log-entry p{font-size:.84rem;line-height:1.5;flex:initial;}
-.pc-log-img{width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--border);}
-.pc-log-more{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);opacity:.7;}
+.pc-year{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);}
+.pc-links{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;
+  align-items:flex-start;gap:9px;}
+.pc-link{display:inline-flex;align-items:center;gap:5px;font-size:.85rem;font-weight:500;
+  color:var(--text);border-bottom:1px solid var(--border);padding-bottom:2px;
+  transition:border-color .25s var(--ease);}
+.pc-link:hover{border-bottom-color:currentColor;}
+.pc-empty{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--faint);}
 @media(max-width:768px){.pipeline-grid{grid-template-columns:1fr;}}
 
 /* ─── HIGHLIGHTS ─── */
@@ -958,68 +942,21 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('modal')
 ═══════════════════════════════════════ */
 function buildPipeline(items) {
   const grid = $('pipelineGrid');
-  const LOG_SHOWN = 3;
   items.forEach(p => {
     const col = catColor(p.category);
-    const steps = p.next_steps || [];
-    const log = p.log || [];
-
-    // once a checklist exists, computed percent wins over the manual field
-    const doneCount = steps.filter(s => s.done).length;
-    const pct = steps.length ? Math.round(doneCount / steps.length * 100) : p.percent;
-    const pctLabel = steps.length ? `${doneCount} of ${steps.length} steps · ${pct}%` : `${pct}% complete`;
-
-    const recent = log.slice(-LOG_SHOWN).reverse();
-
     const el = document.createElement('div');
     el.className = 'pc';
     el.innerHTML = `
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <span class="pc-status">
-          <span class="pc-dot" style="background:${col}"></span>${esc(p.status)}
-        </span>
-        <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted)">${esc(p.year)}</span>
-      </div>
-      <h3>${esc(p.title)}</h3>
       <div class="pc-cat" style="color:${col}">${esc(p.category)}</div>
-      <p>${esc(p.desc)}</p>
-      ${(p.tools || []).length ? `
-        <div class="ms-tools">${p.tools.map(t => `<span class="ms-tool">${esc(t)}</span>`).join('')}</div>` : ''}
-      ${pct != null ? `
-        <div>
-          <div class="progress-label" style="margin-bottom:6px">${pctLabel}</div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="background:${col}" data-pct="${pct}"></div>
-          </div>
-        </div>` : ''}
-      ${steps.length ? `
-        <ul class="pc-steps">${steps.map(s => `
-          <li class="pc-step${s.done ? ' done' : ''}">
-            <span class="pc-step-mark" ${s.done ? `style="background:${col}"` : ''}>${s.done ? '✓' : ''}</span>
-            <span>${esc(s.text)}</span>
-          </li>`).join('')}</ul>` : ''}
-      ${log.length ? `
-        <div class="pc-log">
-          <div class="pc-log-label">Field log</div>
-          ${recent.map(e => `
-            <div class="pc-log-entry">
-              <span class="pc-log-date">${esc(e.date)}</span>
-              <p>${esc(e.text)}</p>
-              ${e.image ? `<img class="pc-log-img" src="${esc(e.image)}" alt="Field log image for ${esc(p.title)}" loading="lazy">` : ''}
-            </div>`).join('')}
-          ${log.length > LOG_SHOWN ? `<div class="pc-log-more">+ ${log.length - LOG_SHOWN} earlier ${log.length - LOG_SHOWN === 1 ? 'entry' : 'entries'}</div>` : ''}
-        </div>` : ''}`;
+      <h3>${esc(p.title)}</h3>
+      <div class="pc-year">${esc(p.year)}</div>
+      <div class="pc-links">
+        ${(p.links || []).map(l =>
+          `<a class="pc-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`
+        ).join('') || `<span class="pc-empty">no deliverables linked yet</span>`}
+      </div>`;
     grid.appendChild(el);
   });
-
-  // animate progress bars on scroll-in
-  new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.querySelectorAll('.progress-fill').forEach(b => { b.style.width = b.dataset.pct + '%'; });
-      }
-    });
-  }, { threshold: 0.4 }).observe(grid);
 }
 
 /* ═══════════════════════════════════════

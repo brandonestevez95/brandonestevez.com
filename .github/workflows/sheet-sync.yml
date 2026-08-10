@@ -1,16 +1,14 @@
 name: Sync in_progress from Google Sheet
 
 on:
-  repository_dispatch:
-    types: [sheet-edit]
   schedule:
-    - cron: "*/30 * * * *"   # fallback in case a dispatch is ever missed
-  workflow_dispatch: {}       # manual "Run workflow" button, e.g. from the GitHub mobile app
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}   # manual "Run workflow" button when you don't want to wait
 
 permissions:
   contents: write
 
-# never let two sync runs race each other on the push
+# never let a manual run and a scheduled run race each other on the push
 concurrency:
   group: sheet-sync
   cancel-in-progress: false
@@ -22,13 +20,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: pip install gspread google-auth google-api-python-client
+      - run: pip install gspread google-auth
       - name: Run sync
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
         # green no-op until the secrets are configured, instead of a red run
-        # every 30 minutes from the cron
+        # every 15 minutes from the cron
         run: |
           if [ -z "$GCP_SA_KEY" ] || [ -z "$SHEET_ID" ]; then
             echo "GCP_SA_KEY / SHEET_ID secrets not set yet — skipping sync"
@@ -36,14 +34,13 @@ jobs:
           fi
           python scripts/sync_sheet.py
       - name: Commit if changed
-        # No [skip ci] in the message: pushes made with GITHUB_TOKEN never
-        # retrigger Actions anyway, and Cloudflare honors [skip ci] by NOT
-        # deploying — which would stop the site from ever updating.
+        # No [skip ci] in the message: Cloudflare honors it by NOT deploying,
+        # which would keep synced changes off the live site. Pushes made with
+        # GITHUB_TOKEN don't retrigger Actions anyway.
         run: |
           git config user.name "sheet-sync-bot"
           git config user.email "actions@github.com"
           git add data.json
-          [ -d assets/log ] && git add assets/log
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
