@@ -281,6 +281,21 @@ section{padding:110px 0;}
 .progress-bar{width:100%;height:5px;background:var(--surface-2);border-radius:100px;overflow:hidden;}
 .progress-fill{height:100%;border-radius:100px;width:0%;transition:width 1.2s var(--ease-out);}
 .progress-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:6px;}
+.pc-steps{list-style:none;display:flex;flex-direction:column;gap:7px;margin:2px 0;}
+.pc-step{display:flex;align-items:flex-start;gap:9px;font-size:.84rem;color:var(--muted);line-height:1.45;}
+.pc-step-mark{flex-shrink:0;width:16px;height:16px;margin-top:1px;border-radius:50%;
+  border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;
+  font-size:.6rem;color:white;}
+.pc-step.done .pc-step-mark{border-color:transparent;}
+.pc-step.done span:last-child{text-decoration:line-through;opacity:.6;}
+.pc-log{border-top:1px solid var(--border);padding-top:14px;display:flex;flex-direction:column;gap:12px;}
+.pc-log-label{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);}
+.pc-log-entry{display:flex;flex-direction:column;gap:6px;}
+.pc-log-date{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);opacity:.75;}
+.pc-log-entry p{font-size:.84rem;line-height:1.5;flex:initial;}
+.pc-log-img{width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--border);}
+.pc-log-more{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);opacity:.7;}
 @media(max-width:768px){.pipeline-grid{grid-template-columns:1fr;}}
 
 /* ─── HIGHLIGHTS ─── */
@@ -589,6 +604,10 @@ function thumbUrl(url) {
 }
 
 function catColor(cat) { return CC[cat] || '#6C757D'; }
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
 /* ═══════════════════════════════════════
    BOOTSTRAP: load data.json then render
@@ -939,26 +958,56 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('modal')
 ═══════════════════════════════════════ */
 function buildPipeline(items) {
   const grid = $('pipelineGrid');
+  const LOG_SHOWN = 3;
   items.forEach(p => {
     const col = catColor(p.category);
+    const steps = p.next_steps || [];
+    const log = p.log || [];
+
+    // once a checklist exists, computed percent wins over the manual field
+    const doneCount = steps.filter(s => s.done).length;
+    const pct = steps.length ? Math.round(doneCount / steps.length * 100) : p.percent;
+    const pctLabel = steps.length ? `${doneCount} of ${steps.length} steps · ${pct}%` : `${pct}% complete`;
+
+    const recent = log.slice(-LOG_SHOWN).reverse();
+
     const el = document.createElement('div');
     el.className = 'pc';
     el.innerHTML = `
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <span class="pc-status">
-          <span class="pc-dot" style="background:${col}"></span>${p.status}
+          <span class="pc-dot" style="background:${col}"></span>${esc(p.status)}
         </span>
-        <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted)">${p.year}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted)">${esc(p.year)}</span>
       </div>
-      <h3>${p.title}</h3>
-      <div class="pc-cat" style="color:${col}">${p.category}</div>
-      <p>${p.desc}</p>
-      ${p.percent != null ? `
+      <h3>${esc(p.title)}</h3>
+      <div class="pc-cat" style="color:${col}">${esc(p.category)}</div>
+      <p>${esc(p.desc)}</p>
+      ${(p.tools || []).length ? `
+        <div class="ms-tools">${p.tools.map(t => `<span class="ms-tool">${esc(t)}</span>`).join('')}</div>` : ''}
+      ${pct != null ? `
         <div>
-          <div class="progress-label" style="margin-bottom:6px">${p.percent}% complete</div>
+          <div class="progress-label" style="margin-bottom:6px">${pctLabel}</div>
           <div class="progress-bar">
-            <div class="progress-fill" style="background:${col}" data-pct="${p.percent}"></div>
+            <div class="progress-fill" style="background:${col}" data-pct="${pct}"></div>
           </div>
+        </div>` : ''}
+      ${steps.length ? `
+        <ul class="pc-steps">${steps.map(s => `
+          <li class="pc-step${s.done ? ' done' : ''}">
+            <span class="pc-step-mark" ${s.done ? `style="background:${col}"` : ''}>${s.done ? '✓' : ''}</span>
+            <span>${esc(s.text)}</span>
+          </li>`).join('')}</ul>` : ''}
+      ${log.length ? `
+        <div class="pc-log">
+          <div class="pc-log-label">Field log</div>
+          ${recent.map(e => `
+            <div class="pc-log-entry">
+              <span class="pc-log-date">${esc(e.date)}</span>
+              <p>${esc(e.text)}</p>
+              ${e.image ? `<img class="pc-log-img" src="${esc(e.image)}" alt="Field log image for ${esc(p.title)}" loading="lazy">` : ''}
+            </div>`).join('')}
+          ${log.length > LOG_SHOWN ? `<div class="pc-log-more">+ ${log.length - LOG_SHOWN} earlier ${log.length - LOG_SHOWN === 1 ? 'entry' : 'entries'}</div>` : ''}
         </div>` : ''}`;
     grid.appendChild(el);
   });

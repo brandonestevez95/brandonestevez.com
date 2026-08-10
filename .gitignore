@@ -15,6 +15,7 @@ Thumbs.db
 
 # Misc
 *.log
+__pycache__/
 
 # wrangler files
 .wrangler
