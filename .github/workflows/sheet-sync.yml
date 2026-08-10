@@ -27,7 +27,14 @@ jobs:
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
-        run: python scripts/sync_sheet.py
+        # green no-op until the secrets are configured, instead of a red run
+        # every 30 minutes from the cron
+        run: |
+          if [ -z "$GCP_SA_KEY" ] || [ -z "$SHEET_ID" ]; then
+            echo "GCP_SA_KEY / SHEET_ID secrets not set yet — skipping sync"
+            exit 0
+          fi
+          python scripts/sync_sheet.py
       - name: Commit if changed
         # No [skip ci] in the message: pushes made with GITHUB_TOKEN never
         # retrigger Actions anyway, and Cloudflare honors [skip ci] by NOT
