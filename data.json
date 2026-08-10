@@ -3,153 +3,179 @@
   "_categories": "Science | Education | Politics | History | Agriculture | Urban Planning | Interdisciplinary | Policy",
   "projects": [
     {
-      "title": "Rediscovering Raleigh's Lost Freedmen Villages",
-      "desc": "AP African American Studies research mapping the post-Civil War Freedmen settlements that built modern Raleigh.",
-      "category": "History",
-      "year": "2025",
-      "completion": 100,
-      "links": [
-        {
-          "label": "View StoryMap",
-          "url": "https://storymaps.arcgis.com/stories/5d30baa34e394ebdaf0a9edeffa5c59a"
-        }
-      ]
+      "title": "Assessing Global Supply Chains' vulnerabilities for 3 everyday consumer products",
+      "desc": "",
+      "category": "Logistics",
+      "year": "2026",
+      "completion": 10,
+      "links": []
     },
     {
-      "title": "Learning by Mapping: A New Kind of Curriculum",
-      "desc": "Esri UC 2025 presentation — making the case for place-based GIS as a K-12 pedagogy to ~200 educators.",
-      "category": "Education",
-      "year": "2025",
-      "completion": 100,
-      "links": [
-        {
-          "label": "View StoryMap",
-          "url": "https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824"
-        }
-      ]
+      "title": "Medicare fraud",
+      "desc": "",
+      "category": "Healthcare",
+      "year": "2026",
+      "completion": 0,
+      "links": []
     },
     {
-      "title": "Researching Raleigh's Neighborhoods and Communities",
-      "desc": "GIS Day 2024 winning project — a block-by-block read of how Raleigh actually lives.",
-      "category": "Urban Planning",
-      "year": "2024",
-      "completion": 100,
-      "links": [
-        {
-          "label": "View StoryMap",
-          "url": "https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b"
-        }
-      ]
+      "title": "Mapping out the biggest war on the planet: between ants",
+      "desc": "",
+      "category": "Biology",
+      "year": "2026",
+      "completion": 0,
+      "links": []
     },
     {
-      "title": "Turning the tide for North Carolina's coastal communities",
-      "desc": "Sea level rise, salt marsh loss, and the working communities on the front line of NC's coast.",
-      "category": "Science",
-      "year": "2025",
+      "title": "Revitalizing rural Southern economies",
+      "desc": "",
+      "category": "Economics",
+      "year": "2026",
+      "completion": 0,
+      "links": []
+    },
+    {
+      "title": "Turning the tide for North Carolina's costal communities",
+      "desc": "",
+      "category": "Marine Science",
+      "year": "2026",
       "completion": 100,
       "links": [
         {
-          "label": "View StoryMap",
+          "label": "View",
           "url": "https://storymaps.arcgis.com/stories/7dd2665b88a64932a51c91f3bf333c65"
         }
       ]
     },
     {
       "title": "WCPSS Students Using GIS Collection",
-      "desc": "A curated collection of student GIS work from across Wake County Public Schools.",
+      "desc": "",
       "category": "Education",
-      "year": "2025",
+      "year": "2026",
       "completion": 100,
       "links": [
         {
-          "label": "View Collection",
+          "label": "View",
           "url": "https://storymaps.arcgis.com/collections/1a0d97bf4c314af8b29cd74b342b5ae5"
         }
       ]
     },
     {
+      "title": "Seven Wonders of the World",
+      "desc": "",
+      "category": "Education",
+      "year": "2026",
+      "completion": 100,
+      "links": [
+        {
+          "label": "View",
+          "url": "https://storymaps.arcgis.com/stories/136b700a908f40139b51172af8ae8169"
+        }
+      ]
+    },
+    {
+      "title": "Tracking grocery stores prices across the Triangle area in North Carolina",
+      "desc": "",
+      "category": "Citizen Science",
+      "year": "2026",
+      "completion": 100,
+      "links": [
+        {
+          "label": "View",
+          "url": "https://storymaps.arcgis.com/stories/5967f17b30614b7b97ce901c8de0e911"
+        }
+      ]
+    },
+    {
       "title": "Behind CAPS MUN 2025: Building Model UN with GIS + AI",
-      "desc": "The first GIS-integrated Model UN conference in the United States.",
-      "category": "Politics",
+      "desc": "",
+      "category": "Education",
       "year": "2025",
       "completion": 100,
       "links": [
         {
-          "label": "View StoryMap",
+          "label": "View",
           "url": "https://storymaps.arcgis.com/stories/e6b6538e81ad47e2b6d2d7d9f24b19cf"
         }
       ]
     },
     {
       "title": "How GPS revolutionized marine science",
-      "desc": "A history of how satellite positioning rewrote what marine scientists could ask.",
+      "desc": "",
       "category": "Science",
       "year": "2025",
       "completion": 100,
       "links": [
         {
-          "label": "View StoryMap",
+          "label": "View",
           "url": "https://storymaps.arcgis.com/stories/251ba32c44694f97966eeac5ffef051a"
         }
       ]
     },
     {
-      "title": "Geography At Work",
-      "desc": "A collection showing how spatial thinking powers science, policy, ag, and history alike.",
-      "category": "Interdisciplinary",
+      "title": "Rediscovering Raleigh's Lost Freedmen Villages.",
+      "desc": "",
+      "category": "Humanities",
       "year": "2025",
       "completion": 100,
       "links": [
         {
-          "label": "View Collection",
+          "label": "View",
+          "url": "https://storymaps.arcgis.com/stories/5d30baa34e394ebdaf0a9edeffa5c59a"
+        }
+      ]
+    },
+    {
+      "title": "Geography At Work collection",
+      "desc": "",
+      "category": "Geography",
+      "year": "2025",
+      "completion": 100,
+      "links": [
+        {
+          "label": "View",
           "url": "https://storymaps.arcgis.com/collections/a4bff65e902e4e5497efa82d900b74a1"
         }
       ]
     },
     {
-      "title": "Growers across North Carolina",
-      "desc": "NOURISH project — mapping the people behind NC's working farms.",
+      "title": "Growers across North Carolina collection",
+      "desc": "",
       "category": "Agriculture",
       "year": "2025",
       "completion": 100,
       "links": [
         {
-          "label": "View Collection",
+          "label": "View",
           "url": "https://storymaps.arcgis.com/collections/78e726bd27404df1b776e5f75be367e0"
         }
       ]
     },
     {
-      "title": "Supply Chain Analysis",
-      "desc": "Food supply chain mapping across NC agricultural counties — tracing inputs, outputs, and chokepoints.",
-      "category": "Agriculture",
-      "year": "2026",
-      "completion": 0,
-      "links": []
-    },
-    {
-      "title": "Medicare Fraud Mapped",
-      "desc": "Geographic fraud-pattern analysis across CMS billing data — locating anomalies that evade tabular audit.",
-      "category": "Policy",
-      "year": "2026",
-      "completion": 0,
-      "links": []
-    },
-    {
-      "title": "Sea Level Rise Impact",
-      "desc": "Extension of the coastal communities StoryMap with parcel-level inundation modeling under IPCC scenarios.",
-      "category": "Science",
+      "title": "Learning by Mapping: A New Kind of Curriculum How youth used GIS to learn in a different way and map America's food supply chains.",
+      "desc": "",
+      "category": "Education",
       "year": "2025",
-      "completion": 85,
-      "links": []
+      "completion": 100,
+      "links": [
+        {
+          "label": "View",
+          "url": "https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824"
+        }
+      ]
     },
     {
-      "title": "Mega Ant War GIS Project",
-      "desc": "Invasive species spread tracking — mapping the front lines of fire ant vs. Argentine ant territory wars.",
-      "category": "Science",
-      "year": "TBD",
-      "completion": 0,
-      "links": []
+      "title": "Researching Raleigh's Neighborhoods and Communities",
+      "desc": "",
+      "category": "Urban Planning",
+      "year": "2024",
+      "completion": 100,
+      "links": [
+        {
+          "label": "View",
+          "url": "https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b"
+        }
+      ]
     }
   ],
   "highlights": [
