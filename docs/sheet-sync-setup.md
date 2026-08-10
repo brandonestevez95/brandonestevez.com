@@ -1,42 +1,62 @@
 # Sheet Sync — setup guide
 
-Edit the site's **In the Pipeline** cards from one Google Sheet tab. A GitHub
-Action reads it every 15 minutes, writes `in_progress[]` into `data.json`, and
-commits — Cloudflare redeploys from that push like it does for any other.
-Nothing new exists on the live domain.
+Every project card on the site comes from one Google Sheet tab — published
+work and work in progress alike. A GitHub Action reads it every 15 minutes,
+writes `projects[]` into `data.json`, and commits. Cloudflare redeploys from
+that push like it does for any other. Nothing new exists on the live domain.
 
 ```
 Google Sheet (`Cards` tab)
         │  every 15 min, or the manual "Run workflow" button
         ▼
-GitHub Action → scripts/sync_sheet.py rewrites in_progress[] in data.json
+GitHub Action → scripts/sync_sheet.py rewrites projects[] in data.json
         │
         └─ commits + pushes ──▶ Cloudflare deploys
 ```
 
-Only `in_progress[]` comes from the Sheet. `projects`, `highlights`, `stats`,
-`about_items`, and `learning` stay hand-edited in `data.json`, and `log.py`
-still works for those. **The Sheet is the source of truth for `in_progress[]`** —
-anything hand-edited into that one key gets replaced on the next sync.
+Only `projects[]` comes from the Sheet. `highlights`, `stats`, `about_items`,
+and `learning` stay hand-edited in `data.json`. **The Sheet is the source of
+truth for `projects[]`** — anything hand-edited into that key gets replaced on
+the next sync.
 
-## 1. Create the Sheet
+## 1. The Sheet
 
 One tab named exactly **`Cards`**, headers in row 1:
 
-| Project | Year | Category | Links |
-|---------|------|----------|-------|
-| Comparative Supply Chain Fragility Study | 2026 | Agriculture | Draft StoryMap: https://… |
-| Medicare Fraud Mapped | 2026 | Policy | Preliminary Map: https://…<br>Methodology Doc: https://… |
+| Project Name | Project Description | Category | Year | Deliverable Links | Project Work Doc | Completion x/100 |
+|---|---|---|---|---|---|---|
+| Comparative Supply Chain Fragility Study | Tracing inputs, outputs, and chokepoints across NC counties. | Agriculture | 2026 | Draft StoryMap: https://… | https://docs.google.com/… | 45 |
 
-- **Category** must be one of `Science, Education, Politics, History,
-  Agriculture, Urban Planning, Interdisciplinary, Policy` — these map to the
-  site's category colors. Worth adding as Data → Data validation → Dropdown so
-  it can't drift.
-- **Links** — one deliverable per line inside the cell (**Alt+Enter** for a line
-  break, **Option+Enter** on a Mac). Each line is either `Label: https://…` or a
-  bare URL, which gets the label "View". Leave it empty and the card shows
-  "no deliverables linked yet".
-- A row with an empty **Project** cell is skipped, so blank spacer rows are fine.
+| Column | Shows on the site | Notes |
+|---|---|---|
+| **Project Name** | yes → title | The only required cell. A row with this blank is skipped, so blank spacer rows are fine. |
+| **Project Description** | yes → desc | One or two sentences. Clamped to 3 lines on the card; blank omits the line entirely. |
+| **Category** | yes | One of the 8 values below, or blank → renders as "Uncategorized" in gray. |
+| **Year** | yes | Blank omits the line entirely. |
+| **Deliverable Links** | yes | One per line — see below. Blank shows "no deliverables linked yet". |
+| **Project Work Doc** | **never** | Your working notes. The script never reads this column. |
+| **Completion x/100** | yes | 0–100. See below — this is the entire published/in-progress distinction. |
+
+**Categories** (they map to the site's colors): `Science, Education, Politics,
+History, Agriculture, Urban Planning, Interdisciplinary, Policy`. Worth adding
+as Data → Data validation → Dropdown so it can't drift. Leaving it blank is
+fine — those cards group under an "Uncategorized" filter chip.
+
+**Deliverable Links** — one per line inside the cell (**Alt+Enter** for a line
+break, **Option+Enter** on a Mac). Each line is either `Label: https://…` or a
+bare URL, which gets the label "View".
+
+**Completion x/100** decides how a card looks:
+
+| Value | Card shows |
+|---|---|
+| `100`, or **blank** | no indicator at all — reads as finished |
+| `1`–`99` | a progress bar and "`{n}`% complete" |
+| `0` | the text "Just started", no bar |
+
+Blank counts as finished on purpose: missing data shouldn't make real work look
+unfinished. Values outside 0–100 are clamped; non-numeric text is treated as
+blank. Cards sort finished-first, newest-first within the same completion.
 
 **Any other tab in the same spreadsheet is never read.** The script opens
 `Cards` by name and nothing else, so a scratch or notes tab stays private by
@@ -47,7 +67,7 @@ simply not being touched.
 1. [console.cloud.google.com](https://console.cloud.google.com) → create a
    project (e.g. `brandonestevez-site-sync`).
 2. APIs & Services → Library → enable the **Google Sheets API**. That's the only
-   one needed — no Drive scope, since there are no images to fetch.
+   one needed.
 3. IAM & Admin → Service Accounts → Create (no roles needed). Open it → Keys →
    Add key → JSON. Keep that file private; it never goes in this repo.
 4. Share the Sheet with the service account's email
@@ -74,10 +94,11 @@ cleanly with a "not set yet" message rather than failing every 15 minutes.
    ```
 2. Edit a row, then Actions → this workflow → **Run workflow** — confirm the
    commit lands and the live card updates.
-3. Confirm a project with an empty **Links** cell renders
-   "no deliverables linked yet" instead of breaking.
-4. Confirm nothing outside `in_progress` changed: `git diff data.json` should
-   only ever touch that one key.
+3. Confirm a row with **Completion** blank looks the same as one with `100`.
+4. Confirm a row with a blank **Category** shows as "Uncategorized" and that the
+   Uncategorized filter chip selects it.
+5. Confirm nothing outside `projects` changed: `git diff data.json` should only
+   ever touch that one key.
 
 ## Notes
 
@@ -91,5 +112,7 @@ cleanly with a "not set yet" message rather than failing every 15 minutes.
   the deploy, which would keep synced changes off the live site. Pushes made
   with `GITHUB_TOKEN` don't retrigger Actions anyway.
 - The sync **refuses to write** if the `Cards` tab has no project rows, so a
-  broken read or a renamed tab can't blank the section. To genuinely empty it,
-  edit `data.json` by hand.
+  broken read or a renamed tab can't blank the site. To genuinely empty it, edit
+  `data.json` by hand.
+- **No featured strip.** Every project renders in the one grid. If a featured
+  row is wanted later, it's an 8th column plus a small amount of code.

@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""Sync in_progress[] in data.json from the Google Sheet's `Cards` tab.
+"""Sync projects[] in data.json from the Google Sheet's `Cards` tab.
 
-Reads four columns (Project, Year, Category, Links), parses each Links cell
-into [{label, url}], and rewrites only the in_progress key of data.json.
-Everything else in the file (projects, highlights, stats, about_items,
+Reads the public columns (Project Name, Project Description, Category, Year,
+Deliverable Links, Completion x/100) and rewrites only the projects key of
+data.json. Everything else in the file (highlights, stats, about_items,
 learning) is left exactly as it is.
 
-Only the tab named `Cards` is ever opened — any other tab in the same
-spreadsheet is never read.
+`Project Work Doc` is never read, and only the tab named `Cards` is ever
+opened — any other tab in the same spreadsheet stays private by not being
+touched.
+
+Completion is the whole published/in-progress distinction: 100 (or blank)
+means finished and renders no indicator, anything less renders one.
 
 Run by .github/workflows/sheet-sync.yml. Local use:
 
@@ -78,53 +82,87 @@ def parse_links(cell, ctx):
     return links
 
 
-def build_in_progress(worksheet):
+def parse_completion(cell, ctx):
+    """0-100, or None when blank/unparseable. None renders the same as 100 —
+    missing data shouldn't read as unfinished work."""
+    s = str(cell or "").strip().rstrip("%").strip()
+    if not s:
+        return None
+    try:
+        value = int(round(float(s)))
+    except ValueError:
+        warn(f"[{ctx}] completion {cell!r} is not a number — treating as blank")
+        return None
+    if not 0 <= value <= 100:
+        warn(f"[{ctx}] completion {value} out of range — clamping to 0-100")
+        value = max(0, min(100, value))
+    return value
+
+
+def build_projects(worksheet):
     rows = worksheet.get_all_values()
     if not rows:
         sys.exit(f"The `{TAB}` tab is completely empty (not even headers)")
 
     header = [h.strip().lower() for h in rows[0]]
 
-    def col(*names):
+    def col(*names, contains=None):
         for n in names:
             if n in header:
                 return header.index(n)
+        if contains:
+            for i, h in enumerate(header):
+                if contains in h:
+                    return i
         return None
 
     idx = {
-        "title": col("project", "title"),
-        "year": col("year"),
+        "title": col("project name", "project", "title"),
+        "desc": col("project description", "description", "desc", contains="description"),
         "category": col("category"),
-        "links": col("links"),
+        "year": col("year"),
+        "links": col("deliverable links", "links", contains="link"),
+        "completion": col("completion x/100", "completion", contains="completion"),
     }
-    missing = [k for k, v in idx.items() if v is None]
-    if missing:
+    # Only the title is structurally required — a row needs something to show.
+    # Any other missing column just means that field is blank everywhere.
+    if idx["title"] is None:
         sys.exit(
-            f"The `{TAB}` tab is missing column(s) for: {', '.join(missing)}. "
-            f"Expected headers: Project | Year | Category | Links. Found: {rows[0]}"
+            f"The `{TAB}` tab has no Project Name column. Expected headers: "
+            f"Project Name | Project Description | Category | Year | "
+            f"Deliverable Links | Project Work Doc | Completion x/100. Found: {rows[0]}"
         )
+    for key in ("desc", "category", "year", "links", "completion"):
+        if idx[key] is None:
+            warn(f"no column found for {key} — treating it as blank for every row")
 
     def cell(row, key):
         i = idx[key]
-        return row[i].strip() if i < len(row) else ""
+        if i is None or i >= len(row):
+            return ""
+        return row[i].strip()
 
-    items = []
+    projects = []
     for row in rows[1:]:
         title = cell(row, "title")
-        if not title:  # blank spacer row
+        if not title:  # blank spacer row — nothing to show
             continue
+        # Blank category/year are expected input, not an error; only a
+        # non-blank value that isn't one of the site's 8 is worth flagging.
         category = cell(row, "category")
-        if category not in VALID_CATEGORIES:
+        if category and category not in VALID_CATEGORIES:
             warn(f"[{title}] category {category!r} is not one of the site's 8 categories")
-        items.append(
+        projects.append(
             {
                 "title": title,
-                "year": cell(row, "year"),
+                "desc": cell(row, "desc"),
                 "category": category,
+                "year": cell(row, "year"),
+                "completion": parse_completion(cell(row, "completion"), title),
                 "links": parse_links(cell(row, "links"), title),
             }
         )
-    return items
+    return projects
 
 
 def main():
@@ -140,15 +178,16 @@ def main():
     except gspread.WorksheetNotFound:
         sys.exit(f"No tab named `{TAB}` in this spreadsheet — check the tab name")
 
-    in_progress = build_in_progress(worksheet)
-    if not in_progress:
+    projects = build_projects(worksheet)
+    if not projects:
         # An empty Cards tab is far more likely a broken read than a real intent
-        # to clear the section. To genuinely empty it, edit data.json by hand.
+        # to clear the site. To genuinely empty it, edit data.json by hand.
         sys.exit(f"The `{TAB}` tab has no project rows; refusing to overwrite data.json")
 
     original = DATA_JSON.read_text(encoding="utf-8")
     data = json.loads(original)
-    data["in_progress"] = in_progress
+    data.pop("in_progress", None)  # superseded by the single projects list
+    data["projects"] = projects
     updated = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
     if updated == original:
@@ -156,7 +195,7 @@ def main():
         return
 
     DATA_JSON.write_text(updated, encoding="utf-8")
-    print(f"data.json updated: {len(in_progress)} in_progress entries")
+    print(f"data.json updated: {len(projects)} projects")
 
 
 if __name__ == "__main__":

@@ -8,9 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<!-- Leaflet loaded synchronously so height is measured correctly on init -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 /* ─── TOKENS ─── */
 :root {
@@ -32,7 +29,6 @@ html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;
   color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden;
   -webkit-font-smoothing:antialiased;}
-body.modal-open{overflow:hidden;}
 h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:-.01em;line-height:1.1;}
 a{color:inherit;text-decoration:none;}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
@@ -107,67 +103,9 @@ section{padding:110px 0;}
 .section-title{font-size:clamp(1.9rem,3.5vw,2.7rem);color:var(--text);max-width:780px;}
 .section-sub{color:var(--muted);margin-top:12px;max-width:620px;font-size:1rem;}
 
-/* ─── CAROUSEL ─── */
-.featured{padding-top:40px;}
-.carousel{position:relative;overflow:hidden;border-radius:24px;}
-.carousel-track{display:flex;transition:transform .72s var(--ease-out);will-change:transform;}
-.carousel-slide{flex:0 0 100%;min-width:0;}
-.carousel-card{position:relative;height:clamp(400px,54vh,540px);border-radius:24px;
-  overflow:hidden;display:flex;align-items:flex-end;padding:52px;color:white;isolation:isolate;}
-/* layer order inside isolated stacking context: thumb(-3) → grad(-2) → vignette(-1) → content(1) */
-.carousel-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  z-index:-3;opacity:0;transition:opacity .6s var(--ease);}
-.carousel-card::before{content:'';position:absolute;inset:0;z-index:-2;
-  background:linear-gradient(135deg,var(--cc,#F77F00) 0%,
-    color-mix(in srgb,var(--cc,#F77F00) 55%,#1a1a2e) 100%);}
-.carousel-card::after{content:'';position:absolute;inset:0;z-index:-1;
-  background:radial-gradient(circle at 22% 28%,rgba(255,255,255,.16),transparent 50%),
-    radial-gradient(circle at 80% 80%,rgba(0,0,0,.3),transparent 52%);}
-.carousel-card.has-thumb .carousel-thumb{opacity:1;}
-.carousel-card.has-thumb::before{background:linear-gradient(to top,
-    rgba(0,0,0,.9) 0%,rgba(0,0,0,.4) 45%,rgba(0,0,0,.1) 100%) !important;}
-.carousel-card.has-thumb::after{display:none;}
-.carousel-body{position:relative;z-index:1;max-width:720px;}
-.carousel-badge{display:inline-block;padding:5px 13px;margin-bottom:16px;
-  background:rgba(255,255,255,.22);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.28);border-radius:100px;
-  font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;}
-.carousel-card h3{font-size:clamp(1.7rem,3.2vw,2.5rem);color:white;margin-bottom:14px;}
-.carousel-card p{font-size:1rem;opacity:.88;margin-bottom:26px;max-width:580px;}
-.carousel-btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;
-  background:white;color:var(--text);border-radius:100px;font-weight:600;font-size:.9rem;
-  transition:transform .3s var(--ease),box-shadow .3s var(--ease);}
-.carousel-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.25);}
-.carousel-btn svg,.carousel-btn:hover svg{transition:transform .3s var(--ease);}
-.carousel-btn:hover svg{transform:translateX(4px);}
-.carousel-controls{position:absolute;bottom:20px;right:20px;display:flex;align-items:center;gap:10px;z-index:5;}
-.car-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.38);
-  transition:all .3s var(--ease);cursor:pointer;}
-.car-dot.active{background:white;width:24px;border-radius:100px;}
-.car-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;
-  border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
-  display:grid;place-items:center;z-index:5;opacity:0;
-  transition:opacity .3s var(--ease),transform .3s var(--ease);box-shadow:0 4px 14px rgba(0,0,0,.15);}
-.carousel:hover .car-arrow{opacity:1;}
-.car-arrow.prev{left:18px;}
-.car-arrow.next{right:18px;}
-.car-arrow:hover{transform:translateY(-50%) scale(1.08);}
-
-/* ─── EXPLORE / MAP ─── */
-.explore-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:start;}
-/* explicit height so Leaflet can measure it */
-.map-wrap{position:relative;border-radius:20px;overflow:hidden;height:520px;
-  background:var(--surface-2);border:1px solid var(--border);box-shadow:var(--shadow-md);}
-#projectMap{width:100%;height:520px;}
-.map-legend{position:absolute;bottom:14px;left:14px;z-index:1000;
-  background:rgba(255,255,255,.95);backdrop-filter:blur(10px);
-  border-radius:12px;padding:9px 13px;
-  font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);box-shadow:var(--shadow-xs);}
-.map-unavailable{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:10px;color:var(--faint);font-size:.9rem;
-  font-family:'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;}
-.filter-panel{display:flex;flex-direction:column;gap:18px;padding-top:4px;}
-.search-box{position:relative;}
+/* ─── WORK: CONTROLS ─── */
+.work-controls{display:flex;flex-direction:column;gap:16px;margin-bottom:36px;}
+.search-box{position:relative;max-width:440px;}
 .search-box input{width:100%;height:48px;padding:0 18px 0 46px;border-radius:14px;
   border:1px solid var(--border);background:var(--surface);font:inherit;font-size:.95rem;
   color:var(--text);outline:none;transition:border-color .25s,box-shadow .25s;}
@@ -183,96 +121,27 @@ section{padding:110px 0;}
 .chip:hover{color:var(--text);border-color:var(--faint);}
 .chip .swatch{width:7px;height:7px;border-radius:50%;}
 .chip.active{color:var(--text);}
-.filter-tip{font-size:.85rem;color:var(--muted);}
-.filter-tip strong{color:var(--text);}
-@media(max-width:1024px){.explore-grid{grid-template-columns:1fr;}}
 
-/* ─── PORTFOLIO GRID ─── */
-.portfolio{padding-top:60px;}
+/* ─── WORK: UNIFIED PROJECT GRID ─── */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;
-  overflow:hidden;cursor:pointer;display:flex;flex-direction:column;
-  opacity:0;transform:translateY(22px);
-  transition:transform .42s var(--ease),box-shadow .42s var(--ease),border-color .3s var(--ease),opacity .5s var(--ease);}
-.card.visible{opacity:1;transform:translateY(0);}
-.card.hidden{display:none;}
-.card:hover{transform:translateY(-8px);box-shadow:var(--shadow-md);}
-.card-thumb{height:200px;position:relative;overflow:hidden;}
-.card-thumb-bg{position:absolute;inset:0;z-index:0;}/* gradient fallback */
-.card-thumb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;
-  transition:opacity .4s;}
-.card-thumb-overlay{position:absolute;inset:0;z-index:2;
-  background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,.28) 100%);}
-.card-pattern{position:absolute;inset:0;z-index:1;opacity:.15;
-  background-image:linear-gradient(to right,white 1px,transparent 1px),
-    linear-gradient(to bottom,white 1px,transparent 1px);
-  background-size:22px 22px;}
-.card-badge{position:absolute;top:14px;left:14px;z-index:3;padding:5px 11px;
-  background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-radius:100px;
-  font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
-.card-body{padding:22px 24px 26px;display:flex;flex-direction:column;flex:1;}
-.card-year{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);margin-bottom:7px;letter-spacing:.08em;}
-.card h3{font-size:1.18rem;line-height:1.28;margin-bottom:9px;
-  font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:-.005em;}
-.card p{font-size:.9rem;color:var(--muted);flex:1;margin-bottom:16px;line-height:1.55;}
-.card-cta{display:inline-flex;align-items:center;gap:8px;font-size:.86rem;font-weight:600;
-  transition:gap .25s;}
-.card:hover .card-cta{gap:13px;}
-.card-cta svg{transition:transform .25s;}
 .empty-state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted);}
-@media(max-width:1024px){.grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:640px){.grid{grid-template-columns:1fr;}}
-
-/* ─── MODAL ─── */
-.modal{position:fixed;inset:0;z-index:200;background:rgba(20,22,32,0);
-  pointer-events:none;transition:background .4s var(--ease);
-  display:flex;align-items:flex-end;justify-content:center;}
-.modal.open{background:rgba(20,22,32,.58);backdrop-filter:blur(8px);pointer-events:auto;}
-.modal-panel{width:100%;max-width:var(--max-w);height:92vh;background:var(--surface);
-  border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
-  display:grid;grid-template-columns:1fr 380px;overflow:hidden;
-  transform:translateY(100%);transition:transform .55s var(--ease-out);}
-.modal.open .modal-panel{transform:translateY(0);}
-.modal-iframe-wrap{position:relative;background:var(--surface-2);overflow:hidden;}
-.modal-iframe-wrap iframe{width:100%;height:100%;border:0;}
-.iframe-loader{position:absolute;inset:0;display:grid;place-items:center;
-  background:var(--surface-2);transition:opacity .4s;}
-.iframe-loader.gone{opacity:0;pointer-events:none;}
-.loader-spin{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--c-science);
-  border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.modal-close{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;
-  background:var(--surface);border:1px solid var(--border);display:grid;place-items:center;z-index:5;
-  transition:transform .25s,background .25s;}
-.modal-close:hover{transform:scale(1.08);background:var(--surface-2);}
-.modal-side{padding:30px;border-left:1px solid var(--border);overflow-y:auto;
-  display:flex;flex-direction:column;gap:18px;}
-.ms-badge{display:inline-block;padding:5px 11px;border-radius:100px;
-  font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;align-self:flex-start;}
-.ms-title{font-size:1.5rem;line-height:1.22;}
-.ms-meta{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--muted);}
-.ms-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-.ms-tools{display:flex;flex-wrap:wrap;gap:6px;}
-.ms-tool{font-size:.75rem;padding:4px 10px;background:var(--surface-2);
-  border:1px solid var(--border);border-radius:100px;color:var(--muted);font-family:'DM Mono',monospace;}
-.ms-open{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  padding:14px 22px;background:var(--text);color:white;border-radius:14px;
-  font-weight:600;font-size:.9rem;transition:transform .25s,opacity .25s;}
-.ms-open:hover{transform:translateY(-2px);opacity:.9;}
-@media(max-width:1024px){.modal-panel{grid-template-columns:1fr;height:96vh;}
-  .modal-side{border-left:0;border-top:1px solid var(--border);max-height:42vh;}}
-
-/* ─── PIPELINE ─── */
-.pipeline-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
 .pc{background:var(--surface);border:1px solid var(--border);border-radius:18px;
   padding:26px;display:flex;flex-direction:column;gap:12px;
-  transition:transform .35s var(--ease),box-shadow .35s var(--ease);}
-.pc:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+  opacity:0;transform:translateY(18px);
+  transition:transform .42s var(--ease),box-shadow .35s var(--ease),opacity .5s var(--ease);}
+.pc.visible{opacity:1;transform:none;}
+.pc.visible:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.pc.hidden{display:none;}
 .pc-cat{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;
   text-transform:uppercase;font-weight:500;}
 .pc h3{font-family:'DM Sans',sans-serif;font-weight:600;font-size:1.08rem;line-height:1.3;}
+.pc-desc{font-size:.88rem;color:var(--muted);line-height:1.55;
+  display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 .pc-year{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);}
+.pc-prog{display:flex;flex-direction:column;gap:6px;}
+.pc-prog-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);}
+.pc-prog-bar{width:100%;height:5px;background:var(--surface-2);border-radius:100px;overflow:hidden;}
+.pc-prog-fill{height:100%;border-radius:100px;}
 .pc-links{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;
   align-items:flex-start;gap:9px;}
 .pc-link{display:inline-flex;align-items:center;gap:5px;font-size:.85rem;font-weight:500;
@@ -280,7 +149,8 @@ section{padding:110px 0;}
   transition:border-color .25s var(--ease);}
 .pc-link:hover{border-bottom-color:currentColor;}
 .pc-empty{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--faint);}
-@media(max-width:768px){.pipeline-grid{grid-template-columns:1fr;}}
+@media(max-width:1024px){.grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.grid{grid-template-columns:1fr;}}
 
 /* ─── HIGHLIGHTS ─── */
 .highlights-section{background:var(--text);padding:110px 0;}
@@ -379,10 +249,9 @@ footer{padding:28px 40px;border-top:1px solid var(--border);
   <div class="nav-inner">
     <a href="#top" class="nav-brand"><span class="dot"></span>Brandon Estevez</a>
     <nav class="nav-links" aria-label="Site sections">
-      <a href="#featured">Featured</a>
-      <a href="#explore">Explore</a>
-      <a href="#portfolio">Work</a>
+      <a href="#work">Work</a>
       <a href="#highlights">Highlights</a>
+      <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
   </div>
@@ -403,88 +272,24 @@ footer{padding:28px 40px;border-top:1px solid var(--border);
   <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-line"></span></div>
 </section>
 
-<section class="featured" id="featured">
+<section class="work" id="work">
   <div class="container">
     <div class="section-head reveal">
-      <div class="eyebrow">Featured Work</div>
-      <h2 class="section-title">Three projects shaping how I see the world.</h2>
+      <div class="eyebrow">Work</div>
+      <h2 class="section-title" id="workTitle">Every project, start to finish.</h2>
+      <p class="section-sub">Published StoryMaps and work still underway. Filter by discipline or search to narrow.</p>
     </div>
-    <div class="carousel" id="carousel">
-      <div class="carousel-track" id="carTrack"></div>
-      <button class="car-arrow prev" id="carPrev" aria-label="Previous">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button class="car-arrow next" id="carNext" aria-label="Next">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <div class="carousel-controls" id="carDots"></div>
-    </div>
-  </div>
-</section>
-
-<section id="explore">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">Explore My Work</div>
-      <h2 class="section-title">Pin a place. Filter by discipline. Find a story.</h2>
-      <p class="section-sub">Every project lives somewhere. Click a pin or chip to filter — search to narrow further.</p>
-    </div>
-    <div class="explore-grid">
-      <div class="map-wrap">
-        <div id="projectMap"></div>
-        <div class="map-legend" id="mapLegend">9 published projects · click a pin to view</div>
+    <div class="work-controls reveal">
+      <div class="search-box">
+        <span class="search-icon">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <input id="searchInput" type="text" placeholder="Search — coastal, curriculum, Raleigh…" autocomplete="off" />
       </div>
-      <div class="filter-panel">
-        <div class="search-box">
-          <span class="search-icon">
-            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </span>
-          <input id="searchInput" type="text" placeholder="Search — coastal, curriculum, Raleigh…" autocomplete="off" />
-        </div>
-        <div class="search-count" id="searchCount"></div>
-        <div class="filter-chips" id="filterChips"></div>
-        <p class="filter-tip"><strong>Tip:</strong> hover a pin to preview, click to scroll to that card.</p>
-      </div>
+      <div class="search-count" id="searchCount"></div>
+      <div class="filter-chips" id="filterChips"></div>
     </div>
-  </div>
-</section>
-
-<section class="portfolio" id="portfolio">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">Portfolio</div>
-      <h2 class="section-title" id="portfolioTitle">Published StoryMaps.</h2>
-    </div>
-    <div class="grid" id="portfolioGrid"></div>
-  </div>
-</section>
-
-<!-- MODAL -->
-<div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal-panel" id="modalPanel">
-    <button class="modal-close" id="modalClose" aria-label="Close">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="modal-iframe-wrap">
-      <div class="iframe-loader" id="iframeLoader">
-        <div style="display:flex;flex-direction:column;align-items:center;font-family:'DM Mono',monospace;font-size:.76rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase">
-          <div class="loader-spin"></div>Loading StoryMap…
-        </div>
-      </div>
-      <iframe id="modalIframe" title="StoryMap preview" allowfullscreen allow="geolocation; fullscreen" loading="lazy"></iframe>
-    </div>
-    <aside class="modal-side" id="modalSide"></aside>
-  </div>
-</div>
-
-<section id="pipeline">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">In the Pipeline</div>
-      <h2 class="section-title">What I'm building now.</h2>
-      <p class="section-sub">Research and projects in progress — some near completion, some still in early framing.</p>
-    </div>
-    <div class="pipeline-grid" id="pipelineGrid"></div>
+    <div class="grid" id="workGrid"></div>
   </div>
 </section>
 
@@ -560,17 +365,22 @@ footer{padding:28px 40px;border-top:1px solid var(--border);
 
 <footer>
   <span>© 2025 Brandon Estevez · Raleigh, NC</span>
-  <span>Built with Leaflet · Deployed on Cloudflare Pages</span>
+  <span>Deployed on Cloudflare</span>
 </footer>
 
 <script>
 /* ═══════════════════════════════════════
    CATEGORY COLOR MAP
 ═══════════════════════════════════════ */
+const UNCATEGORIZED = 'Uncategorized';
+
+// Uncategorized is last so it sorts to the end of the filter chips; it only
+// appears as a chip when something in the data actually lacks a category.
 const CC = {
   Science:'#457B9D', Education:'#2A9D8F', Politics:'#9D4EDD',
   History:'#F77F00', Agriculture:'#C49A00', 'Urban Planning':'#E63946',
-  Interdisciplinary:'#6C757D', Policy:'#4A6FA5'
+  Interdisciplinary:'#6C757D', Policy:'#4A6FA5',
+  [UNCATEGORIZED]:'#9CA3AF'
 };
 
 /* ═══════════════════════════════════════
@@ -582,12 +392,7 @@ function arrow() {
   return `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
 }
 
-function thumbUrl(url) {
-  const m = url.match(/\/(stories|collections)\/([a-f0-9A-F]{32})/);
-  return m ? `https://www.arcgis.com/sharing/rest/content/items/${m[2]}/info/thumbnail/ago_downloaded.png` : null;
-}
-
-function catColor(cat) { return CC[cat] || '#6C757D'; }
+function catColor(cat) { return CC[cat] || CC[UNCATEGORIZED]; }
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -602,26 +407,26 @@ fetch('./data.json')
   .catch(err => { console.warn('data.json unavailable:', err); boot({}); });
 
 function boot(D) {
-  const projects    = D.projects     || [];
-  const inProgress  = D.in_progress  || [];
+  const projects    = sortProjects(D.projects || []);
   const highlights  = D.highlights   || [];
   const stats       = D.stats        || [];
   const aboutItems  = D.about_items  || [];
   const learning    = D.learning     || [];
 
-  // Update portfolio title count
-  if (projects.length) $('portfolioTitle').textContent = `${projects.length} published StoryMaps.`;
+  const published = projects.filter(p => p.completion == null || p.completion >= 100).length;
+  if (projects.length) {
+    $('workTitle').textContent = published === projects.length
+      ? `${projects.length} projects.`
+      : `${projects.length} projects — ${published} published.`;
+  }
 
   buildHeroPills(projects);
-  buildCarousel(projects.filter(p => p.featured));
   buildFilters(projects);
-  buildGrid(projects);
-  buildPipeline(inProgress);
+  buildWorkGrid(projects);
   buildHighlights(highlights, stats);
   buildAbout(aboutItems);
   buildLearning(learning);
-  initMap(projects);
-  applyFilters(projects);
+  applyFilters();
   setupScrollReveal();
 }
 
@@ -657,82 +462,23 @@ function buildHeroPills(projects) {
 }
 
 /* ═══════════════════════════════════════
-   CAROUSEL
+   WORK: SORT, FILTERS, GRID
 ═══════════════════════════════════════ */
-function buildCarousel(featured) {
-  const track = $('carTrack'), dotsBox = $('carDots');
-  let idx = 0, timer;
+let activeCat = 'All', searchQ = '', workItems = [];
 
-  featured.forEach((p, i) => {
-    const col = catColor(p.category);
-    const th  = thumbUrl(p.url);
-
-    const slide = document.createElement('div');
-    slide.className = 'carousel-slide';
-    slide.innerHTML = `
-      <article class="carousel-card" style="--cc:${col}">
-        ${th ? `<img class="carousel-thumb" alt="" />` : ''}
-        <div class="carousel-body">
-          <span class="carousel-badge">${p.category} · ${p.year}</span>
-          <h3>${p.title}</h3>
-          <p>${p.description}</p>
-          <button class="carousel-btn" data-open="${p.id}">
-            View StoryMap ${arrow()}
-          </button>
-        </div>
-      </article>`;
-    track.appendChild(slide);
-
-    if (th) {
-      const img = new Image();
-      img.onload = () => {
-        const el = slide.querySelector('.carousel-thumb');
-        if (el) { el.src = th; slide.querySelector('.carousel-card').classList.add('has-thumb'); }
-      };
-      img.src = th;
-    }
-
-    const dot = document.createElement('button');
-    dot.className = 'car-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', `Slide ${i + 1}`);
-    dot.addEventListener('click', () => go(i));
-    dotsBox.appendChild(dot);
-  });
-
-  function go(n) {
-    idx = ((n % featured.length) + featured.length) % featured.length;
-    track.style.transform = `translateX(-${idx * 100}%)`;
-    [...dotsBox.children].forEach((d, i) => d.classList.toggle('active', i === idx));
-    restart();
-  }
-  function restart() { clearInterval(timer); timer = setInterval(() => go(idx + 1), 6000); }
-
-  $('carPrev').addEventListener('click', () => go(idx - 1));
-  $('carNext').addEventListener('click', () => go(idx + 1));
-
-  const car = $('carousel');
-  car.addEventListener('mouseenter', () => clearInterval(timer));
-  car.addEventListener('mouseleave', restart);
-  let sx = 0;
-  car.addEventListener('touchstart', e => { sx = e.touches[0].clientX; clearInterval(timer); }, { passive: true });
-  car.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - sx;
-    if (dx > 50) go(idx - 1); else if (dx < -50) go(idx + 1); else restart();
-  });
-  car.addEventListener('click', e => {
-    const b = e.target.closest('[data-open]'); if (b) openModal(b.dataset.open);
-  });
-  restart();
+/* Finished work first, newest first within the same completion. A missing
+   completion counts as finished — absent data shouldn't read as unstarted. */
+function sortProjects(list) {
+  const done = p => (p.completion == null ? 100 : p.completion);
+  const yr   = p => { const n = parseInt(p.year, 10); return Number.isFinite(n) ? n : -Infinity; };
+  return [...list].sort((a, b) => done(b) - done(a) || yr(b) - yr(a));
 }
 
-/* ═══════════════════════════════════════
-   PORTFOLIO: FILTERS + GRID
-═══════════════════════════════════════ */
-let activeCat = 'All', searchQ = '', allProjects = [];
+function catOf(p) { return p.category || UNCATEGORIZED; }
 
 function buildFilters(projects) {
   const box = $('filterChips');
-  const cats = ['All', ...Object.keys(CC).filter(c => projects.some(p => p.category === c))];
+  const cats = ['All', ...Object.keys(CC).filter(c => projects.some(p => catOf(p) === c))];
   cats.forEach(c => {
     const col = c === 'All' ? 'var(--text)' : CC[c];
     const btn = document.createElement('button');
@@ -754,66 +500,78 @@ function buildFilters(projects) {
           ch.style.borderColor = isActive ? `${cc}99` : `${cc}55`;
         }
       });
-      applyFilters(allProjects);
+      applyFilters();
     });
     box.appendChild(btn);
   });
 }
 
-function buildGrid(projects) {
-  allProjects = projects;
-  const grid = $('portfolioGrid');
-  projects.forEach((p, i) => {
-    const col = catColor(p.category);
-    const th  = thumbUrl(p.url);
-    const card = document.createElement('article');
-    card.className = 'card';
-    card.dataset.id = p.id;
-    card.style.transitionDelay = `${(i % 6) * 55}ms`;
-    card.innerHTML = `
-      <div class="card-thumb">
-        <div class="card-thumb-bg" style="background:linear-gradient(135deg,${col},color-mix(in srgb,${col} 55%,#1e2035))"></div>
-        ${th ? `<img class="card-thumb-img" src="${th}" alt="" loading="lazy" onerror="this.style.opacity=0" />` : ''}
-        <div class="card-thumb-overlay"></div>
-        <div class="card-pattern"></div>
-        <span class="card-badge" style="color:${col}">${p.category}</span>
-      </div>
-      <div class="card-body">
-        <div class="card-year">${p.year}</div>
-        <h3>${p.title}</h3>
-        <p>${p.description}</p>
-        <span class="card-cta" style="color:${col}">View StoryMap ${arrow()}</span>
-      </div>`;
-    card.addEventListener('click', () => openModal(p.id));
-    grid.appendChild(card);
+function cardMarkup(p) {
+  const cat = catOf(p);
+  const col = catColor(cat);
+  const pct = p.completion;
+  // 100 or missing renders no indicator at all — a finished card looks plain
+  const progress = (pct == null || pct >= 100) ? ''
+    : pct === 0
+      ? `<div class="pc-prog-label">Just started</div>`
+      : `<div class="pc-prog">
+           <div class="pc-prog-label">${pct}% complete</div>
+           <div class="pc-prog-bar"><div class="pc-prog-fill" style="width:${pct}%;background:${col}"></div></div>
+         </div>`;
+  return `
+    <div class="pc-cat" style="color:${col}">${esc(cat)}</div>
+    <h3>${esc(p.title)}</h3>
+    ${p.desc ? `<p class="pc-desc">${esc(p.desc)}</p>` : ''}
+    ${p.year ? `<div class="pc-year">${esc(p.year)}</div>` : ''}
+    ${progress}
+    <div class="pc-links">
+      ${(p.links || []).map(l =>
+        `<a class="pc-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`
+      ).join('') || `<span class="pc-empty">no deliverables linked yet</span>`}
+    </div>`;
+}
+
+function buildWorkGrid(projects) {
+  const grid = $('workGrid');
+  workItems = projects.map((p, i) => {
+    const el = document.createElement('article');
+    el.className = 'pc';
+    el.style.transitionDelay = `${(i % 6) * 45}ms`;
+    el.innerHTML = cardMarkup(p);
+    grid.appendChild(el);
+    return { p, el };
   });
 
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
   }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
-  grid.querySelectorAll('.card').forEach(c => io.observe(c));
+  workItems.forEach(({ el }) => io.observe(el));
 }
 
-function applyFilters(projects) {
-  if (!projects) projects = allProjects;
+function applyFilters() {
   const q = searchQ.trim().toLowerCase();
-  const grid = $('portfolioGrid');
+  const grid = $('workGrid');
   let vis = 0;
-  projects.forEach(p => {
-    const card = grid.querySelector(`.card[data-id="${p.id}"]`);
-    if (!card) return;
-    const mc = activeCat === 'All' || p.category === activeCat;
-    const mq = !q || [p.title, p.description, p.category].some(s => s.toLowerCase().includes(q));
+  workItems.forEach(({ p, el }) => {
+    const mc = activeCat === 'All' || catOf(p) === activeCat;
+    const mq = !q || [p.title, p.desc, catOf(p)].some(s => (s || '').toLowerCase().includes(q));
     const show = mc && mq;
-    card.classList.toggle('hidden', !show);
+    el.classList.toggle('hidden', !show);
     if (show) vis++;
   });
+
   let empty = grid.querySelector('.empty-state');
   if (vis === 0) {
-    if (!empty) { empty = document.createElement('div'); empty.className = 'empty-state'; empty.textContent = 'No projects match.'; grid.appendChild(empty); }
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = 'No projects match.';
+      grid.appendChild(empty);
+    }
   } else if (empty) empty.remove();
-  $('searchCount').textContent = `${vis} ${vis === 1 ? 'PROJECT' : 'PROJECTS'} · ${activeCat === 'All' ? 'ALL CATEGORIES' : activeCat.toUpperCase()}`;
-  updateMapPins();
+
+  $('searchCount').textContent =
+    `${vis} ${vis === 1 ? 'PROJECT' : 'PROJECTS'} · ${activeCat === 'All' ? 'ALL CATEGORIES' : activeCat.toUpperCase()}`;
 }
 
 let searchTimer;
@@ -822,142 +580,6 @@ $('searchInput').addEventListener('input', e => {
   searchTimer = setTimeout(() => { searchQ = e.target.value; applyFilters(); }, 220);
 });
 
-/* ═══════════════════════════════════════
-   MAP
-═══════════════════════════════════════ */
-let mapObj, mapMarkers = {};
-
-function initMap(projects) {
-  if (typeof L === 'undefined') {
-    $('projectMap').innerHTML = '<div class="map-unavailable">Map loading…</div>';
-    // retry once after a moment (CDN sometimes slow)
-    setTimeout(() => {
-      if (typeof L !== 'undefined') initMap(projects);
-    }, 1500);
-    return;
-  }
-
-  try {
-    mapObj = L.map('projectMap', {
-      center: [35.5, -79.0], zoom: 6,
-      scrollWheelZoom: false, attributionControl: false
-    });
-    L.control.attribution({ prefix: false }).addAttribution('© OpenStreetMap, © CARTO').addTo(mapObj);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 18, subdomains: 'abcd'
-    }).addTo(mapObj);
-
-    // jitter pins with same coordinates
-    const counts = {}, seen = {};
-    projects.forEach(p => { const k = p.location.join(','); counts[k] = (counts[k] || 0) + 1; });
-    projects.forEach(p => {
-      const k = p.location.join(','); seen[k] = (seen[k] || 0) + 1;
-      let [lat, lng] = p.location;
-      if (counts[k] > 1) { const a = (seen[k] / counts[k]) * Math.PI * 2; lat += Math.cos(a) * .06; lng += Math.sin(a) * .06; }
-      const col = catColor(p.category);
-      const icon = L.divIcon({
-        className: '',
-        html: `<div class="map-pin" style="width:20px;height:20px;border-radius:50%;background:${col};border:3px solid white;box-shadow:0 2px 10px rgba(0,0,0,.22);transition:transform .22s ease;cursor:pointer"></div>`,
-        iconSize: [20, 20], iconAnchor: [10, 10]
-      });
-      const m = L.marker([lat, lng], { icon, riseOnHover: true })
-        .addTo(mapObj)
-        .bindTooltip(`<strong style="font-family:'DM Sans',sans-serif;font-size:.88rem">${p.title}</strong><br><span style="color:#888;font-size:.75rem">${p.category} · ${p.year}</span>`,
-          { direction: 'top', offset: [0, -8] });
-      m.on('click', () => {
-        const card = document.querySelector(`.card[data-id="${p.id}"]`);
-        if (card && !card.classList.contains('hidden')) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          const prev = card.style.transition;
-          card.style.outline = `3px solid ${col}`;
-          card.style.outlineOffset = '3px';
-          setTimeout(() => { card.style.outline = ''; card.style.outlineOffset = ''; }, 1800);
-        } else openModal(p.id);
-      });
-      m.on('mouseover', e => { const d = e.target.getElement()?.firstChild; if (d) d.style.transform = 'scale(1.45)'; });
-      m.on('mouseout',  e => { const d = e.target.getElement()?.firstChild; if (d) d.style.transform = ''; });
-      mapMarkers[p.id] = { marker: m, project: p };
-    });
-  } catch(err) {
-    console.warn('Map init error:', err);
-    $('projectMap').innerHTML = '<div class="map-unavailable">Map unavailable</div>';
-  }
-}
-
-function updateMapPins() {
-  if (!mapObj) return;
-  const q = searchQ.trim().toLowerCase();
-  Object.values(mapMarkers).forEach(({ marker, project: p }) => {
-    const mc = activeCat === 'All' || p.category === activeCat;
-    const mq = !q || [p.title, p.description, p.category].some(s => s.toLowerCase().includes(q));
-    if (mc && mq) { if (!mapObj.hasLayer(marker)) marker.addTo(mapObj); }
-    else          { if (mapObj.hasLayer(marker))  mapObj.removeLayer(marker); }
-  });
-}
-
-/* ═══════════════════════════════════════
-   MODAL
-═══════════════════════════════════════ */
-function openModal(id) {
-  const p = allProjects.find(x => x.id === id); if (!p) return;
-  const col = catColor(p.category);
-  const side = $('modalSide');
-  side.innerHTML = `
-    <span class="ms-badge" style="background:${col}22;color:${col}">${p.category}</span>
-    <div><h2 class="ms-title" id="modalTitle">${p.title}</h2>
-      <div class="ms-meta" style="margin-top:8px">${p.year}</div></div>
-    <div><div class="ms-label">Problem</div><p>${p.problem}</p></div>
-    <div><div class="ms-label">Tools</div>
-      <div class="ms-tools">${(p.tools || []).map(t => `<span class="ms-tool">${t}</span>`).join('')}</div></div>
-    <div><div class="ms-label">Impact</div><p>${p.impact}</p></div>
-    <a class="ms-open" href="${p.url}" target="_blank" rel="noopener">Open in new tab ${arrow()}</a>`;
-  const loader = $('iframeLoader');
-  loader.classList.remove('gone');
-  $('modalIframe').onload = () => loader.classList.add('gone');
-  $('modalIframe').src = p.url;
-  $('modal').classList.add('open');
-  $('modal').setAttribute('aria-hidden', 'false');
-  document.body.classList.add('modal-open');
-}
-function closeModal() {
-  $('modal').classList.remove('open');
-  $('modal').setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('modal-open');
-  setTimeout(() => { $('modalIframe').src = 'about:blank'; $('iframeLoader').classList.remove('gone'); }, 500);
-}
-$('modalClose').addEventListener('click', closeModal);
-$('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('modal').classList.contains('open')) closeModal(); });
-// swipe down to close
-(function() {
-  let sy = null;
-  const p = $('modalPanel');
-  p.addEventListener('touchstart', e => { if (p.scrollTop > 0) return; sy = e.touches[0].clientY; }, { passive: true });
-  p.addEventListener('touchmove',  e => { if (sy === null) return; const dy = e.touches[0].clientY - sy; if (dy > 0) p.style.transform = `translateY(${dy}px)`; }, { passive: true });
-  p.addEventListener('touchend',   e => { if (sy === null) return; const dy = e.changedTouches[0].clientY - sy; p.style.transform = ''; if (dy > 100) closeModal(); sy = null; });
-})();
-
-/* ═══════════════════════════════════════
-   IN THE PIPELINE
-═══════════════════════════════════════ */
-function buildPipeline(items) {
-  const grid = $('pipelineGrid');
-  items.forEach(p => {
-    const col = catColor(p.category);
-    const el = document.createElement('div');
-    el.className = 'pc';
-    el.innerHTML = `
-      <div class="pc-cat" style="color:${col}">${esc(p.category)}</div>
-      <h3>${esc(p.title)}</h3>
-      <div class="pc-year">${esc(p.year)}</div>
-      <div class="pc-links">
-        ${(p.links || []).map(l =>
-          `<a class="pc-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`
-        ).join('') || `<span class="pc-empty">no deliverables linked yet</span>`}
-      </div>`;
-    grid.appendChild(el);
-  });
-}
 
 /* ═══════════════════════════════════════
    HIGHLIGHTS + STATS

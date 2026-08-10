@@ -1,211 +1,154 @@
 {
-  "_readme": "Edit this file to update your site content. Push to GitHub and Cloudflare Pages redeploys automatically. No code changes needed.",
+  "_readme": "projects[] is synced from the Google Sheet's `Cards` tab — edit it there, not here (see docs/sheet-sync-setup.md). Everything else in this file is hand-edited; push to GitHub and Cloudflare redeploys automatically.",
   "_categories": "Science | Education | Politics | History | Agriculture | Urban Planning | Interdisciplinary | Policy",
   "projects": [
     {
-      "id": "freedmen",
       "title": "Rediscovering Raleigh's Lost Freedmen Villages",
+      "desc": "AP African American Studies research mapping the post-Civil War Freedmen settlements that built modern Raleigh.",
       "category": "History",
       "year": "2025",
-      "featured": true,
-      "url": "https://storymaps.arcgis.com/stories/5d30baa34e394ebdaf0a9edeffa5c59a",
-      "description": "AP African American Studies research mapping the post-Civil War Freedmen settlements that built modern Raleigh.",
-      "problem": "Raleigh's post-emancipation Black communities — Oberlin, Method, Hayti — were systematically erased from the official record by 20th-century urban renewal. Their geography is missing from most local histories.",
-      "impact": "Reconstructs five lost villages using historic plats, census records, and oral histories. Now used as supplemental material in WCPSS African American Studies classrooms.",
-      "tools": [
-        "ArcGIS Pro",
-        "StoryMaps",
-        "Historic Imagery",
-        "Census Data"
-      ],
-      "location": [
-        35.7796,
-        -78.6382
+      "completion": 100,
+      "links": [
+        {
+          "label": "View StoryMap",
+          "url": "https://storymaps.arcgis.com/stories/5d30baa34e394ebdaf0a9edeffa5c59a"
+        }
       ]
     },
     {
-      "id": "learning-mapping",
       "title": "Learning by Mapping: A New Kind of Curriculum",
+      "desc": "Esri UC 2025 presentation — making the case for place-based GIS as a K-12 pedagogy to ~200 educators.",
       "category": "Education",
       "year": "2025",
-      "featured": true,
-      "url": "https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824",
-      "description": "Esri UC 2025 presentation — making the case for place-based GIS as a K-12 pedagogy to ~200 educators.",
-      "problem": "Geography is the most-cut subject in American K-12 education, yet spatial reasoning underlies every modern science. Few teachers have a curriculum that bridges the two.",
-      "impact": "Presented at the 2025 Esri User Conference. The framework now informs 4-H Geospatial Leadership Team curriculum across four states.",
-      "tools": [
-        "ArcGIS Pro",
-        "StoryMaps",
-        "Survey123",
-        "Field Maps"
-      ],
-      "location": [
-        32.7157,
-        -117.1611
+      "completion": 100,
+      "links": [
+        {
+          "label": "View StoryMap",
+          "url": "https://storymaps.arcgis.com/stories/468ce9433c83480fa93a9dec1b675824"
+        }
       ]
     },
     {
-      "id": "raleigh-neighborhoods",
       "title": "Researching Raleigh's Neighborhoods and Communities",
+      "desc": "GIS Day 2024 winning project — a block-by-block read of how Raleigh actually lives.",
       "category": "Urban Planning",
       "year": "2024",
-      "featured": true,
-      "url": "https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b",
-      "description": "GIS Day 2024 winning project — a block-by-block read of how Raleigh actually lives.",
-      "problem": "Raleigh's rapid growth has left residents without a public tool to understand how their own neighborhoods compare on access, demographics, and change over time.",
-      "impact": "Won the 2024 NC State GIS Day student competition. Cited by a Raleigh Planning Commission member as a model for civic spatial communication.",
-      "tools": [
-        "ArcGIS Pro",
-        "StoryMaps",
-        "Census API",
-        "Wake County Open Data"
-      ],
-      "location": [
-        35.7896,
-        -78.628
+      "completion": 100,
+      "links": [
+        {
+          "label": "View StoryMap",
+          "url": "https://storymaps.arcgis.com/stories/5fff04250c254c0aa2609d63fd745f9b"
+        }
       ]
     },
     {
-      "id": "coastal",
       "title": "Turning the tide for North Carolina's coastal communities",
+      "desc": "Sea level rise, salt marsh loss, and the working communities on the front line of NC's coast.",
       "category": "Science",
       "year": "2025",
-      "featured": false,
-      "url": "https://storymaps.arcgis.com/stories/7dd2665b88a64932a51c91f3bf333c65",
-      "description": "Sea level rise, salt marsh loss, and the working communities on the front line of NC's coast.",
-      "problem": "NC's coastal counties are losing wetland buffers faster than nearly any state on the Atlantic — but the impact is mostly framed as ecological rather than economic and human.",
-      "impact": "Shared with the NC Coastal Federation as a communication template for community outreach.",
-      "tools": [
-        "ArcGIS Pro",
-        "StoryMaps",
-        "NOAA Data"
-      ],
-      "location": [
-        34.7204,
-        -76.6628
+      "completion": 100,
+      "links": [
+        {
+          "label": "View StoryMap",
+          "url": "https://storymaps.arcgis.com/stories/7dd2665b88a64932a51c91f3bf333c65"
+        }
       ]
     },
     {
-      "id": "wcpss",
       "title": "WCPSS Students Using GIS Collection",
+      "desc": "A curated collection of student GIS work from across Wake County Public Schools.",
       "category": "Education",
       "year": "2025",
-      "featured": false,
-      "url": "https://storymaps.arcgis.com/collections/1a0d97bf4c314af8b29cd74b342b5ae5",
-      "description": "A curated collection of student GIS work from across Wake County Public Schools.",
-      "problem": "Teachers need a visible body of student work to make the case for GIS curriculum to administrators — but there was no central place to point to.",
-      "impact": "Distributed to WCPSS GIS staff and teacher liaisons; the canonical example portfolio for the district's GIS instruction expansion.",
-      "tools": [
-        "StoryMaps Collections",
-        "ArcGIS Online"
-      ],
-      "location": [
-        35.83,
-        -78.64
+      "completion": 100,
+      "links": [
+        {
+          "label": "View Collection",
+          "url": "https://storymaps.arcgis.com/collections/1a0d97bf4c314af8b29cd74b342b5ae5"
+        }
       ]
     },
     {
-      "id": "caps-mun",
       "title": "Behind CAPS MUN 2025: Building Model UN with GIS + AI",
+      "desc": "The first GIS-integrated Model UN conference in the United States.",
       "category": "Politics",
       "year": "2025",
-      "featured": false,
-      "url": "https://storymaps.arcgis.com/stories/e6b6538e81ad47e2b6d2d7d9f24b19cf",
-      "description": "The first GIS-integrated Model UN conference in the United States.",
-      "problem": "Model UN crises rely on dense briefing packets that delegates rarely fully read, and almost never ground-truth with maps. Spatial context is lost.",
-      "impact": "Delegates used live maps and AI-assisted research during crisis sessions. The format is being adopted by two other NC conferences in 2026.",
-      "tools": [
-        "ArcGIS Online",
-        "StoryMaps",
-        "Claude",
-        "Custom Web Maps"
-      ],
-      "location": [
-        35.7915,
-        -78.7811
+      "completion": 100,
+      "links": [
+        {
+          "label": "View StoryMap",
+          "url": "https://storymaps.arcgis.com/stories/e6b6538e81ad47e2b6d2d7d9f24b19cf"
+        }
       ]
     },
     {
-      "id": "gps-marine",
       "title": "How GPS revolutionized marine science",
+      "desc": "A history of how satellite positioning rewrote what marine scientists could ask.",
       "category": "Science",
       "year": "2025",
-      "featured": false,
-      "url": "https://storymaps.arcgis.com/stories/251ba32c44694f97966eeac5ffef051a",
-      "description": "A history of how satellite positioning rewrote what marine scientists could ask.",
-      "problem": "Most students learn GPS as a navigation tool, missing the deeper story: pre-GPS oceanography was bottlenecked by the inability to know your location within a hundred meters.",
-      "impact": "Archived as part of the Geography At Work interdisciplinary collection.",
-      "tools": [
-        "StoryMaps",
-        "Historic Imagery"
-      ],
-      "location": [
-        34.52,
-        -76.48
+      "completion": 100,
+      "links": [
+        {
+          "label": "View StoryMap",
+          "url": "https://storymaps.arcgis.com/stories/251ba32c44694f97966eeac5ffef051a"
+        }
       ]
     },
     {
-      "id": "geography-work",
       "title": "Geography At Work",
+      "desc": "A collection showing how spatial thinking powers science, policy, ag, and history alike.",
       "category": "Interdisciplinary",
       "year": "2025",
-      "featured": false,
-      "url": "https://storymaps.arcgis.com/collections/a4bff65e902e4e5497efa82d900b74a1",
-      "description": "A collection showing how spatial thinking powers science, policy, ag, and history alike.",
-      "problem": "GIS is too often pitched as a single discipline. The real case for it is interdisciplinary — and that case isn't made well in any single project.",
-      "impact": "Used in 4-H Geospatial Leadership Team onboarding as the umbrella interdisciplinary collection.",
-      "tools": [
-        "StoryMaps Collections"
-      ],
-      "location": [
-        35.5,
-        -79.5
+      "completion": 100,
+      "links": [
+        {
+          "label": "View Collection",
+          "url": "https://storymaps.arcgis.com/collections/a4bff65e902e4e5497efa82d900b74a1"
+        }
       ]
     },
     {
-      "id": "growers",
       "title": "Growers across North Carolina",
+      "desc": "NOURISH project — mapping the people behind NC's working farms.",
       "category": "Agriculture",
       "year": "2025",
-      "featured": false,
-      "url": "https://storymaps.arcgis.com/collections/78e726bd27404df1b776e5f75be367e0",
-      "description": "NOURISH project — mapping the people behind NC's working farms.",
-      "problem": "NC ag policy is shaped at the state level, but conditions for growers vary enormously by county — a variation invisible at the policy level.",
-      "impact": "Cited by NC Ag Extension contacts as a useful frame for outreach. Core spatial layer of the NOURISH project.",
-      "tools": [
-        "ArcGIS Pro",
-        "StoryMaps Collections",
-        "Survey123"
-      ],
-      "location": [
-        35.4,
-        -78.5
+      "completion": 100,
+      "links": [
+        {
+          "label": "View Collection",
+          "url": "https://storymaps.arcgis.com/collections/78e726bd27404df1b776e5f75be367e0"
+        }
       ]
-    }
-  ],
-  "in_progress": [
+    },
     {
       "title": "Supply Chain Analysis",
-      "year": "2026",
+      "desc": "Food supply chain mapping across NC agricultural counties — tracing inputs, outputs, and chokepoints.",
       "category": "Agriculture",
+      "year": "2026",
+      "completion": 0,
       "links": []
     },
     {
       "title": "Medicare Fraud Mapped",
-      "year": "2026",
+      "desc": "Geographic fraud-pattern analysis across CMS billing data — locating anomalies that evade tabular audit.",
       "category": "Policy",
+      "year": "2026",
+      "completion": 0,
       "links": []
     },
     {
       "title": "Sea Level Rise Impact",
-      "year": "2025",
+      "desc": "Extension of the coastal communities StoryMap with parcel-level inundation modeling under IPCC scenarios.",
       "category": "Science",
+      "year": "2025",
+      "completion": 85,
       "links": []
     },
     {
       "title": "Mega Ant War GIS Project",
-      "year": "TBD",
+      "desc": "Invasive species spread tracking — mapping the front lines of fire ant vs. Argentine ant territory wars.",
       "category": "Science",
+      "year": "TBD",
+      "completion": 0,
       "links": []
     }
   ],
