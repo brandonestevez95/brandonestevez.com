@@ -25,7 +25,12 @@ body{font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--paper);
 /* Sized to the photo's own 1504x484 ratio rather than the viewport, so `cover`
    never has anything left to crop off the sides. Reads as a wide banner, not a
    full-screen hero — that's intentional. */
-.hero{width:100%;aspect-ratio:1504/484;min-height:300px;position:relative;overflow:hidden;background:var(--ink);}
+/* min-height is what breaks the ratio match: a flat 300px floor overrides
+   aspect-ratio on narrow screens, and `cover` then crops the panorama hard
+   (40% visible at 375px). Scaling the floor with the viewport keeps the
+   container close to 3.1:1 everywhere, so cover has little left to crop. */
+.hero{width:100%;aspect-ratio:1504/484;min-height:min(300px,46vw);
+  position:relative;overflow:hidden;background:var(--ink);}
 .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
 /* Radial scrim spends contrast only where the name sits, so the panels stay
    vivid at the edges; the linear pass just seats the top and bottom. */
@@ -41,6 +46,12 @@ body{font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--paper);
 .hero-tags{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:center;}
 .hero-tag{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
   font-weight:600;color:#fff;border:1.5px solid rgba(255,255,255,.55);padding:7px 16px;border-radius:100px;}
+/* On small phones the three pills wrap to a second row, and that taller block
+   overflows the (now shorter) hero. Trim them enough to stay on one line. */
+@media(max-width:430px){
+  .hero-tags{gap:8px;margin-top:16px;}
+  .hero-tag{font-size:.6rem;letter-spacing:.08em;padding:6px 11px;}
+}
 
 /* ---- MINI MAP RIBBON ---- */
 .maprow{background:#14181A;padding:36px 24px 40px;}
