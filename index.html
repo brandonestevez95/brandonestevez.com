@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Brandon Estevez — Spatial Science · Agricultural Systems · Civic Technology</title>
+<title>Brandon Estevez</title>
 <meta name="description" content="Brandon Estevez — Agricultural Business Management student at NC State, National 4-H Geospatial Leadership Team lead. Published ArcGIS StoryMaps across agriculture, science, and education." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -336,13 +336,13 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
 <section class="bio">
   <div class="wrap reveal">
     <div class="eyebrow">Bio</div>
-    <h2>Maps as analytical tools, not decoration.</h2>
+    <h2>Learning by mapping.</h2>
     <div class="bio-grid">
       <div class="bio-media"><span class="photo-flag">Photo needed</span>You, in the field</div>
       <div class="bio-text">
         <p>I'm an Agricultural Business Management student at NC State, working at the intersection of GIS, agriculture, and civic technology.</p>
         <p>I've published StoryMaps in marine science, urban history, political simulation, and food systems — some in front of educators at national conferences, others in a middle-school classroom in Wake County.</p>
-        <p>Outside the classroom I lead the National 4-H Geospatial Leadership Team and run a small GIS consulting practice focused on civic and agricultural clients.</p>
+        <p>Outside the classroom I led the National 4-H Geospatial Leadership Team and run a small GIS consulting practice focused on civic and agricultural clients.</p>
       </div>
     </div>
   </div>
@@ -366,16 +366,16 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
     <div class="eyebrow">Other Things I've Built</div>
     <h2>A few other places worth a visit.</h2>
     <div class="apps-grid">
-      <a class="app-card" href="https://cobra.brandonestevez.com" target="_blank" rel="noopener">
-        <div class="app-name">Cobra</div>
-        <div class="app-domain">cobra.brandonestevez.com</div>
-        <div class="app-desc">A spatial pedagogy compiler — turns any lesson into inquiry-ready GIS, platform-neutral.</div>
+      <a class="app-card" href="https://taco-app.brandonestevez.com" target="_blank" rel="noopener">
+        <div class="app-name">Taco App</div>
+        <div class="app-domain">taco-app.brandonestevez.com</div>
+        <div class="app-desc">An app that shows how far ingredients for a taco come from. Used in Juntos 4-H Summer Camp 2026.</div>
         <div class="app-arrow">Visit ↗</div>
       </a>
       <a class="app-card" href="#">
-        <div class="app-name">[App Name]</div>
+        <div class="app-name">Whiteboard App</div>
         <div class="app-domain">whiteboard.brandonestevez.com</div>
-        <div class="app-desc">Swap in what this one actually is and does.</div>
+        <div class="app-desc">A free and simple whiteboard web app for desktop</div>
         <div class="app-arrow">Visit ↗</div>
       </a>
     </div>
@@ -388,7 +388,8 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
     <h2>Field Notes</h2>
     <div class="field-grid">
       <div class="field-story">
-        <p>Every project on this site started as handwriting in a memo book before it was ever a layer in ArcGIS — the paper comes first, always.</p>
+        <p>Despite how digital GIS really is. I like to take a moment to reconnect with analog items. Field Notes memo books are one way I've gone about doing that. I have kept a collection</p>
+        <p>that details my drawings, observations, beginning of project ideas, etc. These memo books also include photos and sketches that are shown in the Leaflet map to the right. </p>
         <div class="stub">Your story about the field-notebook practice goes here — this is the one section on the site that's pure writing, no placeholder needed once you draft it.</div>
       </div>
       <div class="map-placeholder">Leaflet map — pins for where you've actually worked, tied to real field-note entries once they exist</div>
@@ -411,32 +412,56 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
 <footer>© 2026 Brandon Estevez · Raleigh, NC</footer>
 
 <script>
+  
 /* ═══════════════════════════════════════
    CATEGORY → PHOTO PLACEHOLDER GRADIENT
-   Science / Agriculture / Policy keep the reference mockup's exact values;
-   the rest derive from the category colors the site already used.
+   Covers the 12 categories actually in use in the sheet, plus the 4
+   originally-planned ones that aren't used anywhere yet (kept for
+   forward-compat, not actively differentiated against).
 ═══════════════════════════════════════ */
 const UNCATEGORIZED = 'Uncategorized';
 const CAT_PHOTO = {
-  'Science':          ['#457B9D', '#1F4A63'],
-  'Education':        ['#2A9D8F', '#14524A'],
-  'Politics':         ['#9D4EDD', '#4A2168'],
-  'History':          ['#F77F00', '#8A4600'],
-  'Agriculture':      ['#E8B33D', '#8A6320'],
-  'Urban Planning':   ['#E63946', '#7A1A22'],
-  'Interdisciplinary':['#6C757D', '#383D42'],
-  'Policy':           ['#4A6FA5', '#22345A'],
-  [UNCATEGORIZED]:    ['#8B8D85', '#5A5D52']
+  // active — the 4 that overlap with the original 8-category plan
+  'Science':           ['#457B9D', '#1F4A63'],
+  'Education':         ['#2A9D8F', '#14524A'],
+  'Agriculture':       ['#E8B33D', '#8A6320'],
+  'Urban Planning':    ['#E63946', '#7A1A22'],
+
+  // active — the 8 real categories the original plan didn't anticipate
+  'Marine Science':    ['#2F8FA6', '#164A57'],
+  'Biology':           ['#4C9A5B', '#275030'],
+  'Geography':         ['#2F6B4F', '#163825'],
+  'Citizen Science':   ['#D97D3D', '#7A421C'],
+  'Logistics':         ['#4A6478', '#22303D'],
+  'Economics':         ['#6B6FA6', '#35375A'],
+  'Healthcare':        ['#C4586B', '#6B2A38'],
+  'Humanities':        ['#8B5A6B', '#4A2E38'],
+
+  // defined but currently unused anywhere in the sheet — kept for
+  // forward-compat in case they show up later, not actively tuned against
+  // the active set above
+  'Politics':          ['#9D4EDD', '#4A2168'],
+  'History':           ['#F77F00', '#8A4600'],
+  'Interdisciplinary': ['#6C757D', '#383D42'],
+  'Policy':            ['#4A6FA5', '#22345A'],
+
+  [UNCATEGORIZED]:     ['#8B8D85', '#5A5D52']
 };
 
-/* The sheet is free text, so it carries categories beyond the eight above
-   (Logistics, Marine Science, Humanities…). Give those a stable gradient
-   derived from the name rather than dropping them all into the same gray. */
+/* Still free text, so still possible to hit a category never seen before.
+   Keep the hash fallback as a safety net — it just shouldn't be doing the
+   heavy lifting for the 12 categories that are actually live today. */
 const FALLBACK_PHOTO = [
   ['#2E9B94','#14524A'], ['#E8735A','#8A3826'], ['#E8B33D','#8A6320'], ['#4A6FA5','#22345A'],
   ['#7A9268','#3D4A32'], ['#8A5560','#4A2A32'], ['#5AAFA8','#2A5F5A'], ['#C48A3D','#6E4A1A']
 ];
 
+function photoFor(cat) {
+  if (CAT_PHOTO[cat]) return CAT_PHOTO[cat];
+  let h = 0;
+  for (let i = 0; i < cat.length; i++) h = (h * 31 + cat.charCodeAt(i)) >>> 0;
+  return FALLBACK_PHOTO[h % FALLBACK_PHOTO.length];
+}
 function photoFor(cat) {
   if (CAT_PHOTO[cat]) return CAT_PHOTO[cat];
   let h = 0;
