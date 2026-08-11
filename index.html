@@ -177,8 +177,6 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
 .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:56px;align-items:start;}
 @media(max-width:800px){.field-grid{grid-template-columns:1fr;}}
 .field-story p{font-size:.98rem;line-height:1.75;color:rgba(255,255,255,.78);margin-bottom:16px;}
-.field-story .stub{font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--mustard);border:1px dashed rgba(232,179,61,.5);padding:14px 16px;border-radius:8px;}
 .map-placeholder{aspect-ratio:1/1;border:1px dashed rgba(255,255,255,.25);border-radius:14px;
   display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:.78rem;
   letter-spacing:.03em;text-align:center;padding:24px;font-family:'Jost',sans-serif;}
@@ -466,12 +464,6 @@ const FALLBACK_PHOTO = [
   ['#7A9268','#3D4A32'], ['#8A5560','#4A2A32'], ['#5AAFA8','#2A5F5A'], ['#C48A3D','#6E4A1A']
 ];
 
-function photoFor(cat) {
-  if (CAT_PHOTO[cat]) return CAT_PHOTO[cat];
-  let h = 0;
-  for (let i = 0; i < cat.length; i++) h = (h * 31 + cat.charCodeAt(i)) >>> 0;
-  return FALLBACK_PHOTO[h % FALLBACK_PHOTO.length];
-}
 function photoFor(cat) {
   if (CAT_PHOTO[cat]) return CAT_PHOTO[cat];
   let h = 0;
