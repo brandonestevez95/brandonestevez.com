@@ -82,7 +82,15 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
 .filter-count{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--stone);font-weight:600;margin-top:16px;}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:32px;}
-@media(max-width:760px){.grid{grid-template-columns:1fr;}}
+@media(max-width:760px){
+  .grid{grid-template-columns:1fr;}
+  /* the sheet's category list runs long — wrapping it stacks ~244px of chips
+     above the cards on a phone, so scroll it sideways instead */
+  .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    margin:40px -32px 0;padding:0 32px;}
+  .filters::-webkit-scrollbar{display:none;}
+  .chip{flex:0 0 auto;}
+}
 .pc{background:var(--paper);border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(28,34,38,.06);
   transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
 .pc:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(28,34,38,.12);}
@@ -273,6 +281,21 @@ const CAT_PHOTO = {
   [UNCATEGORIZED]:    ['#8B8D85', '#5A5D52']
 };
 
+/* The sheet is free text, so it carries categories beyond the eight above
+   (Logistics, Marine Science, Humanities…). Give those a stable gradient
+   derived from the name rather than dropping them all into the same gray. */
+const FALLBACK_PHOTO = [
+  ['#2E9B94','#14524A'], ['#E8735A','#8A3826'], ['#E8B33D','#8A6320'], ['#4A6FA5','#22345A'],
+  ['#7A9268','#3D4A32'], ['#8A5560','#4A2A32'], ['#5AAFA8','#2A5F5A'], ['#C48A3D','#6E4A1A']
+];
+
+function photoFor(cat) {
+  if (CAT_PHOTO[cat]) return CAT_PHOTO[cat];
+  let h = 0;
+  for (let i = 0; i < cat.length; i++) h = (h * 31 + cat.charCodeAt(i)) >>> 0;
+  return FALLBACK_PHOTO[h % FALLBACK_PHOTO.length];
+}
+
 /* ═══════════════════════════════════════
    UTILITIES
 ═══════════════════════════════════════ */
@@ -312,9 +335,22 @@ function sortProjects(list) {
 ═══════════════════════════════════════ */
 let activeCat = 'All', searchQ = '', items = [];
 
+/* Chips come from the categories actually present in the sheet, not from a
+   fixed list — otherwise anything the sheet invents is unreachable by filter.
+   Known categories keep their canonical order; the rest follow alphabetically,
+   with Uncategorized last. */
+function categoriesIn(projects) {
+  const present = [...new Set(projects.map(catOf))];
+  const known = Object.keys(CAT_PHOTO).filter(c => c !== UNCATEGORIZED);
+  const inKnown = known.filter(c => present.includes(c));
+  const extra = present.filter(c => !known.includes(c) && c !== UNCATEGORIZED).sort();
+  const uncat = present.includes(UNCATEGORIZED) ? [UNCATEGORIZED] : [];
+  return [...inKnown, ...extra, ...uncat];
+}
+
 function buildFilters(projects) {
   const box = $('filterChips');
-  const cats = ['All', ...Object.keys(CAT_PHOTO).filter(c => projects.some(p => catOf(p) === c))];
+  const cats = ['All', ...categoriesIn(projects)];
   cats.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'chip' + (c === 'All' ? ' active' : '');
@@ -340,7 +376,7 @@ function buildGrid(projects) {
   const grid = $('grid');
   items = projects.map(p => {
     const cat = catOf(p);
-    const [g1, g2] = CAT_PHOTO[cat] || CAT_PHOTO[UNCATEGORIZED];
+    const [g1, g2] = photoFor(cat);
     const el = document.createElement('article');
     el.className = 'pc';
     el.innerHTML = `
