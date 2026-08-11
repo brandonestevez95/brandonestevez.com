@@ -4,383 +4,273 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Brandon Estevez — Spatial Science · Agricultural Systems · Civic Technology</title>
-<meta name="description" content="Brandon Estevez — high school senior, National 4-H Geospatial Leadership Team lead, founder of The Map Company. 9+ published ArcGIS StoryMaps." />
+<meta name="description" content="Brandon Estevez — Agricultural Business Management student at NC State, National 4-H Geospatial Leadership Team lead. Published ArcGIS StoryMaps across agriculture, science, and education." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;600;800&family=DM+Sans:wght@400;500;600;700&family=Jost:wght@500;600&display=swap" rel="stylesheet" />
 <style>
-/* ─── TOKENS ─── */
-:root {
-  --bg:#F8F9FA; --surface:#FFFFFF; --surface-2:#F1F3F5;
-  --text:#2B2D42; --muted:#6B7280; --faint:#9CA3AF; --border:#E6E8EC;
-  --shadow-xs:0 1px 2px rgba(20,25,35,.04);
-  --shadow-sm:0 1px 2px rgba(20,25,35,.04),0 2px 8px rgba(20,25,35,.05);
-  --shadow-md:0 6px 18px rgba(20,25,35,.07),0 2px 6px rgba(20,25,35,.04);
-  --shadow-lg:0 24px 60px rgba(20,25,35,.18),0 8px 24px rgba(20,25,35,.08);
-  --c-science:#457B9D; --c-education:#2A9D8F; --c-politics:#9D4EDD;
-  --c-history:#F77F00; --c-agriculture:#C49A00; --c-urban:#E63946;
-  --c-inter:#6C757D; --c-policy:#4A6FA5;
-  --ease:cubic-bezier(0.4,0.0,0.2,1);
-  --ease-out:cubic-bezier(0.16,1,0.3,1);
-  --nav-h:64px; --max-w:1400px;
+:root{
+  --ink:#1C2226; --paper:#FAF7F0; --turquoise:#2E9B94; --coral:#E8735A;
+  --mustard:#E8B33D; --stone:#8B8D85; --line:#E4E0D6; --cream:#F2EFE6; --forest:#1F3A2E;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;
-  color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;}
-h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:-.01em;line-height:1.1;}
-a{color:inherit;text-decoration:none;}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
-.container{max-width:var(--max-w);margin:0 auto;padding:0 40px;}
-@media(max-width:768px){.container{padding:0 20px;}}
+body{font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--paper);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+.photo-flag{position:absolute;top:12px;left:12px;background:var(--coral);color:#fff;font-size:.6rem;
+  letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:5px;font-weight:600;z-index:2;
+  font-family:'Jost',sans-serif;}
 
-/* ─── NAV ─── */
-.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:100;
-  display:flex;align-items:center;padding:0 40px;
-  background:rgba(248,249,250,.8);
-  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
-  border-bottom:1px solid transparent;
-  transition:border-color .3s var(--ease);}
-.nav.scrolled{border-bottom-color:var(--border);}
-.nav-inner{display:flex;width:100%;max-width:var(--max-w);margin:0 auto;align-items:center;}
-.nav-brand{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--text);
-  display:flex;align-items:center;gap:10px;}
-.nav-brand .dot{width:8px;height:8px;border-radius:50%;background:var(--c-urban);}
-.nav-links{margin-left:auto;display:flex;gap:28px;font-size:.9rem;font-weight:500;color:var(--muted);}
-.nav-links a{transition:color .2s;}
-.nav-links a:hover{color:var(--text);}
-@media(max-width:768px){.nav{padding:0 20px;}.nav-links{display:none;}}
+/* ---- HERO ---- */
+.hero{height:100vh;position:relative;overflow:hidden;background:var(--ink);}
+.hero-sky{position:absolute;inset:0;animation:skyshift 40s ease-in-out infinite;}
+@keyframes skyshift{
+  0%{background:linear-gradient(180deg,#1A2E3D 0%,#2E9B94 45%,#3D6E5A 100%);}
+  35%{background:linear-gradient(180deg,#2A3D50 0%,#5AAFA8 40%,#7A9268 100%);}
+  60%{background:linear-gradient(180deg,#3D2A2A 0%,#E8735A 40%,#C48A3D 100%);}
+  85%{background:linear-gradient(180deg,#241830 0%,#8A5560 40%,#3D5A50 100%);}
+  100%{background:linear-gradient(180deg,#1A2E3D 0%,#2E9B94 45%,#3D6E5A 100%);}
+}
+.hero-layer{position:absolute;left:0;right:0;bottom:0;transition:transform .05s linear;}
+.hero-mist{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.08),transparent 60%);
+  animation:mist 18s ease-in-out infinite alternate;}
+@keyframes mist{0%{opacity:.4;transform:translateX(-2%);}100%{opacity:.75;transform:translateX(2%);}}
+.hero-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;z-index:5;padding:0 24px;}
+.hero-name{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(2.8rem,8vw,6.4rem);
+  letter-spacing:-.01em;color:#fff;line-height:1;text-transform:uppercase;}
+.hero-tags{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;justify-content:center;}
+.hero-tag{font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:600;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:8px 18px;border-radius:100px;}
+.hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:5;
+  color:rgba(255,255,255,.6);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'Jost',sans-serif;}
+.hero-scroll .line{width:1px;height:34px;background:rgba(255,255,255,.4);animation:scrollpulse 2s ease-in-out infinite;}
+@keyframes scrollpulse{0%,100%{opacity:.3;}50%{opacity:1;}}
 
-/* ─── HERO ─── */
-.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;
-  position:relative;padding:var(--nav-h) 40px 80px;overflow:hidden;}
-.hero-grid{position:absolute;inset:0;
-  background-image:linear-gradient(to right,rgba(43,45,66,.045) 1px,transparent 1px),
-    linear-gradient(to bottom,rgba(43,45,66,.045) 1px,transparent 1px);
-  background-size:56px 56px;
-  mask-image:radial-gradient(ellipse 75% 65% at 50% 50%,black 20%,transparent 80%);
-  -webkit-mask-image:radial-gradient(ellipse 75% 65% at 50% 50%,black 20%,transparent 80%);
-  animation:gridDrift 55s linear infinite;}
-@keyframes gridDrift{to{background-position:56px 56px;}}
-.hero-shapes{position:absolute;inset:0;pointer-events:none;}
-.shape{position:absolute;border-radius:50%;opacity:.8;animation:float 9s ease-in-out infinite;}
-.s1{width:14px;height:14px;background:var(--c-urban);top:22%;left:7%;animation-delay:0s;}
-.s2{width:10px;height:10px;background:var(--c-science);top:70%;left:11%;animation-delay:1.2s;}
-.s3{width:12px;height:12px;background:var(--c-agriculture);top:28%;right:9%;animation-delay:2.4s;}
-.s4{width:16px;height:16px;background:var(--c-education);top:65%;right:7%;animation-delay:3.6s;border-radius:4px;transform:rotate(45deg);}
-.s5{width:8px;height:8px;background:var(--c-history);top:45%;left:3.5%;animation-delay:4.8s;}
-.s6{width:9px;height:9px;background:var(--c-politics);top:16%;right:22%;animation-delay:6s;}
-@keyframes float{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-22px) rotate(8deg);}}
-.hero-inner{position:relative;text-align:center;max-width:900px;z-index:2;}
-.hero h1{font-size:clamp(3rem,7.5vw,5.8rem);margin-bottom:1.2rem;}
-.caret{display:inline-block;width:4px;height:.85em;background:var(--c-urban);
-  margin-left:6px;vertical-align:-8%;animation:blink 1s step-end infinite;}
-@keyframes blink{50%{opacity:0;}}
-.hero-sub{font-size:clamp(1rem,1.6vw,1.3rem);color:var(--muted);font-weight:400;
-  letter-spacing:.02em;margin-bottom:2.5rem;
-  opacity:0;animation:fadeUp .8s 1.6s var(--ease) forwards;}
-.hero-sub .sep{color:var(--faint);margin:0 10px;}
-.hero-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
-  opacity:0;animation:fadeUp .8s 1.9s var(--ease) forwards;}
-.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;
-  border-radius:100px;background:var(--surface);border:1px solid var(--border);font-size:.84rem;font-weight:500;}
-.pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-.scroll-cue{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--faint);opacity:0;animation:fadeUp .8s 2.2s var(--ease) forwards;}
-.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,var(--faint),transparent);
-  animation:scrollPulse 2.2s ease-in-out infinite;}
-@keyframes scrollPulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+/* ---- SECTION REVEAL ---- */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity 1s cubic-bezier(.2,.7,.3,1),transform 1s cubic-bezier(.2,.7,.3,1);}
+.reveal.in{opacity:1;transform:translateY(0);}
+section{padding:130px 0;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+.eyebrow{font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--coral);font-weight:600;margin-bottom:14px;}
+h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,3rem);letter-spacing:-.005em;line-height:1.15;max-width:760px;text-transform:uppercase;}
 
-/* ─── SECTION COMMONS ─── */
-section{padding:110px 0;}
-.section-head{margin-bottom:52px;}
-.eyebrow{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
-.section-title{font-size:clamp(1.9rem,3.5vw,2.7rem);color:var(--text);max-width:780px;}
-.section-sub{color:var(--muted);margin-top:12px;max-width:620px;font-size:1rem;}
+/* ---- BIO ---- */
+.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px;}
+@media(max-width:800px){.bio-grid{grid-template-columns:1fr;}}
+.bio-media{position:relative;aspect-ratio:4/5;background:linear-gradient(160deg,var(--turquoise),#1A5850);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:.75rem;letter-spacing:.06em;
+  text-transform:uppercase;text-align:center;padding:24px;font-family:'Jost',sans-serif;}
+.bio-text p{font-size:1.05rem;line-height:1.75;color:#3A3D34;margin-bottom:20px;font-weight:400;}
+.bio-text p:first-child{font-weight:600;color:var(--ink);font-size:1.15rem;}
 
-/* ─── WORK: CONTROLS ─── */
-.work-controls{display:flex;flex-direction:column;gap:16px;margin-bottom:36px;}
-.search-box{position:relative;max-width:440px;}
-.search-box input{width:100%;height:48px;padding:0 18px 0 46px;border-radius:14px;
-  border:1px solid var(--border);background:var(--surface);font:inherit;font-size:.95rem;
-  color:var(--text);outline:none;transition:border-color .25s,box-shadow .25s;}
-.search-box input:focus{border-color:var(--c-science);
-  box-shadow:0 0 0 4px rgba(69,123,157,.15);}
-.search-box input::placeholder{color:var(--faint);}
-.search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-.search-count{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.1em;}
-.filter-chips{display:flex;flex-wrap:wrap;gap:8px;}
-.chip{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:100px;
-  background:var(--surface);border:1px solid var(--border);font-size:.85rem;font-weight:500;
-  color:var(--muted);transition:all .22s;}
-.chip:hover{color:var(--text);border-color:var(--faint);}
-.chip .swatch{width:7px;height:7px;border-radius:50%;}
-.chip.active{color:var(--text);}
-
-/* ─── WORK: UNIFIED PROJECT GRID ─── */
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.empty-state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted);}
-.pc{background:var(--surface);border:1px solid var(--border);border-radius:18px;
-  padding:26px;display:flex;flex-direction:column;gap:12px;
-  opacity:0;transform:translateY(18px);
-  transition:transform .42s var(--ease),box-shadow .35s var(--ease),opacity .5s var(--ease);}
-.pc.visible{opacity:1;transform:none;}
-.pc.visible:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+/* ---- PROJECTS — immersive photo cards ---- */
+.projects{background:var(--cream);}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:40px;}
+.chip{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+  color:var(--stone);background:transparent;border:1px solid var(--line);padding:8px 15px;border-radius:100px;
+  cursor:pointer;transition:color .25s,border-color .25s,background .25s;}
+.chip:hover{color:var(--ink);border-color:var(--stone);}
+.chip.active{background:var(--ink);border-color:var(--ink);color:var(--paper);}
+.search-box{position:relative;margin-top:20px;max-width:340px;}
+.search-box input{width:100%;height:44px;padding:0 16px;border-radius:100px;border:1px solid var(--line);
+  background:var(--paper);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);outline:none;
+  transition:border-color .25s;}
+.search-box input:focus{border-color:var(--stone);}
+.search-box input::placeholder{color:var(--stone);}
+.filter-count{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--stone);font-weight:600;margin-top:16px;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:32px;}
+@media(max-width:760px){.grid{grid-template-columns:1fr;}}
+.pc{background:var(--paper);border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(28,34,38,.06);
+  transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
+.pc:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(28,34,38,.12);}
 .pc.hidden{display:none;}
-.pc-cat{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;
-  text-transform:uppercase;font-weight:500;}
-.pc h3{font-family:'DM Sans',sans-serif;font-weight:600;font-size:1.08rem;line-height:1.3;}
-.pc-desc{font-size:.88rem;color:var(--muted);line-height:1.55;
-  display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.pc-year{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);}
-.pc-prog{display:flex;flex-direction:column;gap:6px;}
-.pc-prog-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);}
-.pc-prog-bar{width:100%;height:5px;background:var(--surface-2);border-radius:100px;overflow:hidden;}
-.pc-prog-fill{height:100%;border-radius:100px;}
-.pc-links{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;
-  align-items:flex-start;gap:9px;}
-.pc-link{display:inline-flex;align-items:center;gap:5px;font-size:.85rem;font-weight:500;
-  color:var(--text);border-bottom:1px solid var(--border);padding-bottom:2px;
-  transition:border-color .25s var(--ease);}
-.pc-link:hover{border-bottom-color:currentColor;}
-.pc-empty{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--faint);}
-@media(max-width:1024px){.grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:640px){.grid{grid-template-columns:1fr;}}
+.pc-photo{position:relative;aspect-ratio:16/10;
+  background:linear-gradient(140deg,var(--g1,var(--stone)),var(--g2,#5A5D52));
+  display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);font-size:.72rem;
+  letter-spacing:.05em;text-transform:uppercase;text-align:center;padding:16px;font-family:'Jost',sans-serif;}
+.pc-body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:9px;}
+.pc-cat{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.pc h3{font-family:'Overpass',sans-serif;font-weight:600;font-size:1.2rem;line-height:1.3;}
+.pc-desc{font-size:.9rem;color:var(--stone);line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.pc-year{font-family:'Jost',sans-serif;font-size:.7rem;color:var(--stone);}
+.pc-progress-bar{width:100%;height:3px;background:var(--line);margin-top:2px;border-radius:2px;}
+.pc-progress-fill{height:100%;background:var(--coral);border-radius:2px;}
+.pc-progress-label{font-family:'Jost',sans-serif;font-size:.68rem;color:var(--stone);font-weight:600;}
+.pc-links{display:flex;flex-direction:column;align-items:flex-start;}
+.pc-link{font-size:.85rem;color:var(--ink);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:5px;margin-top:6px;}
+.pc-link:hover{color:var(--coral);}
+.pc-empty{font-family:'Jost',sans-serif;font-size:.7rem;color:var(--stone);font-style:italic;}
+.empty-state{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--stone);
+  font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;}
 
-/* ─── HIGHLIGHTS ─── */
-.highlights-section{background:var(--text);padding:110px 0;}
-.highlights-section .eyebrow{color:rgba(255,255,255,.45);}
-.highlights-section .section-title{color:white;}
-.hl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;
-  border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
-.hl{background:rgba(255,255,255,.04);padding:44px 40px;display:flex;flex-direction:column;gap:14px;
-  border:1px solid rgba(255,255,255,.06);transition:background .3s;}
-.hl:hover{background:rgba(255,255,255,.07);}
-.hl-type{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.22em;
-  text-transform:uppercase;color:rgba(255,255,255,.4);}
-.hl-icon{font-size:2.2rem;line-height:1;}
-.hl h3{font-family:'DM Serif Display',serif;font-size:1.55rem;color:white;line-height:1.2;}
-.hl p{font-size:.9rem;color:rgba(255,255,255,.62);line-height:1.6;flex:1;}
-.hl-year{font-family:'DM Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.38);}
-.hl-link{display:inline-flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;
-  color:rgba(255,255,255,.7);margin-top:4px;transition:color .2s;}
-.hl-link:hover{color:white;}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
-  margin-top:2px;border-radius:0 0 20px 20px;overflow:hidden;}
-.stat{background:rgba(255,255,255,.05);padding:30px 24px;text-align:center;
-  border:1px solid rgba(255,255,255,.06);}
-.stat-num{font-family:'DM Serif Display',serif;font-size:2.6rem;color:white;line-height:1;}
-.stat-label{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(255,255,255,.42);margin-top:8px;}
-@media(max-width:900px){.hl-grid{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+/* ---- APPS ---- */
+.apps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--line);margin-top:56px;}
+@media(max-width:700px){.apps-grid{grid-template-columns:1fr;}}
+.app-card{background:var(--ink);color:#fff;padding:44px 36px;text-decoration:none;display:flex;flex-direction:column;gap:10px;transition:background .3s;}
+.app-card:hover{background:#000;}
+.app-name{font-family:'Overpass',sans-serif;font-size:1.3rem;font-weight:600;text-transform:uppercase;}
+.app-domain{font-size:.78rem;color:var(--mustard);font-family:monospace;}
+.app-desc{font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.55;margin-top:4px;}
+.app-arrow{margin-top:14px;font-family:'Jost',sans-serif;font-size:.75rem;color:rgba(255,255,255,.5);letter-spacing:.04em;text-transform:uppercase;}
 
-/* ─── ABOUT ─── */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
-.about-bio{font-size:1.06rem;line-height:1.74;}
-.about-bio p+p{margin-top:16px;}
-.about-bio em{font-style:italic;}
-.about-side{display:flex;flex-direction:column;gap:16px;}
-.about-card{display:flex;gap:16px;align-items:flex-start;padding:18px;
-  background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  transition:box-shadow .3s;}
-.about-card:hover{box-shadow:var(--shadow-sm);}
-.about-card-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px;}
-.about-card h4{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.95rem;margin-bottom:3px;}
-.about-card p{font-size:.83rem;color:var(--muted);line-height:1.5;}
-@media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:48px;}}
+/* ---- FIELD NOTES + MAP ---- */
+.field{background:linear-gradient(160deg,var(--forest),#0F221A);color:#fff;}
+.field h2{color:#fff;}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:56px;align-items:start;}
+@media(max-width:800px){.field-grid{grid-template-columns:1fr;}}
+.field-story p{font-size:.98rem;line-height:1.75;color:rgba(255,255,255,.78);margin-bottom:16px;}
+.field-story .stub{font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--mustard);border:1px dashed rgba(232,179,61,.5);padding:14px 16px;border-radius:8px;}
+.map-placeholder{aspect-ratio:1/1;border:1px dashed rgba(255,255,255,.25);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:.78rem;
+  letter-spacing:.03em;text-align:center;padding:24px;font-family:'Jost',sans-serif;}
 
-/* ─── LEARNING FEED ─── */
-.learn-wrap{position:relative;}
-.learn-wrap::before,.learn-wrap::after{content:'';position:absolute;top:0;bottom:16px;z-index:2;
-  width:60px;pointer-events:none;}
-.learn-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent);}
-.learn-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent);}
-.learn-track{display:flex;gap:18px;padding:6px 2px 20px;
-  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-.learn-track::-webkit-scrollbar{display:none;}
-.lc{flex:0 0 300px;background:var(--surface);border:1px solid var(--border);
-  border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;
-  transition:transform .35s var(--ease),box-shadow .35s;}
-.lc:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
-.lc-source{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);}
-.lc h4{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.96rem;
-  color:var(--text);line-height:1.35;flex:1;}
-.lc-take{font-size:.84rem;color:var(--muted);line-height:1.55;font-style:italic;}
-.lc-link{display:inline-flex;align-items:center;gap:7px;font-size:.82rem;font-weight:600;
-  color:var(--c-science);transition:gap .2s;}
-.lc-link:hover{gap:11px;}
+/* ---- CONTACT ---- */
+.contact{text-align:center;}
+.contact h2{margin:0 auto 16px;max-width:none;}
+.contact .sub{font-size:1.05rem;color:var(--stone);max-width:520px;margin:0 auto 32px;line-height:1.6;}
+.contact-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+.contact a{font-family:'Jost',sans-serif;font-size:1rem;color:var(--ink);text-decoration:none;
+  border-bottom:1px solid var(--coral);padding-bottom:3px;}
 
-/* ─── CONTACT ─── */
-.contact-section{background:var(--surface-2);border-top:1px solid var(--border);}
-.contact-inner{max-width:720px;margin:0 auto;text-align:center;}
-.contact-desc{color:var(--muted);font-size:1rem;max-width:540px;margin:0 auto 36px;}
-.interest-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:44px;}
-.interest-chip{padding:8px 16px;border-radius:100px;background:var(--surface);
-  border:1px solid var(--border);font-size:.84rem;color:var(--muted);}
-.contact-btns{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
-.cta{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;
-  border-radius:14px;font-weight:600;font-size:.95rem;transition:transform .28s var(--ease),box-shadow .28s;}
-.cta:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
-.cta.primary{background:var(--text);color:white;}
-.cta.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+/* ---- FOOTER ---- */
+footer{border-top:1px solid var(--line);padding:32px;text-align:center;
+  font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.06em;color:var(--stone);}
 
-/* ─── FOOTER ─── */
-footer{padding:28px 40px;border-top:1px solid var(--border);
-  display:flex;justify-content:space-between;align-items:center;
-  font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);}
-@media(max-width:640px){footer{flex-direction:column;gap:8px;text-align:center;padding:28px 20px;}}
-
-/* ─── UTILS ─── */
-.reveal{opacity:0;transform:translateY(20px);
-  transition:opacity .7s var(--ease),transform .7s var(--ease);}
-.reveal.in{opacity:1;transform:none;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;}
+  html{scroll-behavior:auto;}
+  .reveal{opacity:1;transform:none;}
+}
 </style>
+<!-- Without JS the IntersectionObserver never runs, and .reveal would leave
+     every section below the hero permanently invisible. -->
+<noscript><style>.reveal{opacity:1;transform:none;}</style></noscript>
 </head>
 <body>
 
-<nav class="nav" id="nav">
-  <div class="nav-inner">
-    <a href="#top" class="nav-brand"><span class="dot"></span>Brandon Estevez</a>
-    <nav class="nav-links" aria-label="Site sections">
-      <a href="#work">Work</a>
-      <a href="#highlights">Highlights</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
+<div class="hero">
+  <div class="hero-sky"></div>
+  <div class="hero-mist"></div>
+  <svg class="hero-layer" id="layerFar" viewBox="0 0 1400 500" preserveAspectRatio="none" style="height:60vh;opacity:.55" aria-hidden="true">
+    <path d="M0 260 L200 190 L420 250 L650 170 L900 240 L1150 180 L1400 230 L1400 500 L0 500 Z" fill="#1a2e26"/>
+  </svg>
+  <svg class="hero-layer" id="layerMid" viewBox="0 0 1400 500" preserveAspectRatio="none" style="height:45vh;opacity:.75" aria-hidden="true">
+    <path d="M0 320 L250 260 L480 310 L720 230 L980 300 L1220 250 L1400 285 L1400 500 L0 500 Z" fill="#0f221a"/>
+  </svg>
+  <svg class="hero-layer" id="layerNear" viewBox="0 0 1400 500" preserveAspectRatio="none" style="height:26vh;" aria-hidden="true">
+    <path d="M0 380 Q350 340 700 380 T1400 375 L1400 500 L0 500 Z" fill="#0a1712"/>
+  </svg>
+  <div class="hero-text">
+    <h1 class="hero-name">Brandon Estevez</h1>
+    <div class="hero-tags">
+      <div class="hero-tag">Agriculture</div>
+      <div class="hero-tag">Science</div>
+      <div class="hero-tag">Education</div>
+    </div>
   </div>
-</nav>
+  <div class="hero-scroll" aria-hidden="true"><span>Scroll</span><div class="line"></div></div>
+</div>
 
-<section class="hero" id="top">
-  <div class="hero-grid"></div>
-  <div class="hero-shapes" aria-hidden="true">
-    <span class="shape s1"></span><span class="shape s2"></span>
-    <span class="shape s3"></span><span class="shape s4"></span>
-    <span class="shape s5"></span><span class="shape s6"></span>
-  </div>
-  <div class="hero-inner">
-    <h1><span id="typewriter"></span><span class="caret" aria-hidden="true"></span></h1>
-    <p class="hero-sub">Spatial Science <span class="sep">×</span> Agricultural Systems <span class="sep">×</span> Civic Technology</p>
-    <div class="hero-meta" id="heroPills"></div>
-  </div>
-  <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-line"></span></div>
-</section>
-
-<section class="work" id="work">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">Work</div>
-      <h2 class="section-title" id="workTitle">Every project, start to finish.</h2>
-      <p class="section-sub">Published StoryMaps and work still underway. Filter by discipline or search to narrow.</p>
-    </div>
-    <div class="work-controls reveal">
-      <div class="search-box">
-        <span class="search-icon">
-          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </span>
-        <input id="searchInput" type="text" placeholder="Search — coastal, curriculum, Raleigh…" autocomplete="off" />
-      </div>
-      <div class="search-count" id="searchCount"></div>
-      <div class="filter-chips" id="filterChips"></div>
-    </div>
-    <div class="grid" id="workGrid"></div>
-  </div>
-</section>
-
-<section class="highlights-section" id="highlights">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">Highlights</div>
-      <h2 class="section-title">A few things I'm proud of.</h2>
-    </div>
-    <div class="hl-grid" id="hlGrid"></div>
-    <div class="stats-row" id="statsRow"></div>
-  </div>
-</section>
-
-<section id="about">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">About</div>
-      <h2 class="section-title">Where I come from, where I'm going.</h2>
-    </div>
-    <div class="about-grid">
-      <div class="about-bio">
-        <p>I'm a high school senior in Raleigh, NC, heading to <strong>NC State University in Fall 2026</strong> to study Agricultural Business Management — the business layer underneath food systems, land use, and the rural economy.</p>
-        <p>My work sits at the intersection of GIS, agriculture, and civic technology. I use maps not as decoration but as <strong>analytical tools</strong> — to make policy problems visible, give communities a voice in their own planning, and bring spatial reasoning into K-12 classrooms that have never had it.</p>
-        <p>I've published StoryMaps in marine science, urban history, political simulation, education, and food systems. Some have ended up in front of educators at national conferences; others live in a middle-school classroom in Wake County. All of them asked the same question: <em>what does this look like on a map?</em></p>
-        <p>Outside the classroom I lead the <strong>National 4-H Geospatial Leadership Team</strong> and run <strong>The Map Company</strong>, a small GIS consulting practice focused on civic and agricultural clients.</p>
-      </div>
-      <div id="aboutCards"></div>
-    </div>
-  </div>
-</section>
-
-<section id="learning">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">Currently Reading</div>
-      <h2 class="section-title">What's on my desk right now.</h2>
-      <p class="section-sub">Five things I'm reading or thinking about — updated monthly in <code style="font-size:.9em;background:var(--surface-2);padding:2px 6px;border-radius:4px;border:1px solid var(--border)">data.json</code>.</p>
-    </div>
-    <div class="learn-wrap">
-      <div class="learn-track" id="learnTrack"></div>
-    </div>
-  </div>
-</section>
-
-<section class="contact-section" id="contact">
-  <div class="container">
-    <div class="contact-inner">
-      <div class="eyebrow" style="text-align:center;margin-bottom:12px">Get in touch</div>
-      <h2 class="section-title" style="margin-bottom:14px">Let's work together.</h2>
-      <p class="contact-desc">Open to market intelligence projects, environmental data tools, outreach visualization, K-12 GIS education, and interesting problems I haven't thought of yet.</p>
-      <div class="interest-chips">
-        <span class="interest-chip">Market intelligence</span>
-        <span class="interest-chip">Environmental data</span>
-        <span class="interest-chip">Outreach visualization</span>
-        <span class="interest-chip">K-12 GIS education</span>
-        <span class="interest-chip">Agricultural systems</span>
-        <span class="interest-chip">Civic technology</span>
-      </div>
-      <div class="contact-btns">
-        <a class="cta primary" href="https://www.linkedin.com/in/brandonestevez" target="_blank" rel="noopener">
-          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-        <a class="cta secondary" href="mailto:brandonestevez2007@gmail.com">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          brandonestevez2007@gmail.com
-        </a>
+<section class="bio">
+  <div class="wrap reveal">
+    <div class="eyebrow">Bio</div>
+    <h2>Maps as analytical tools, not decoration.</h2>
+    <div class="bio-grid">
+      <div class="bio-media"><span class="photo-flag">Photo needed</span>You, in the field</div>
+      <div class="bio-text">
+        <p>I'm an Agricultural Business Management student at NC State, working at the intersection of GIS, agriculture, and civic technology.</p>
+        <p>I've published StoryMaps in marine science, urban history, political simulation, and food systems — some in front of educators at national conferences, others in a middle-school classroom in Wake County.</p>
+        <p>Outside the classroom I lead the National 4-H Geospatial Leadership Team and run a small GIS consulting practice focused on civic and agricultural clients.</p>
       </div>
     </div>
   </div>
 </section>
 
-<footer>
-  <span>© 2025 Brandon Estevez · Raleigh, NC</span>
-  <span>Deployed on Cloudflare</span>
-</footer>
+<section class="projects">
+  <div class="wrap reveal">
+    <div class="eyebrow">Projects</div>
+    <h2>Published work, and what's still underway.</h2>
+    <div class="filters" id="filterChips"></div>
+    <div class="search-box">
+      <input id="searchInput" type="text" placeholder="Search projects…" autocomplete="off" aria-label="Search projects" />
+    </div>
+    <div class="filter-count" id="filterCount"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="apps">
+  <div class="wrap reveal">
+    <div class="eyebrow">Other Things I've Built</div>
+    <h2>A few other places worth a visit.</h2>
+    <div class="apps-grid">
+      <a class="app-card" href="https://cobra.brandonestevez.com" target="_blank" rel="noopener">
+        <div class="app-name">Cobra</div>
+        <div class="app-domain">cobra.brandonestevez.com</div>
+        <div class="app-desc">A spatial pedagogy compiler — turns any lesson into inquiry-ready GIS, platform-neutral.</div>
+        <div class="app-arrow">Visit ↗</div>
+      </a>
+      <a class="app-card" href="#">
+        <div class="app-name">[App Name]</div>
+        <div class="app-domain">whiteboard.brandonestevez.com</div>
+        <div class="app-desc">Swap in what this one actually is and does.</div>
+        <div class="app-arrow">Visit ↗</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="field">
+  <div class="wrap reveal">
+    <div class="eyebrow" style="color:var(--mustard)">Places I've Been</div>
+    <h2>Field Notes</h2>
+    <div class="field-grid">
+      <div class="field-story">
+        <p>Every project on this site started as handwriting in a memo book before it was ever a layer in ArcGIS — the paper comes first, always.</p>
+        <div class="stub">Your story about the field-notebook practice goes here — this is the one section on the site that's pure writing, no placeholder needed once you draft it.</div>
+      </div>
+      <div class="map-placeholder">Leaflet map — pins for where you've actually worked, tied to real field-note entries once they exist</div>
+    </div>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="wrap reveal">
+    <div class="eyebrow">Get In Touch</div>
+    <h2>Let's Work Together</h2>
+    <div class="sub">Open to researching, working, or teaching together in geospatial science or technology.</div>
+    <div class="contact-links">
+      <a href="mailto:me@brandonestevez.com">me@brandonestevez.com</a>
+      <a href="mailto:bwesteve@ncsu.edu">bwesteve@ncsu.edu</a>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 Brandon Estevez · Raleigh, NC</footer>
 
 <script>
 /* ═══════════════════════════════════════
-   CATEGORY COLOR MAP
+   CATEGORY → PHOTO PLACEHOLDER GRADIENT
+   Science / Agriculture / Policy keep the reference mockup's exact values;
+   the rest derive from the category colors the site already used.
 ═══════════════════════════════════════ */
 const UNCATEGORIZED = 'Uncategorized';
-
-// Uncategorized is last so it sorts to the end of the filter chips; it only
-// appears as a chip when something in the data actually lacks a category.
-const CC = {
-  Science:'#457B9D', Education:'#2A9D8F', Politics:'#9D4EDD',
-  History:'#F77F00', Agriculture:'#C49A00', 'Urban Planning':'#E63946',
-  Interdisciplinary:'#6C757D', Policy:'#4A6FA5',
-  [UNCATEGORIZED]:'#9CA3AF'
+const CAT_PHOTO = {
+  'Science':          ['#457B9D', '#1F4A63'],
+  'Education':        ['#2A9D8F', '#14524A'],
+  'Politics':         ['#9D4EDD', '#4A2168'],
+  'History':          ['#F77F00', '#8A4600'],
+  'Agriculture':      ['#E8B33D', '#8A6320'],
+  'Urban Planning':   ['#E63946', '#7A1A22'],
+  'Interdisciplinary':['#6C757D', '#383D42'],
+  'Policy':           ['#4A6FA5', '#22345A'],
+  [UNCATEGORIZED]:    ['#8B8D85', '#5A5D52']
 };
 
 /* ═══════════════════════════════════════
@@ -388,15 +278,11 @@ const CC = {
 ═══════════════════════════════════════ */
 const $ = id => document.getElementById(id);
 
-function arrow() {
-  return `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
-}
-
-function catColor(cat) { return CC[cat] || CC[UNCATEGORIZED]; }
-
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+
+function catOf(p) { return p.category || UNCATEGORIZED; }
 
 /* ═══════════════════════════════════════
    BOOTSTRAP: load data.json then render
@@ -407,64 +293,11 @@ fetch('./data.json')
   .catch(err => { console.warn('data.json unavailable:', err); boot({}); });
 
 function boot(D) {
-  const projects    = sortProjects(D.projects || []);
-  const highlights  = D.highlights   || [];
-  const stats       = D.stats        || [];
-  const aboutItems  = D.about_items  || [];
-  const learning    = D.learning     || [];
-
-  const published = projects.filter(p => p.completion == null || p.completion >= 100).length;
-  if (projects.length) {
-    $('workTitle').textContent = published === projects.length
-      ? `${projects.length} projects.`
-      : `${projects.length} projects — ${published} published.`;
-  }
-
-  buildHeroPills(projects);
+  const projects = sortProjects(D.projects || []);
   buildFilters(projects);
-  buildWorkGrid(projects);
-  buildHighlights(highlights, stats);
-  buildAbout(aboutItems);
-  buildLearning(learning);
+  buildGrid(projects);
   applyFilters();
-  setupScrollReveal();
 }
-
-/* ═══════════════════════════════════════
-   TYPEWRITER
-═══════════════════════════════════════ */
-(function() {
-  const el = $('typewriter'), text = 'Brandon Estevez';
-  let i = 0;
-  (function tick() {
-    if (i <= text.length) { el.textContent = text.slice(0, i++); setTimeout(tick, i < 4 ? 110 : 72); }
-  })();
-})();
-
-/* NAV scroll border */
-window.addEventListener('scroll', () => {
-  $('nav').classList.toggle('scrolled', window.scrollY > 20);
-}, { passive: true });
-
-/* ═══════════════════════════════════════
-   HERO PILLS
-═══════════════════════════════════════ */
-function buildHeroPills(projects) {
-  const pills = [
-    { color: CC.History,   label: `${projects.length || 9}+ Published StoryMaps` },
-    { color: CC.Education, label: 'Esri UC 2025 Presenter' },
-    { color: CC['Urban Planning'], label: 'GIS Day 2024 Winner' },
-    { color: CC.Politics,  label: 'NC State, Fall 2026' }
-  ];
-  $('heroPills').innerHTML = pills.map(p =>
-    `<span class="pill"><span class="pdot" style="background:${p.color}"></span>${p.label}</span>`
-  ).join('');
-}
-
-/* ═══════════════════════════════════════
-   WORK: SORT, FILTERS, GRID
-═══════════════════════════════════════ */
-let activeCat = 'All', searchQ = '', workItems = [];
 
 /* Finished work first, newest first within the same completion. A missing
    completion counts as finished — absent data shouldn't read as unstarted. */
@@ -474,85 +307,68 @@ function sortProjects(list) {
   return [...list].sort((a, b) => done(b) - done(a) || yr(b) - yr(a));
 }
 
-function catOf(p) { return p.category || UNCATEGORIZED; }
+/* ═══════════════════════════════════════
+   PROJECTS: FILTERS + GRID
+═══════════════════════════════════════ */
+let activeCat = 'All', searchQ = '', items = [];
 
 function buildFilters(projects) {
   const box = $('filterChips');
-  const cats = ['All', ...Object.keys(CC).filter(c => projects.some(p => catOf(p) === c))];
+  const cats = ['All', ...Object.keys(CAT_PHOTO).filter(c => projects.some(p => catOf(p) === c))];
   cats.forEach(c => {
-    const col = c === 'All' ? 'var(--text)' : CC[c];
     const btn = document.createElement('button');
     btn.className = 'chip' + (c === 'All' ? ' active' : '');
     btn.dataset.cat = c;
-    if (c !== 'All') {
-      btn.style.background = `${CC[c]}18`;
-      btn.style.borderColor = `${CC[c]}55`;
-    }
-    btn.innerHTML = `<span class="swatch" style="background:${col}"></span>${c}`;
+    btn.textContent = c;
     btn.addEventListener('click', () => {
       activeCat = c;
-      [...box.children].forEach(ch => {
-        const isActive = ch.dataset.cat === c;
-        ch.classList.toggle('active', isActive);
-        if (ch.dataset.cat !== 'All') {
-          const cc = CC[ch.dataset.cat];
-          ch.style.background = isActive ? `${cc}22` : `${cc}18`;
-          ch.style.borderColor = isActive ? `${cc}99` : `${cc}55`;
-        }
-      });
+      [...box.children].forEach(ch => ch.classList.toggle('active', ch.dataset.cat === c));
       applyFilters();
     });
     box.appendChild(btn);
   });
 }
 
-function cardMarkup(p) {
-  const cat = catOf(p);
-  const col = catColor(cat);
-  const pct = p.completion;
-  // 100 or missing renders no indicator at all — a finished card looks plain
-  const progress = (pct == null || pct >= 100) ? ''
-    : pct === 0
-      ? `<div class="pc-prog-label">Just started</div>`
-      : `<div class="pc-prog">
-           <div class="pc-prog-label">${pct}% complete</div>
-           <div class="pc-prog-bar"><div class="pc-prog-fill" style="width:${pct}%;background:${col}"></div></div>
-         </div>`;
-  return `
-    <div class="pc-cat" style="color:${col}">${esc(cat)}</div>
-    <h3>${esc(p.title)}</h3>
-    ${p.desc ? `<p class="pc-desc">${esc(p.desc)}</p>` : ''}
-    ${p.year ? `<div class="pc-year">${esc(p.year)}</div>` : ''}
-    ${progress}
-    <div class="pc-links">
-      ${(p.links || []).map(l =>
-        `<a class="pc-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`
-      ).join('') || `<span class="pc-empty">no deliverables linked yet</span>`}
-    </div>`;
+function progressBlock(pct) {
+  if (pct === null || pct === undefined || pct >= 100) return '';
+  if (pct === 0) return `<div class="pc-progress-label">Just started</div>`;
+  return `<div><div class="pc-progress-label">${pct}% complete</div>` +
+         `<div class="pc-progress-bar"><div class="pc-progress-fill" style="width:${pct}%"></div></div></div>`;
 }
 
-function buildWorkGrid(projects) {
-  const grid = $('workGrid');
-  workItems = projects.map((p, i) => {
+function buildGrid(projects) {
+  const grid = $('grid');
+  items = projects.map(p => {
+    const cat = catOf(p);
+    const [g1, g2] = CAT_PHOTO[cat] || CAT_PHOTO[UNCATEGORIZED];
     const el = document.createElement('article');
     el.className = 'pc';
-    el.style.transitionDelay = `${(i % 6) * 45}ms`;
-    el.innerHTML = cardMarkup(p);
+    el.innerHTML = `
+      <div class="pc-photo" style="--g1:${g1};--g2:${g2}">
+        <span class="photo-flag">Photo needed</span>${esc(p.title)}
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat">${esc(cat)}</div>
+        <h3>${esc(p.title)}</h3>
+        ${p.desc ? `<div class="pc-desc">${esc(p.desc)}</div>` : ''}
+        ${p.year ? `<div class="pc-year">${esc(p.year)}</div>` : ''}
+        ${progressBlock(p.completion)}
+        <div class="pc-links">${
+          (p.links || []).length
+            ? p.links.map(l => `<a class="pc-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} →</a>`).join('')
+            : `<span class="pc-empty">no deliverables linked yet</span>`
+        }</div>
+      </div>`;
     grid.appendChild(el);
     return { p, el };
   });
-
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-  }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
-  workItems.forEach(({ el }) => io.observe(el));
 }
 
 function applyFilters() {
   const q = searchQ.trim().toLowerCase();
-  const grid = $('workGrid');
+  const grid = $('grid');
   let vis = 0;
-  workItems.forEach(({ p, el }) => {
+  items.forEach(({ p, el }) => {
     const mc = activeCat === 'All' || catOf(p) === activeCat;
     const mq = !q || [p.title, p.desc, catOf(p)].some(s => (s || '').toLowerCase().includes(q));
     const show = mc && mq;
@@ -570,87 +386,46 @@ function applyFilters() {
     }
   } else if (empty) empty.remove();
 
-  $('searchCount').textContent =
-    `${vis} ${vis === 1 ? 'PROJECT' : 'PROJECTS'} · ${activeCat === 'All' ? 'ALL CATEGORIES' : activeCat.toUpperCase()}`;
+  $('filterCount').textContent =
+    `${vis} ${vis === 1 ? 'project' : 'projects'} · ${activeCat === 'All' ? 'all categories' : activeCat}`;
 }
 
 let searchTimer;
 $('searchInput').addEventListener('input', e => {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { searchQ = e.target.value; applyFilters(); }, 220);
+  searchTimer = setTimeout(() => { searchQ = e.target.value; applyFilters(); }, 200);
 });
 
-
 /* ═══════════════════════════════════════
-   HIGHLIGHTS + STATS
+   HERO PARALLAX
 ═══════════════════════════════════════ */
-function buildHighlights(highlights, stats) {
-  const grid = $('hlGrid');
-  highlights.forEach(h => {
-    const el = document.createElement('div');
-    el.className = 'hl';
-    el.innerHTML = `
-      <div class="hl-type">${h.type}</div>
-      <div class="hl-icon">${h.icon}</div>
-      <h3>${h.title}</h3>
-      <p>${h.desc}</p>
-      <div class="hl-year">${h.year}</div>
-      ${h.link ? `<a class="hl-link" href="${h.link}" target="_blank" rel="noopener">${h.link_label} ${arrow()}</a>` : ''}`;
-    grid.appendChild(el);
-  });
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const far = $('layerFar'), mid = $('layerMid'), near = $('layerNear');
+let ticking = false;
 
-  const row = $('statsRow');
-  stats.forEach(s => {
-    const el = document.createElement('div');
-    el.className = 'stat';
-    el.innerHTML = `<div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div>`;
-    row.appendChild(el);
-  });
+function onScroll() {
+  const y = window.scrollY;
+  far.style.transform  = `translateY(${y * 0.15}px)`;
+  mid.style.transform  = `translateY(${y * 0.3}px)`;
+  near.style.transform = `translateY(${y * 0.5}px)`;
+  ticking = false;
 }
-
-/* ═══════════════════════════════════════
-   ABOUT CARDS
-═══════════════════════════════════════ */
-function buildAbout(items) {
-  const box = $('aboutCards');
-  box.className = 'about-side';
-  items.forEach(item => {
-    const el = document.createElement('div');
-    el.className = 'about-card';
-    el.innerHTML = `<span class="about-card-icon">${item.icon}</span>
-      <div><h4>${item.title}</h4><p>${item.desc}</p></div>`;
-    box.appendChild(el);
-  });
-}
-
-/* ═══════════════════════════════════════
-   LEARNING FEED
-═══════════════════════════════════════ */
-function buildLearning(items) {
-  const track = $('learnTrack');
-  if (!items.length) { track.innerHTML = '<p style="color:var(--muted);font-size:.9rem">Learning feed coming soon.</p>'; return; }
-  items.forEach(item => {
-    const el = document.createElement('div');
-    el.className = 'lc';
-    el.innerHTML = `
-      <div class="lc-source">${item.source} · ${item.date}</div>
-      <h4>${item.title}</h4>
-      <p class="lc-take">"${item.take}"</p>
-      ${item.link ? `<a class="lc-link" href="${item.link}" target="_blank" rel="noopener">Read ${arrow()}</a>`
-                  : `<span class="lc-source" style="margin-top:4px">Link coming soon</span>`}`;
-    track.appendChild(el);
-  });
+if (!reduceMotion) {
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
 }
 
 /* ═══════════════════════════════════════
    SCROLL REVEAL
+   rootMargin rather than a ratio threshold: the projects section runs several
+   screens tall, and a 0.15 *ratio* is unreachable once an element is taller
+   than ~6.7 viewports, which would leave it permanently hidden on mobile.
 ═══════════════════════════════════════ */
-function setupScrollReveal() {
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-}
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0, rootMargin: '0px 0px -15% 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 </script>
 </body>
 </html>
