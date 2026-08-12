@@ -36,7 +36,7 @@
     },
     {
       "title": "Turning the tide for North Carolina's costal communities",
-      "desc": "",
+      "desc": "Examines how rising sea levels are reshaping life, livelihoods, and landscapes across eastern North Carolina's coastal communities. It documents the environmental and socioeconomic challenges these areas face as they adapt to encroaching water and a changing climate.",
       "category": "Marine Science",
       "year": "2026",
       "completion": 100,
@@ -49,7 +49,7 @@
     },
     {
       "title": "WCPSS Students Using GIS Collection",
-      "desc": "",
+      "desc": "A collection showcasing how Wake County Public School System students are applying GIS in their classrooms and communities. It gathers student-created stories that demonstrate practical, real-world geospatial learning both in school and out.",
       "category": "Education",
       "year": "2026",
       "completion": 100,
@@ -62,7 +62,7 @@
     },
     {
       "title": "Seven Wonders of the World",
-      "desc": "",
+      "desc": "An interactive tour of the Seven Wonders of the World, blending mapping and narrative storytelling. Fittingly, it was inspired by a Fleetwood Mac song, giving the geography lesson a musical framing device.",
       "category": "Education",
       "year": "2026",
       "completion": 100,
@@ -75,7 +75,7 @@
     },
     {
       "title": "Tracking grocery stores prices across the Triangle area in North Carolina",
-      "desc": "",
+      "desc": "What started as a personal budgeting exercise became a data-driven look at how grocery prices vary by store and neighborhood in the Raleigh–RTP area. It moves past the usual anecdotal \"this store is cheap/expensive\" talk by tracking real staple-item prices across retailers.",
       "category": "Citizen Science",
       "year": "2026",
       "completion": 100,
@@ -88,7 +88,7 @@
     },
     {
       "title": "Behind CAPS MUN 2025: Building Model UN with GIS + AI",
-      "desc": "",
+      "desc": "Showcases how 29 student organizers built CAPS MUN 2025, the first GIS integrated Model UN Conference in the United States. It highlights how the team wove GIS and AI tools into event planning and logistics, making it as much a tech story as an event recap.",
       "category": "Education",
       "year": "2025",
       "completion": 100,
@@ -101,7 +101,7 @@
     },
     {
       "title": "How GPS revolutionized marine science",
-      "desc": "",
+      "desc": "Explores how GPS technology transformed the way scientists navigate and study the ocean. Co-authored with Maddie Townsend, it traces this shift through the ArcGIS storytelling format of maps, text, and imagery.",
       "category": "Science",
       "year": "2025",
       "completion": 100,
@@ -114,7 +114,7 @@
     },
     {
       "title": "Rediscovering Raleigh's Lost Freedmen Villages.",
-      "desc": "",
+      "desc": "Uncovers the largely forgotten African American freedmen villages of Raleigh, communities founded by formerly enslaved people after emancipation. It works to preserve their places, people, and stories before they fade further from public memory.",
       "category": "Humanities",
       "year": "2025",
       "completion": 100,
@@ -127,7 +127,7 @@
     },
     {
       "title": "Geography At Work collection",
-      "desc": "",
+      "desc": "A collection built around the idea that \"geography connects and powers the world around us,\" showing spatial thinking applied to real jobs and everyday life. Rather than treating geography as an abstract subject, it curates stories on how it shows up across industries and professions.",
       "category": "Geography",
       "year": "2025",
       "completion": 100,
@@ -140,7 +140,7 @@
     },
     {
       "title": "Growers across North Carolina collection",
-      "desc": "",
+      "desc": "A collection highlighting agricultural producers across North Carolina through map-based storytelling. It uses location data to turn individual grower profiles into a broader narrative about the state's farming community.",
       "category": "Agriculture",
       "year": "2025",
       "completion": 100,
