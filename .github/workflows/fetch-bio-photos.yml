@@ -4,6 +4,11 @@ name: Fetch bio photos from Drive
 # binary assets, so they have no business riding the 15-minute sheet sync.
 on:
   workflow_dispatch: {}
+  # TEMPORARY — remove before merging to main. workflow_dispatch is only
+  # exposed for workflows already on the default branch, so this is the only
+  # way to exercise the Drive calls before this lands.
+  push:
+    branches: [bio-section]
 
 permissions:
   contents: write
