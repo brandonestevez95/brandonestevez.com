@@ -111,15 +111,22 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
    than centring — every other section on the page hangs off that same axis, and
    a centred column left the heading floating ~100px to its left. Photo groups
    are the only thing that breaks out to the full wrap. */
+/* 820px rather than a comfortable 680: at 680 the prose ended ~220px short of
+   the photo groups' right edge, which read as a broken indent rather than a
+   margin. The type scales up with the column so the measure stays around 85
+   characters instead of stretching to 100+, and clamps back down on narrow
+   screens where the column is only ~311px wide. */
 .bio-body{display:grid;row-gap:44px;margin-top:56px;counter-reset:bio-plate;
   grid-template-columns:
-    [full-start text-start] minmax(0,680px) [text-end]
+    [full-start text-start] minmax(0,820px) [text-end]
     minmax(0,1fr) [full-end];}
 .bio-body>*{grid-column:text;}
 .bio-body>.bio-photos{grid-column:full;}
-.bio-block p{font-size:1.05rem;line-height:1.75;color:#3A3D34;margin-bottom:20px;font-weight:400;}
+.bio-block p{font-size:clamp(1.05rem,.9rem + .6vw,1.2rem);line-height:1.7;
+  color:#3A3D34;margin-bottom:20px;font-weight:400;}
 .bio-block p:last-child{margin-bottom:0;}
-.bio-block .bio-lead{font-weight:600;color:var(--ink);font-size:1.15rem;}
+.bio-block .bio-lead{font-weight:600;color:var(--ink);
+  font-size:clamp(1.15rem,1rem + .5vw,1.34rem);}
 
 /* Scaffolding only — every .bio-todo comes out when the real copy is pasted in.
    Deliberately styled to look unfinished so it can't ship by accident. */
@@ -133,7 +140,7 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
 .bio-photos{display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;
   gap:clamp(18px,3vw,38px);margin:14px 0;}
 .polaroid{--rot:0deg;--cap-size:.68rem;--cap-lh:1.4;--cap-pt:14px;--cap-pb:18px;
-  background:#fff;padding:14px 14px 0;border-radius:3px;
+  position:relative;background:#fff;padding:14px 14px 0;border-radius:3px;
   width:100%;max-width:340px;flex:0 1 auto;
   box-shadow:0 1px 2px rgba(28,34,38,.10),0 14px 30px rgba(28,34,38,.13);}
 .bio-photos[data-count="1"] .polaroid{max-width:400px;}
@@ -147,6 +154,16 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
 /* Square by default — a fixed image format is what makes a wall of these read
    as one object rather than a scrapbook. Add .pl--wide to any single frame
    whose photo is too landscape to survive a square crop. */
+/* Pushpin. A mask rather than an inline <svg> in each figure: the colour comes
+   from the palette instead of being hardcoded twelve times, and the captionless
+   Juntos frames get it without any extra markup. Sits across the top edge so
+   it reads as pushed through the white margin into the board behind. */
+.polaroid::before{content:"";position:absolute;z-index:3;top:-6px;left:50%;
+  margin-left:-9px;width:18px;height:22px;background:var(--coral);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Ccircle cx='10' cy='8.5' r='7.5'/%3E%3Cpath d='M9 15h2l-1 8.5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Ccircle cx='10' cy='8.5' r='7.5'/%3E%3Cpath d='M9 15h2l-1 8.5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter:drop-shadow(0 2px 2px rgba(28,34,38,.3));}
+
 /* The inset hairline is load-bearing for light images: village-plan is a
    drawing on white, which without it bleeds straight into the white frame and
    loses its edge entirely. Too faint to notice on a photo. */
@@ -184,9 +201,17 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
 .bio-photos.reveal{opacity:1;transform:none;transition:none;}
 .polaroid{opacity:0;transform:translateY(26px) rotate(0deg);
   transition:opacity .85s cubic-bezier(.2,.7,.3,1),transform .85s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
-.bio-photos.in .polaroid{opacity:1;transform:translateY(0) rotate(calc(var(--rot) * var(--tilt,1)));}
-.bio-photos.in .polaroid:nth-child(2){transition-delay:.14s;}
-.bio-photos.in .polaroid:nth-child(3){transition-delay:.28s;}
+/* --pY and --wob are written by the sway handler; both default to zero, so the
+   photos sit exactly where the reveal left them if the script never runs. */
+.bio-photos.in .polaroid{opacity:1;
+  transform:translateY(var(--pY,0px)) rotate(calc(var(--rot) * var(--tilt,1) + var(--wob,0deg)));}
+.bio-photos.in:not(.settled) .polaroid:nth-child(2){transition-delay:.14s;}
+.bio-photos.in:not(.settled) .polaroid:nth-child(3){transition-delay:.28s;}
+/* Once the reveal has landed, transform belongs to the scroll handler and must
+   not be transitioned — an .85s ease on it would smear every frame into the
+   next. Hover gets its transition back on its own. */
+.bio-photos.settled .polaroid{transition:opacity .85s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
+.bio-photos.settled .polaroid:hover{transition:transform .3s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
 .bio-photos .polaroid:nth-child(odd){--rot:-2.2deg;}
 .bio-photos .polaroid:nth-child(even){--rot:2.4deg;}
 .bio-photos[data-count="1"] .polaroid{--rot:-1.8deg;}
@@ -296,8 +321,11 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
   .reveal{opacity:1;transform:none;}
   /* Polaroids sit outside .reveal (their tilt can't survive its transform), so
      they need spelling out separately. The tilt itself is static styling, not
-     motion, so it stays. */
-  .polaroid{opacity:1;transform:rotate(calc(var(--rot) * var(--tilt,1)));}
+     motion, so it stays — but the scroll-linked drift and wobble don't, which
+     is why --pY/--wob are left out of the transform here. The sway handler
+     also bails on this query, so nothing writes them in the first place. */
+  .polaroid,.bio-photos.in .polaroid{opacity:1;
+    transform:rotate(calc(var(--rot) * var(--tilt,1)));}
   /* The tile loop ends on opacity:0, so collapsing it to one instant iteration
      would leave every tile blank. Show the finished map instead. */
   .maptile-layer{animation:none !important;opacity:1 !important;}
@@ -845,7 +873,16 @@ $('searchInput').addEventListener('input', e => {
    than ~6.7 viewports, which would leave it permanently hidden on mobile.
 ═══════════════════════════════════════ */
 const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    io.unobserve(e.target);
+    // Hand transform over to the sway handler once the reveal (.85s plus up to
+    // .28s of stagger) has finished, so the two never fight over it.
+    if (e.target.classList.contains('bio-photos')) {
+      setTimeout(() => e.target.classList.add('settled'), 1200);
+    }
+  });
 }, { threshold: 0, rootMargin: '0px 0px -15% 0px' });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
@@ -861,6 +898,67 @@ document.querySelectorAll('.pl-img').forEach(img => {
   if (img.complete && img.naturalWidth === 0) mark();
   else img.addEventListener('error', mark, { once: true });
 });
+
+/* ═══════════════════════════════════════
+   BIO: PINNED-PHOTO SWAY
+   A few px of drift and well under a degree of tilt, keyed to how far each
+   photo is from the middle of the viewport. Neighbours in a group get
+   different amounts so they separate slightly instead of moving as a slab.
+   Deliberately small — it should read as paper hanging on a board, not as a
+   scroll effect.
+═══════════════════════════════════════ */
+(() => {
+  const pins = [];
+  document.querySelectorAll('.bio-photos').forEach(g => {
+    g.querySelectorAll('.polaroid').forEach((el, i) => {
+      pins.push({ el, drift: 5 + (i % 3) * 2.5, sway: (i % 2 ? -0.5 : 0.5) });
+    });
+  });
+  if (!pins.length) return;
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  // Touch scrolling shows up any jitter far more than a mouse wheel does, and
+  // the stacked layout puts every photo on its own row, so halve it there.
+  const small = matchMedia('(max-width:560px)');
+  let queued = false;
+
+  function frame() {
+    queued = false;
+    const vh = innerHeight, scale = small.matches ? 0.5 : 1;
+    // Measure everything before writing anything: interleaving the two makes
+    // each write invalidate the next read and the loop thrashes layout.
+    const pos = pins.map(({ el }) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -80 || r.top > vh + 80) return null;
+      return Math.max(-1, Math.min(1, (vh / 2 - (r.top + r.height / 2)) / vh));
+    });
+    pins.forEach((p, i) => {
+      if (pos[i] === null) return;
+      p.el.style.setProperty('--pY', (pos[i] * p.drift * scale).toFixed(2) + 'px');
+      p.el.style.setProperty('--wob', (pos[i] * p.sway * scale).toFixed(3) + 'deg');
+    });
+  }
+
+  const onScroll = () => {
+    if (!queued) { queued = true; requestAnimationFrame(frame); }
+  };
+
+  function apply() {
+    removeEventListener('scroll', onScroll);
+    if (reduce.matches) {
+      pins.forEach(({ el }) => {
+        el.style.removeProperty('--pY');
+        el.style.removeProperty('--wob');
+      });
+      return;
+    }
+    addEventListener('scroll', onScroll, { passive: true });
+    frame();
+  }
+  reduce.addEventListener('change', apply);
+  addEventListener('resize', onScroll, { passive: true });
+  apply();
+})();
 </script>
 </body>
 </html>
