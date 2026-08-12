@@ -103,13 +103,109 @@ section{padding:130px 0;}
 h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,3rem);letter-spacing:-.005em;line-height:1.15;max-width:760px;text-transform:uppercase;}
 
 /* ---- BIO ---- */
-.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px;}
-@media(max-width:800px){.bio-grid{grid-template-columns:1fr;}}
-.bio-media{position:relative;aspect-ratio:4/5;background:linear-gradient(160deg,var(--turquoise),#1A5850);border-radius:14px;
-  display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:.75rem;letter-spacing:.06em;
-  text-transform:uppercase;text-align:center;padding:24px;font-family:'Jost',sans-serif;}
-.bio-text p{font-size:1.05rem;line-height:1.75;color:#3A3D34;margin-bottom:20px;font-weight:400;}
-.bio-text p:first-child{font-weight:600;color:var(--ink);font-size:1.15rem;}
+/* Long-form and photo-anchored, so it's a single centred reading column rather
+   than the old side-by-side grid. The named `full` column is what lets a
+   three-up photo group use the whole 1016px wrap without the prose following
+   it out there — text stays on `text`, photo groups opt into `full`. */
+/* The reading column shares its left edge with the eyebrow and h2 above rather
+   than centring — every other section on the page hangs off that same axis, and
+   a centred column left the heading floating ~100px to its left. Photo groups
+   are the only thing that breaks out to the full wrap. */
+.bio-body{display:grid;row-gap:44px;margin-top:56px;counter-reset:bio-plate;
+  grid-template-columns:
+    [full-start text-start] minmax(0,680px) [text-end]
+    minmax(0,1fr) [full-end];}
+.bio-body>*{grid-column:text;}
+.bio-body>.bio-photos{grid-column:full;}
+.bio-block p{font-size:1.05rem;line-height:1.75;color:#3A3D34;margin-bottom:20px;font-weight:400;}
+.bio-block p:last-child{margin-bottom:0;}
+.bio-block .bio-lead{font-weight:600;color:var(--ink);font-size:1.15rem;}
+
+/* Scaffolding only — every .bio-todo comes out when the real copy is pasted in.
+   Deliberately styled to look unfinished so it can't ship by accident. */
+.bio-todo{border-left:2px dashed var(--coral);padding:2px 0 2px 16px;
+  font-family:'Jost',sans-serif;font-size:.82rem;line-height:1.6;color:var(--stone);}
+
+/* ---- POLAROIDS ---- */
+/* align-items:stretch (not flex-start) so a caption that wraps to two lines
+   doesn't leave its neighbour's frame hanging short — the extra height lands in
+   the shorter one's bottom margin, which is exactly where a Polaroid keeps it. */
+.bio-photos{display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;
+  gap:clamp(18px,3vw,38px);margin:14px 0;}
+.polaroid{--rot:0deg;--cap-size:.68rem;--cap-lh:1.4;--cap-pt:14px;--cap-pb:18px;
+  background:#fff;padding:14px 14px 0;border-radius:3px;
+  width:100%;max-width:340px;flex:0 1 auto;
+  box-shadow:0 1px 2px rgba(28,34,38,.10),0 14px 30px rgba(28,34,38,.13);}
+.bio-photos[data-count="1"] .polaroid{max-width:400px;}
+.bio-photos[data-count="2"] .polaroid{flex:1 1 300px;max-width:376px;}
+/* A small basis keeps the Juntos three-up intact down to ~640px rather than
+   breaking to an orphaned 2+1; they grow to fill, so this is a wrap threshold
+   and not the rendered width. Deliberately well clear of the limit — a 215px
+   basis needed 691px and a scrollbar left 689px. Below ~640 they stack. */
+.bio-photos[data-count="3"] .polaroid{flex:1 1 200px;max-width:312px;}
+
+/* Square by default — a fixed image format is what makes a wall of these read
+   as one object rather than a scrapbook. Add .pl--wide to any single frame
+   whose photo is too landscape to survive a square crop. */
+/* The inset hairline is load-bearing for light images: village-plan is a
+   drawing on white, which without it bleeds straight into the white frame and
+   loses its edge entirely. Too faint to notice on a photo. */
+.pl-frame{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--cream);
+  box-shadow:inset 0 0 0 1px rgba(28,34,38,.08);}
+.pl--wide .pl-frame{aspect-ratio:16/10;}
+.pl-img{display:block;width:100%;height:100%;object-fit:cover;}
+
+/* The deep bottom margin is the whole tell of a Polaroid: 14px on three sides,
+   ~40px of caption band below. */
+.pl-cap{display:flex;gap:8px;align-items:baseline;
+  padding:var(--cap-pt) 2px var(--cap-pb);
+  font-family:'Jost',sans-serif;font-weight:500;font-size:var(--cap-size);letter-spacing:.06em;
+  line-height:var(--cap-lh);color:var(--stone);text-wrap:balance;transition:color .3s;}
+/* A frame whose group is captioned elsewhere: no text, but it still needs the
+   deep bottom margin or it stops reading as a Polaroid. Derived from the same
+   tokens as .pl-cap so the blank band can't drift out of step with a real one. */
+.pl--nocap{padding-bottom:calc(var(--cap-pt) + var(--cap-size) * var(--cap-lh) + var(--cap-pb));}
+/* Plate numbers renumber themselves when groups are reordered. */
+.pl-cap::before{content:counter(bio-plate,decimal-leading-zero);counter-increment:bio-plate;
+  flex:0 0 auto;font-weight:600;font-size:.58rem;letter-spacing:.1em;color:var(--coral);}
+
+/* Awaiting-photo state, set by JS on image error so a missing file reads as a
+   blank frame rather than a broken-image icon. */
+.pl-frame.no-photo{display:flex;align-items:center;justify-content:center;
+  background:repeating-linear-gradient(45deg,var(--cream),var(--cream) 7px,#EDE9DE 7px,#EDE9DE 14px);}
+.pl-frame.no-photo .pl-img{display:none;}
+.pl-frame.no-photo::after{content:"Photo pending";font-family:'Jost',sans-serif;font-size:.6rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--stone);}
+
+/* Each group carries .reveal purely as a hook for the existing observer, so
+   photo groups animate in on their own beat rather than with the whole section.
+   Its own fade is neutralized: .reveal's translateY would overwrite the tilt,
+   so the frames inside run the motion themselves and settle into rotation. */
+.bio-photos.reveal{opacity:1;transform:none;transition:none;}
+.polaroid{opacity:0;transform:translateY(26px) rotate(0deg);
+  transition:opacity .85s cubic-bezier(.2,.7,.3,1),transform .85s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
+.bio-photos.in .polaroid{opacity:1;transform:translateY(0) rotate(calc(var(--rot) * var(--tilt,1)));}
+.bio-photos.in .polaroid:nth-child(2){transition-delay:.14s;}
+.bio-photos.in .polaroid:nth-child(3){transition-delay:.28s;}
+.bio-photos .polaroid:nth-child(odd){--rot:-2.2deg;}
+.bio-photos .polaroid:nth-child(even){--rot:2.4deg;}
+.bio-photos[data-count="1"] .polaroid{--rot:-1.8deg;}
+/* a gentle fan rather than a strict alternation, which reads as a stack */
+.bio-photos[data-count="3"] .polaroid:nth-child(1){--rot:-2.4deg;}
+.bio-photos[data-count="3"] .polaroid:nth-child(2){--rot:1.1deg;}
+.bio-photos[data-count="3"] .polaroid:nth-child(3){--rot:2.6deg;}
+
+.bio-photos.in .polaroid:hover{transition-delay:0s;
+  transform:translateY(-7px) rotate(0deg) scale(1.015);
+  box-shadow:0 3px 6px rgba(28,34,38,.10),0 22px 44px rgba(28,34,38,.18);}
+.polaroid:hover .pl-cap{color:var(--ink);}
+
+/* Stacked frames at one-per-row collide at full tilt; scale it back rather than
+   respecifying every --rot. */
+@media(max-width:560px){
+  .bio-photos{--tilt:.6;gap:22px;}
+  .polaroid,.bio-photos[data-count="1"] .polaroid{max-width:330px;}
+}
 
 /* ---- PROJECTS — immersive photo cards ---- */
 .projects{background:var(--cream);}
@@ -198,6 +294,10 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
     transition-duration:.01ms !important;}
   html{scroll-behavior:auto;}
   .reveal{opacity:1;transform:none;}
+  /* Polaroids sit outside .reveal (their tilt can't survive its transform), so
+     they need spelling out separately. The tilt itself is static styling, not
+     motion, so it stays. */
+  .polaroid{opacity:1;transform:rotate(calc(var(--rot) * var(--tilt,1)));}
   /* The tile loop ends on opacity:0, so collapsing it to one instant iteration
      would leave every tile blank. Show the finished map instead. */
   .maptile-layer{animation:none !important;opacity:1 !important;}
@@ -208,7 +308,8 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
 </style>
 <!-- Without JS the IntersectionObserver never runs, and .reveal would leave
      every section below the hero permanently invisible. -->
-<noscript><style>.reveal{opacity:1;transform:none;}</style></noscript>
+<noscript><style>.reveal{opacity:1;transform:none;}
+  .polaroid{opacity:1;transform:rotate(calc(var(--rot) * var(--tilt,1)));}</style></noscript>
 </head>
 <body>
 
@@ -342,17 +443,147 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     BIO — structure is finished; the narrative copy is not.
+
+     Every .bio-todo block is a placeholder for a run of the real bio text.
+     Replace each one with <p> paragraphs (the first paragraph of the whole
+     section carries class="bio-lead"). Search this file for "bio-todo" to
+     find them all; none should survive into the final version.
+
+     Photo groups are <div class="bio-photos reveal" data-count="N"> — N must
+     match the number of .polaroid children (1, 2, or 3), since it drives the
+     sizing. Files are expected at assets/bio/<name>.jpg; until they exist each
+     frame renders a hatched "Photo pending" panel instead of a broken image.
+
+     Links are marked with "LINK:" comments at the exact spot each one belongs,
+     so wrapping a phrase in an anchor tag later is a local edit.
+════════════════════════════════════════════════════════════════════════ -->
 <section class="bio">
-  <div class="wrap reveal">
-    <div class="eyebrow">Bio</div>
-    <h2>Learning by mapping.</h2>
-    <div class="bio-grid">
-      <div class="bio-media"><span class="photo-flag">Photo needed</span>You, in the field</div>
-      <div class="bio-text">
-        <p>I'm an Agricultural Business Management student at NC State, working at the intersection of GIS, agriculture, and civic technology.</p>
-        <p>I've published StoryMaps in marine science, urban history, political simulation, and food systems — some in front of educators at national conferences, others in a middle-school classroom in Wake County.</p>
-        <p>Outside the classroom I led the National 4-H Geospatial Leadership Team and run a small GIS consulting practice focused on civic and agricultural clients.</p>
+  <div class="wrap">
+    <div class="bio-head reveal">
+      <div class="eyebrow">Bio</div>
+      <h2>Learning by mapping.</h2>
+    </div>
+
+    <div class="bio-body">
+
+      <div class="bio-block reveal">
+        <p class="bio-lead">I'm an Agricultural Business Management student at NC State, working at the intersection of GIS, agriculture, and civic technology.</p>
+        <p>I grew up going to state parks with my parents most weekends, my parents wanted to inspire a love in me for nature but also for learning about the world around me. Somewhere in those trips, watching how a trail wound around a ridge or why a river cut where it cut, I got interested in why places look the way they do. There's a photo of me at maybe seven years old holding up a world map almost as big as I was, grinning like I'd just discovered something nobody else knew. In a lot of ways I haven't stopped holding up that map since. It just got more accurate, and I got better at explaining why it mattered.</p>
       </div>
+
+      <div class="bio-photos reveal" data-count="2">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/kid-worldmap.png" alt="Brandon as a young child with a world map." loading="lazy" /></div>
+          <figcaption class="pl-cap">First map, age seven</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/kid-nature.png" alt="Brandon as a child outdoors at a state park." loading="lazy" /></div>
+          <figcaption class="pl-cap">State parks, growing up</figcaption>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <p>By middle school I was drawing maps of my own neighborhood, then my community, then my city. Eventually I started drawing plans for how I wanted them to look instead, my own version of EPCOT, sketched out long before I had the tools to actually build any of it.</p>
+      </div>
+
+      <div class="bio-photos reveal" data-count="1">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/village-plan.png" alt="A hand-drawn plan of an invented village." loading="lazy" /></div>
+          <figcaption class="pl-cap">My own version of EPCOT</figcaption>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <p>I always loved learning, and the questions kept multiplying. Why were places the way they were. Why did problems cluster where they clustered. How did all the systems underneath a city actually fit together. I wanted to understand it all and eventually do something with that understanding, help build better communities, teach people about the world, make it a better place to learn, work, and live. I didn't know where to start. I just knew I wanted to get there.</p>
+        <p>I found my way in almost by accident, scrolling through a website and landing on a Community Mapping Club. A short presentation from a few kids not much older than me was all it took. I was hooked. I did my first research project soon after, learned everything I could get my hands on, and eventually made it to Esri's User Conference and Education Summit in 2024.</p>
+      </div>
+
+      <div class="bio-photos reveal" data-count="1">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/esri-2024.jpg" alt="Brandon at the Esri User Conference and Education Summit, 2024." loading="lazy" /></div>
+          <figcaption class="pl-cap">Esri UC + Ed Summit, 2024</figcaption>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <p>At some point I got good enough that adults started asking me how to teach it to other kids. My first real presentation was in January 2025, a room full of strangers, a StoryMap I'd finished on the drive there, and a very real fear of forgetting everything I meant to say. It wasn't perfect. But it taught me something I still carry, that teaching GIS isn't just about the tool. It's about showing people how much better they can see the world, and the decisions in it, once they know how to look.</p>
+      </div>
+
+      <div class="bio-photos reveal" data-count="1">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/first-presentation.png" alt="Brandon giving his first public presentation, January 2025." loading="lazy" /></div>
+          <figcaption class="pl-cap">First real presentation, Jan 2025</figcaption>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <!-- LINK: TEDx talk — wrap "a TEDx talk" in the first sentence below -->
+        <p>Then came a TEDx talk on how young people could use GIS to make the world better. I was terrified the entire walk to the podium. But somewhere in the middle of it, I looked out and saw my parents looking back up at me, and I understood what the moment actually was. My mom immigrated from Mexico. My dad grew up in a working class family outside of Miami. I'm the first person on my mom's side of the family to go to college. Standing on that stage wasn't just about GIS. It was standing somewhere I don't think either of them could have pictured for me when they were my age, and I carry that history with me, not as pressure, but as something I'm proud to build on top of.</p>
+      </div>
+
+      <div class="bio-photos reveal" data-count="1">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/tedx-photo.jpg" alt="Brandon speaking at TEDxYouth@ChavisWay." loading="lazy" /></div>
+          <figcaption class="pl-cap">TEDxYouth@ChavisWay</figcaption>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <p>That momentum carried into Esri's User Conference in 2025. When I joined in 2024, I'd been one of just two youth representing the National 4-H Geospatial Leadership Team. The team was struggling then, attendance was low, recruitment had stalled, and I came home from that trip determined to change it. With my peers, we worked over the following year. We rebuilt how the team onboarded new members and trained them, and by the time UC 2025 came around we showed up eight strong, active in three states, with youth leading original research in agriculture, climate, finance, and healthcare.</p>
+        <!-- LINK: NOURISH StoryMap — wrap "NOURISH" in the first sentence below -->
+        <!-- LINK: Esri Press article — wrap "Esri Press" in the same paragraph -->
+        <p>I presented NOURISH and a session called Learning by Mapping alongside my mentor, Dr. Thomas Ray, on what actually works when teaching GIS. It wasn't just handing someone software. It's helping them use mapping to explore what they already care about, so they see themselves in the work. I also got to write about the National 4-H Geospatial Leadership Team for Esri Press, which was its own kind of full circle. There was another one that week too. Our team took a photo with Dr. Jack Dangermond, the founder of Esri, a strange thing for a program that started back in the early 2000s to still be standing in front of.</p>
+      </div>
+
+      <div class="bio-photos reveal" data-count="2">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/esri25-group-dangermund.jpg" alt="Brandon with the 4-H team and Jack Dangermond at the Esri User Conference, 2025." loading="lazy" /></div>
+          <figcaption class="pl-cap">4-H team + Jack Dangermond, 2025</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/esri25-meposters.jpg" alt="Brandon presenting the NOURISH and Learning by Mapping posters." loading="lazy" /></div>
+          <figcaption class="pl-cap">Presenting NOURISH + Learning by Mapping</figcaption>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <!-- LINK: CAPS MUN StoryMap collection — wrap "the inaugural CAPS MUN" below -->
+        <p>From there, it kept compounding. I helped organize the inaugural CAPS MUN, the first GIS integrated Model UN conference in the country, and stood in that auditorium with Representative Phil Rubin as our opening speaker, watching an idea that started as a Google Doc become something 200 delegates actually showed up for. It taught me that the hardest part of building something isn't the first idea. It's earning enough trust that other people are willing to build it with you. It was also probably the first time that hundreds of people, not just students but parents and faculty, saw firsthand what this tool could actually do.</p>
+      </div>
+
+      <div class="bio-photos reveal" data-count="1">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/capsmun-1.png" alt="Brandon at CAPS Model UN 2025 with Representative Phil Rubin." loading="lazy" /></div>
+          <figcaption class="pl-cap">CAPS MUN 2025, with Rep. Phil Rubin</figcaption>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <p>Teaching has been the throughline the whole way. The NOURISH work itself involved mapping North Carolina's food systems from the ground up, interviewing farmers, groundtruthing data, collecting and analyzing thousands of points to build a clearer picture of how food actually moves through this state, a project with the USDA, University of Kansas, UCSF, UCSD, and NC State.</p>
+        <p>A year later, I got to hand that knowledge to a room full of high schoolers. I spent a week running a full GIS curriculum for a classroom of students, condensing two years of what I'd learned into five days. By the end of it, they'd learned ArcGIS Online, run routing algorithms, built scenario models, made their own StoryMaps, and produced projects tracing where their own ingredients came from, mapping the same kind of interconnected supply chains I'd studied with NOURISH, but this time it was their research, their questions, their maps.</p>
+      </div>
+
+      <div class="bio-photos reveal" data-count="3">
+        <figure class="polaroid">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/juntos-1.png" alt="Teaching at the Juntos 4-H Summer Academy, 2026." loading="lazy" /></div>
+          <figcaption class="pl-cap">Juntos 4-H Summer Academy, 2026</figcaption>
+        </figure>
+        <!-- The group's caption is carried by juntos-1 alone; these two keep the
+             blank bottom band via .pl--nocap so they still read as Polaroids. -->
+        <figure class="polaroid pl--nocap">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/juntos-2.png" alt="Students working through a mapping exercise at the Juntos 4-H Summer Academy, 2026." loading="lazy" /></div>
+        </figure>
+        <figure class="polaroid pl--nocap">
+          <div class="pl-frame"><img class="pl-img" src="assets/bio/juntos-3.png" alt="Brandon with students at the Juntos 4-H Summer Academy, 2026." loading="lazy" /></div>
+        </figure>
+      </div>
+
+      <div class="bio-block reveal">
+        <p>That week is probably the closest I've come to doing exactly what I want to do with my life. I intend to pursue my education in geography, education, and GIS to fulfill my core goal: to ensure that everyone gets the same access to opportunities, knowledge, and the tools to better their own lives.</p>
+      </div>
+
     </div>
   </div>
 </section>
@@ -617,6 +848,19 @@ const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
 }, { threshold: 0, rootMargin: '0px 0px -15% 0px' });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ═══════════════════════════════════════
+   BIO: AWAITING-PHOTO FRAMES
+   The bio images aren't in the repo yet. Marking the frame on error keeps a
+   missing file looking like an empty polaroid rather than a broken-image icon,
+   and stops doing anything at all once the files land.
+═══════════════════════════════════════ */
+document.querySelectorAll('.pl-img').forEach(img => {
+  const mark = () => img.closest('.pl-frame').classList.add('no-photo');
+  // a cached failure can beat the listener to it
+  if (img.complete && img.naturalWidth === 0) mark();
+  else img.addEventListener('error', mark, { once: true });
+});
 </script>
 </body>
 </html>

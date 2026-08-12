@@ -1,0 +1,51 @@
+name: Fetch bio photos from Drive
+
+# Manual button only — no cron. The bio photos change rarely, and they're
+# binary assets, so they have no business riding the 15-minute sheet sync.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bio-photos
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install google-api-python-client google-auth pillow
+      - name: Fetch photos
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          # Currently stored as a repo *secret*; the vars fallback means moving
+          # it to a repo variable later needs no change here.
+          BIO_PHOTOS_FOLDER_ID: ${{ vars.BIO_PHOTOS_FOLDER_ID || secrets.BIO_PHOTOS_FOLDER_ID }}
+        run: |
+          if [ -z "$GCP_SA_KEY" ] || [ -z "$BIO_PHOTOS_FOLDER_ID" ]; then
+            echo "GCP_SA_KEY / BIO_PHOTOS_FOLDER_ID not set — nothing to do"
+            exit 0
+          fi
+          python scripts/fetch_bio_photos.py
+      - name: Commit if changed
+        # No [skip ci]: Cloudflare honors it by not deploying, which would keep
+        # the photos off the live site. index.html is staged too because the
+        # script retargets an <img> when a photo isn't the extension expected.
+        run: |
+          git config user.name "bio-photos-bot"
+          git config user.email "actions@github.com"
+          # The lock file has to be committed too, or the md5 skip never has a
+          # previous run to compare against and every run refetches all twelve.
+          git add assets/bio index.html scripts/bio_photos.lock.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "assets: sync bio photos from Drive"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
