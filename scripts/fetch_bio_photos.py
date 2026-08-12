@@ -15,16 +15,19 @@ as `kid-worldmap.jpg`. The extension comes from Drive's own metadata rather
 than being assumed — and if it turns out a photo isn't the .jpg index.html
 currently expects, the <img src> for that one photo is rewritten to match.
 
+Photos are downscaled to MAX_EDGE on the long side and re-encoded on the way
+in, so phone originals don't ship at 4.8MB. Format is preserved — a line
+drawing saved as a PNG stays a PNG rather than picking up JPEG artefacts.
+
 Run by .github/workflows/fetch-bio-photos.yml. Local use:
 
     export GCP_SA_KEY="$(cat service-account.json)"
     export BIO_PHOTOS_FOLDER_ID="<folder id from the drive url>"
     python scripts/fetch_bio_photos.py
 
-Requires: pip install google-api-python-client google-auth
+Requires: pip install google-api-python-client google-auth pillow
 """
 
-import hashlib
 import io
 import json
 import mimetypes
@@ -37,10 +40,14 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
+from PIL import Image, ImageOps
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 BIO_DIR = REPO_ROOT / "assets" / "bio"
 INDEX_HTML = REPO_ROOT / "index.html"
+# Build metadata, not an asset — it records which Drive revision each file came
+# from. Lives beside the script so it isn't served with the site.
+MANIFEST = Path(__file__).resolve().parent / "bio_photos.lock.json"
 
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
@@ -68,9 +75,12 @@ MIME_EXT = {
 }
 KNOWN_EXTS = set(MIME_EXT.values()) | {".jpeg", ".tiff"}
 
-# Phone originals run 3-5MB each; twelve of those is a slow bio section and a
-# heavy repo. Not fatal, and not something to silently re-encode either.
-SIZE_WARN_BYTES = 1_500_000
+# The frames render at ~400px at most, so 1600 leaves plenty of headroom for
+# retina without shipping 6000px phone originals.
+MAX_EDGE = 1600
+JPEG_QUALITY = 82
+# Anything still over this after processing is worth a look by hand.
+SIZE_WARN_BYTES = 1_000_000
 
 
 def warn(msg):
@@ -98,14 +108,6 @@ def pick_ext(name, mime):
         if guessed:
             return normalize_ext(guessed)
     return None
-
-
-def md5_of(path):
-    h = hashlib.md5()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def list_folder(service, folder_id):
@@ -166,7 +168,7 @@ def match_to_stems(files):
     return matched, unmatched
 
 
-def download(service, file_id, dest):
+def download(service, file_id):
     buf = io.BytesIO()
     downloader = MediaIoBaseDownload(
         buf, service.files().get_media(fileId=file_id, supportsAllDrives=True)
@@ -174,8 +176,72 @@ def download(service, file_id, dest):
     done = False
     while not done:
         _, done = downloader.next_chunk()
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(buf.getvalue())
+    return buf.getvalue()
+
+
+def process_image(raw, ext, label):
+    """Downscale to MAX_EDGE and re-encode. Returns (bytes, note).
+
+    Format is preserved on purpose: village-plan is line art, and JPEG would
+    put ringing artefacts all over it. Metadata is dropped as a side effect of
+    re-encoding, which also takes GPS coordinates out of the shipped files.
+    """
+    try:
+        img = Image.open(io.BytesIO(raw))
+        img.load()
+    except Exception as e:  # HEIC without pillow-heif, or anything exotic
+        warn(f"{label}: Pillow couldn't read this ({e}) — storing the original as-is")
+        return raw, None
+
+    # Phone cameras record orientation in EXIF rather than rotating the pixels.
+    # Bake it in before re-encoding drops the tag, or the photo ships sideways.
+    img = ImageOps.exif_transpose(img)
+
+    fmt = {".jpg": "JPEG", ".png": "PNG"}.get(ext)
+    if fmt is None:
+        return raw, None  # no encoder settings for this one; leave it alone
+
+    w, h = img.size
+    scale = MAX_EDGE / max(w, h)
+    resized = scale < 1  # only ever downscale — first-presentation is 309x246
+    if resized:
+        img = img.resize((round(w * scale), round(h * scale)), Image.LANCZOS)
+
+    buf = io.BytesIO()
+    if fmt == "JPEG":
+        if img.mode not in ("RGB", "L"):
+            img = img.convert("RGB")
+        img.save(buf, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
+    else:
+        # These come out of a screenshot tool as RGBA with a fully opaque alpha
+        # channel — a quarter of the pixel data carrying no information. Only
+        # dropped when it really is opaque everywhere, so it stays lossless.
+        if img.mode == "RGBA" and img.getchannel("A").getextrema() == (255, 255):
+            img = img.convert("RGB")
+        img.save(buf, "PNG", optimize=True)
+    out = buf.getvalue()
+
+    # Re-encoding an already-tight file can make it bigger; don't take a loss
+    # for nothing when there was no resize to justify it.
+    if not resized and len(out) >= len(raw):
+        return raw, None
+    note = f"{w}x{h} -> {img.size[0]}x{img.size[1]}" if resized else "re-encoded"
+    return out, note
+
+
+def load_manifest():
+    """Which Drive revision each local file came from.
+
+    Needed because processing means the stored bytes no longer match Drive's
+    md5, so the file itself can't answer "is this still current?".
+    """
+    if not MANIFEST.exists():
+        return {}
+    try:
+        return json.loads(MANIFEST.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        warn(f"{MANIFEST.name} is unreadable — refetching everything")
+        return {}
 
 
 def retarget_html(stem_to_ext):
@@ -228,31 +294,41 @@ def main():
         if stem not in matched:
             warn(f"no Drive file found for {stem!r} — its frame stays 'photo pending'")
 
-    written, skipped, final_ext = [], [], {}
+    manifest = load_manifest()
+    written, skipped, final_ext, saved_bytes = [], [], {}, 0
     for stem, f in matched.items():
         ext = pick_ext(f["name"], f["mimeType"])
         if ext is None:
             warn(f"can't tell what kind of file {f['name']!r} is ({f['mimeType']}) — skipping")
             continue
-        final_ext[stem] = ext
-        dest = BIO_DIR / f"{stem}{ext}"
 
-        # Drive hands us an md5 for binary files; use it to leave untouched
-        # photos alone rather than rewriting twelve files on every run.
+        # Compare against the Drive md5 recorded last run, not the local bytes:
+        # the local file has been resized, so it can never match Drive again.
         remote_md5 = f.get("md5Checksum")
-        if dest.exists() and remote_md5 and md5_of(dest) == remote_md5:
-            skipped.append(dest.name)
-            continue
+        prev = manifest.get(stem)
+        if prev and remote_md5 and prev.get("md5") == remote_md5:
+            existing = BIO_DIR / prev.get("out", "")
+            if existing.exists():
+                final_ext[stem] = existing.suffix
+                skipped.append(existing.name)
+                continue
 
-        download(service, f["id"], dest)
-        written.append(dest.name)
+        raw = download(service, f["id"])
+        data, note = process_image(raw, ext, f["name"])
+        saved_bytes += len(raw) - len(data)
 
-        size = dest.stat().st_size
-        if size > SIZE_WARN_BYTES:
-            warn(
-                f"{dest.name} is {size/1_000_000:.1f}MB — consider resizing before "
-                f"this ships; the bio loads all twelve"
-            )
+        dest = BIO_DIR / f"{stem}{ext}"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(data)
+        final_ext[stem] = ext
+        manifest[stem] = {"md5": remote_md5, "out": dest.name, "drive_name": f["name"]}
+        written.append(
+            f"{dest.name} {len(raw)/1_000_000:.1f}->{len(data)/1_000_000:.1f}MB"
+            + (f" ({note})" if note else " (unchanged)")
+        )
+
+        if len(data) > SIZE_WARN_BYTES:
+            warn(f"{dest.name} is still {len(data)/1_000_000:.1f}MB after processing")
 
         # An earlier run may have saved this photo under a different extension.
         for old in BIO_DIR.glob(f"{stem}.*"):
@@ -260,11 +336,20 @@ def main():
                 old.unlink()
                 print(f"removed stale {old.name}")
 
+    # Drop entries for photos no longer in Drive so the manifest can't go stale.
+    for stem in [s for s in manifest if s not in matched]:
+        del manifest[stem]
+    MANIFEST.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
     retargeted = retarget_html(final_ext)
+    total = sum((BIO_DIR / f"{s}{e}").stat().st_size for s, e in final_ext.items())
 
     print(f"downloaded {len(written)}, unchanged {len(skipped)}, of {len(EXPECTED)} expected")
-    if written:
-        print("  written: " + ", ".join(sorted(written)))
+    for line in sorted(written):
+        print(f"  {line}")
+    if saved_bytes:
+        print(f"  saved {saved_bytes/1_000_000:.1f}MB by resizing")
+    print(f"  assets/bio total: {total/1_000_000:.1f}MB")
     if retargeted:
         print("  index.html retargeted: " + "; ".join(retargeted))
 
