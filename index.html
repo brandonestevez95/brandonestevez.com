@@ -147,7 +147,11 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
 /* Square by default — a fixed image format is what makes a wall of these read
    as one object rather than a scrapbook. Add .pl--wide to any single frame
    whose photo is too landscape to survive a square crop. */
-.pl-frame{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--cream);}
+/* The inset hairline is load-bearing for light images: village-plan is a
+   drawing on white, which without it bleeds straight into the white frame and
+   loses its edge entirely. Too faint to notice on a photo. */
+.pl-frame{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--cream);
+  box-shadow:inset 0 0 0 1px rgba(28,34,38,.08);}
 .pl--wide .pl-frame{aspect-ratio:16/10;}
 .pl-img{display:block;width:100%;height:100%;object-fit:cover;}
 
