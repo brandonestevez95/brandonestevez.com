@@ -79,6 +79,16 @@ KNOWN_EXTS = set(MIME_EXT.values()) | {".jpeg", ".tiff"}
 # retina without shipping 6000px phone originals.
 MAX_EDGE = 1600
 JPEG_QUALITY = 82
+
+# Stems whose source is a drawing rather than a photograph. These keep PNG —
+# JPEG would ring all over the linework — and take a tighter cap, because line
+# art doesn't need photo resolution to stay crisp at 400px.
+GRAPHIC_STEMS = {"village-plan": 900}
+
+# Part of the cache key below. Bump when a change to process_image would
+# produce different bytes from the same source, or already-fetched photos will
+# be skipped and keep their old encoding forever.
+PROCESS_VERSION = 2
 # Anything still over this after processing is worth a look by hand.
 SIZE_WARN_BYTES = 1_000_000
 
@@ -179,30 +189,53 @@ def download(service, file_id):
     return buf.getvalue()
 
 
-def process_image(raw, ext, label):
-    """Downscale to MAX_EDGE and re-encode. Returns (bytes, note).
+def proc_key(stem):
+    """Cache key for "already processed with the current settings".
 
-    Format is preserved on purpose: village-plan is line art, and JPEG would
-    put ringing artefacts all over it. Metadata is dropped as a side effect of
-    re-encoding, which also takes GPS coordinates out of the shipped files.
+    The Drive md5 alone isn't enough: changing the cap or the quality changes
+    the output bytes while the source stays identical, and the run would skip
+    every photo and keep the old encoding.
+    """
+    return f"v{PROCESS_VERSION}:{MAX_EDGE}:{JPEG_QUALITY}:{GRAPHIC_STEMS.get(stem, '-')}"
+
+
+def process_image(raw, src_ext, stem, label):
+    """Downscale and re-encode. Returns (bytes, out_ext, note).
+
+    The written format isn't always the source format: these PNGs are
+    screenshots of photographs, and PNG is a poor container for that. Drawings
+    listed in GRAPHIC_STEMS stay PNG, since JPEG rings all over linework.
+    Metadata is dropped as a side effect, which also takes GPS coordinates out
+    of the shipped files.
     """
     try:
         img = Image.open(io.BytesIO(raw))
         img.load()
     except Exception as e:  # HEIC without pillow-heif, or anything exotic
         warn(f"{label}: Pillow couldn't read this ({e}) — storing the original as-is")
-        return raw, None
+        return raw, src_ext, None
 
     # Phone cameras record orientation in EXIF rather than rotating the pixels.
     # Bake it in before re-encoding drops the tag, or the photo ships sideways.
     img = ImageOps.exif_transpose(img)
 
-    fmt = {".jpg": "JPEG", ".png": "PNG"}.get(ext)
+    graphic = stem in GRAPHIC_STEMS
+    max_edge = GRAPHIC_STEMS[stem] if graphic else MAX_EDGE
+    # Real transparency has to keep PNG; flattening it onto JPEG would paint
+    # whatever showed through solid black.
+    opaque = img.mode != "RGBA" or img.getchannel("A").getextrema() == (255, 255)
+
+    if not graphic and src_ext == ".png" and opaque:
+        out_ext = ".jpg"
+    else:
+        out_ext = src_ext
+
+    fmt = {".jpg": "JPEG", ".png": "PNG"}.get(out_ext)
     if fmt is None:
-        return raw, None  # no encoder settings for this one; leave it alone
+        return raw, src_ext, None  # no encoder settings for this one
 
     w, h = img.size
-    scale = MAX_EDGE / max(w, h)
+    scale = max_edge / max(w, h)
     resized = scale < 1  # only ever downscale — first-presentation is 309x246
     if resized:
         img = img.resize((round(w * scale), round(h * scale)), Image.LANCZOS)
@@ -213,20 +246,23 @@ def process_image(raw, ext, label):
             img = img.convert("RGB")
         img.save(buf, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
     else:
-        # These come out of a screenshot tool as RGBA with a fully opaque alpha
-        # channel — a quarter of the pixel data carrying no information. Only
-        # dropped when it really is opaque everywhere, so it stays lossless.
-        if img.mode == "RGBA" and img.getchannel("A").getextrema() == (255, 255):
+        # A fully opaque alpha channel is a quarter of the pixel data carrying
+        # no information. Only dropped when it really is opaque everywhere.
+        if img.mode == "RGBA" and opaque:
             img = img.convert("RGB")
         img.save(buf, "PNG", optimize=True)
     out = buf.getvalue()
 
     # Re-encoding an already-tight file can make it bigger; don't take a loss
-    # for nothing when there was no resize to justify it.
-    if not resized and len(out) >= len(raw):
-        return raw, None
-    note = f"{w}x{h} -> {img.size[0]}x{img.size[1]}" if resized else "re-encoded"
-    return out, note
+    # for nothing when nothing else about the file changed.
+    if out_ext == src_ext and not resized and len(out) >= len(raw):
+        return raw, src_ext, None
+
+    bits = []
+    if out_ext != src_ext:
+        bits.append(f"{src_ext.lstrip('.')}->{out_ext.lstrip('.')}")
+    bits.append(f"{w}x{h} -> {img.size[0]}x{img.size[1]}" if resized else "re-encoded")
+    return out, out_ext, ", ".join(bits)
 
 
 def load_manifest():
@@ -304,9 +340,16 @@ def main():
 
         # Compare against the Drive md5 recorded last run, not the local bytes:
         # the local file has been resized, so it can never match Drive again.
+        # The processing key goes in too, so changing the cap or the quality
+        # refetches instead of silently keeping the old encoding.
         remote_md5 = f.get("md5Checksum")
         prev = manifest.get(stem)
-        if prev and remote_md5 and prev.get("md5") == remote_md5:
+        if (
+            prev
+            and remote_md5
+            and prev.get("md5") == remote_md5
+            and prev.get("proc") == proc_key(stem)
+        ):
             existing = BIO_DIR / prev.get("out", "")
             if existing.exists():
                 final_ext[stem] = existing.suffix
@@ -314,14 +357,19 @@ def main():
                 continue
 
         raw = download(service, f["id"])
-        data, note = process_image(raw, ext, f["name"])
+        data, out_ext, note = process_image(raw, ext, stem, f["name"])
         saved_bytes += len(raw) - len(data)
 
-        dest = BIO_DIR / f"{stem}{ext}"
+        dest = BIO_DIR / f"{stem}{out_ext}"
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
-        final_ext[stem] = ext
-        manifest[stem] = {"md5": remote_md5, "out": dest.name, "drive_name": f["name"]}
+        final_ext[stem] = out_ext
+        manifest[stem] = {
+            "md5": remote_md5,
+            "out": dest.name,
+            "drive_name": f["name"],
+            "proc": proc_key(stem),
+        }
         written.append(
             f"{dest.name} {len(raw)/1_000_000:.1f}->{len(data)/1_000_000:.1f}MB"
             + (f" ({note})" if note else " (unchanged)")
