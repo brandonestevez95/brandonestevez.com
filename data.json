@@ -4,7 +4,7 @@
   "projects": [
     {
       "title": "Assessing Global Supply Chains' vulnerabilities for 3 everyday consumer products",
-      "desc": "",
+      "desc": "Supply chain fragility, spatial concentration, labor inequality, environmental externalization. Three products compared using a composite Fragility Index. ArcGIS Pro + SAS Viya methods. Key findings: iPhone highest fragility (HHI driven), T-Shirt highest wage ratio, avocado highest water stress. Spatial diagnostic framework as contribution.",
       "category": "Logistics",
       "year": "2026",
       "completion": 10,
@@ -12,10 +12,10 @@
     },
     {
       "title": "Medicare fraud",
-      "desc": "",
+      "desc": "How do the structural incentives of the American healthcare system produce geographic concentrations of fraud, poor outcomes, and coverage gaps — and what can spatial analysis reveal about where alternative models would have the most impact?",
       "category": "Healthcare",
       "year": "2026",
-      "completion": 0,
+      "completion": 1,
       "links": []
     },
     {
@@ -153,7 +153,7 @@
     },
     {
       "title": "Learning by Mapping: A New Kind of Curriculum How youth used GIS to learn in a different way and map America's food supply chains.",
-      "desc": "",
+      "desc": "Documents how youth used GIS as an alternative learning tool to map and understand America's food supply chains. It shows how GIS can be used as an interdisciplinary tool to learn about the world and how it can connect back to students' passions and their interests or fields of study that they plan on pursuing.",
       "category": "Education",
       "year": "2025",
       "completion": 100,
@@ -166,7 +166,7 @@
     },
     {
       "title": "Researching Raleigh's Neighborhoods and Communities",
-      "desc": "",
+      "desc": "Brandon's first StoryMap project, and the winner of GIS Day 2024, it focuses on \"measuring Raleigh's policies, places, and paths\" to build more vibrant communities.It functions as a research tool examining neighborhood characteristics and municipal policy to spot opportunities for improving quality of life citywide.",
       "category": "Urban Planning",
       "year": "2024",
       "completion": 100,
