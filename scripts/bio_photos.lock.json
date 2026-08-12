@@ -2,61 +2,73 @@
   "capsmun-1": {
     "drive_name": "capsmun-1",
     "md5": "cd6e74f4d06a904d24578d504eb25f22",
-    "out": "capsmun-1.png"
+    "out": "capsmun-1.jpg",
+    "proc": "v2:1600:82:-"
   },
   "esri-2024": {
     "drive_name": "esri-2024",
     "md5": "960c8d941dc2f8fcbbcf6c51bffbee4b",
-    "out": "esri-2024.jpg"
+    "out": "esri-2024.jpg",
+    "proc": "v2:1600:82:-"
   },
   "esri25-group-dangermund": {
     "drive_name": "esri25-group-dangermund",
     "md5": "9df324d0880d8863d85664a72a56b82a",
-    "out": "esri25-group-dangermund.jpg"
+    "out": "esri25-group-dangermund.jpg",
+    "proc": "v2:1600:82:-"
   },
   "esri25-meposters": {
     "drive_name": "esri25-meposters",
     "md5": "6168b7e4e1ef1c1f74df1941fb437b85",
-    "out": "esri25-meposters.jpg"
+    "out": "esri25-meposters.jpg",
+    "proc": "v2:1600:82:-"
   },
   "first-presentation": {
     "drive_name": "first-presentation",
     "md5": "87dbe2827b7441e5021578acf4c2addc",
-    "out": "first-presentation.png"
+    "out": "first-presentation.jpg",
+    "proc": "v2:1600:82:-"
   },
   "juntos-1": {
     "drive_name": "juntos-1",
     "md5": "c0e85694a93939be9e3f63b34db987f3",
-    "out": "juntos-1.png"
+    "out": "juntos-1.jpg",
+    "proc": "v2:1600:82:-"
   },
   "juntos-2": {
     "drive_name": "juntos-2",
     "md5": "a902c0636e4f28752c31e2231bcda85b",
-    "out": "juntos-2.png"
+    "out": "juntos-2.jpg",
+    "proc": "v2:1600:82:-"
   },
   "juntos-3": {
     "drive_name": "juntos-3",
     "md5": "fffd8887826944f509bffc55d0c4fb7f",
-    "out": "juntos-3.png"
+    "out": "juntos-3.jpg",
+    "proc": "v2:1600:82:-"
   },
   "kid-nature": {
     "drive_name": "kid-nature",
     "md5": "ea72c7189bd34993ca6871cf6a8fdea2",
-    "out": "kid-nature.png"
+    "out": "kid-nature.jpg",
+    "proc": "v2:1600:82:-"
   },
   "kid-worldmap": {
     "drive_name": "kid-worldmap",
     "md5": "d588597aef345c8e30d0f5ee8c2b7445",
-    "out": "kid-worldmap.png"
+    "out": "kid-worldmap.jpg",
+    "proc": "v2:1600:82:-"
   },
   "tedx-photo": {
     "drive_name": "tedx-photo",
     "md5": "adb5a5ce72eaa8c2b8bcb49e21f8583a",
-    "out": "tedx-photo.jpg"
+    "out": "tedx-photo.jpg",
+    "proc": "v2:1600:82:-"
   },
   "village-plan": {
     "drive_name": "village-plan",
     "md5": "e9e1a3a233da1578068dd7b1becc2ca2",
-    "out": "village-plan.png"
+    "out": "village-plan.png",
+    "proc": "v2:1600:82:900"
   }
 }
