@@ -259,7 +259,7 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
   .chip{flex:0 0 auto;}
 }
 .pc{background:var(--paper);border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(28,34,38,.06);
-  transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
+  cursor:pointer;transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s;}
 .pc:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(28,34,38,.12);}
 .pc.hidden{display:none;}
 .pc-photo{position:relative;aspect-ratio:16/10;
@@ -281,6 +281,60 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
 .pc-empty{font-family:'Jost',sans-serif;font-size:.7rem;color:var(--stone);font-style:italic;}
 .empty-state{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--stone);
   font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;}
+
+/* ---- RECORD MODAL ---- */
+/* Generic expand-a-record dialog, not a project-specific one — the media block
+   borrows .pc-photo and the links borrow .pc-link/.pc-empty so an opened card
+   reads as the same object as the card it came from. */
+.modal-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:28px;background:rgba(20,24,26,.62);
+  opacity:0;visibility:hidden;
+  /* visibility is delayed out so the fade can finish before it stops being
+     hittable; on the way in it flips immediately. */
+  transition:opacity .32s cubic-bezier(.2,.7,.3,1),visibility 0s .32s;}
+.modal-overlay.open{opacity:1;visibility:visible;
+  transition:opacity .32s cubic-bezier(.2,.7,.3,1);}
+/* The frame itself never scrolls — .modal-scroll inside it does. If the frame
+   were the scroller, the absolutely positioned close button would scroll away
+   with the content on a long record. */
+.modal{position:relative;width:min(560px,100%);max-height:calc(100vh - 56px);
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--paper);border-radius:16px;box-shadow:0 24px 60px rgba(28,34,38,.28);
+  transform:translateY(20px) scale(.985);opacity:0;
+  transition:transform .32s cubic-bezier(.2,.7,.3,1),opacity .32s cubic-bezier(.2,.7,.3,1);}
+.modal-overlay.open .modal{transform:none;opacity:1;}
+.modal-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.modal-media{border-radius:16px 16px 0 0;aspect-ratio:16/9;}
+.modal-img{width:100%;height:100%;object-fit:cover;display:block;}
+.modal-close{position:absolute;top:12px;right:12px;z-index:4;width:34px;height:34px;
+  border:0;border-radius:50%;background:rgba(20,24,26,.55);color:#fff;font-size:.9rem;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-family:'Jost',sans-serif;transition:background .25s;}
+.modal-close:hover{background:var(--coral);}
+/* The close button takes focus on open, so give the ring a palette colour
+   rather than leaving the browser default over the photo block. */
+.modal-close:focus-visible{outline:2px solid var(--coral);outline-offset:2px;}
+.pc:focus-visible{outline:2px solid var(--coral);outline-offset:3px;}
+.modal-body{padding:26px 28px 30px;display:flex;flex-direction:column;gap:12px;}
+.modal-eyebrow{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--stone);font-weight:600;}
+.modal h3{font-family:'Overpass',sans-serif;font-weight:800;font-size:1.45rem;line-height:1.22;
+  letter-spacing:-.005em;text-transform:uppercase;}
+.modal-desc{font-size:.98rem;line-height:1.7;color:#3A3D34;}
+.modal-meta{display:flex;flex-direction:column;gap:7px;margin:2px 0 0;}
+.modal-meta>div{display:flex;gap:10px;align-items:baseline;}
+.modal-meta dt{font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--stone);font-weight:600;flex:0 0 94px;}
+.modal-meta dd{margin:0;font-size:.9rem;color:var(--ink);line-height:1.5;}
+.modal-links{border-top:1px solid var(--line);padding-top:14px;margin-top:4px;}
+@media(max-width:560px){
+  .modal-overlay{padding:12px;}
+  .modal{width:100%;max-height:calc(100dvh - 24px);border-radius:14px;}
+  .modal-media{border-radius:14px 14px 0 0;}
+  .modal-body{padding:20px 18px 24px;}
+  .modal h3{font-size:1.2rem;}
+  .modal-meta dt{flex-basis:80px;}
+}
 
 /* ---- APPS ---- */
 .apps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--line);margin-top:56px;}
@@ -678,6 +732,12 @@ footer{border-top:1px solid var(--line);padding:32px;text-align:center;
 
 <footer>© 2026 Brandon Estevez · Raleigh, NC</footer>
 
+<!-- Shared expand-a-record dialog. Empty until openModal() fills it, so any
+     section can reuse the one instance rather than shipping its own. -->
+<div class="modal-overlay" id="modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></div>
+</div>
+
 <script>
   
 /* ═══════════════════════════════════════
@@ -806,6 +866,110 @@ function progressBlock(pct) {
          `<div class="pc-progress-bar"><div class="pc-progress-fill" style="width:${pct}%"></div></div></div>`;
 }
 
+/* ═══════════════════════════════════════
+   RECORD MODAL
+   Renders a plain record, not a project, so the Field Notes map can reuse it
+   by handing over a note instead of rewiring anything. Every slot is optional
+   except title — a record without links or progress just renders fewer rows.
+
+     { media:  {g1, g2, caption, src, alt} | null
+       eyebrow, title, body                      strings
+       meta:   [{label, value}]                  blank values are dropped
+       progress: 0-100 | null                    same language as the cards
+       links:  [{label, url}]
+       linksEmpty: string }                      '' hides the row entirely
+═══════════════════════════════════════ */
+const mOverlay = $('modal');
+const mBox = mOverlay.querySelector('.modal');
+let lastFocused = null;
+
+function renderRecord(r) {
+  const media = r.media
+    ? `<div class="pc-photo modal-media" style="--g1:${esc(r.media.g1)};--g2:${esc(r.media.g2)}">${
+        r.media.src
+          ? `<img class="modal-img" src="${esc(r.media.src)}" alt="${esc(r.media.alt || '')}" />`
+          : `<span class="photo-flag">Photo needed</span>${esc(r.media.caption || '')}`
+      }</div>`
+    : '';
+  const meta = (r.meta || [])
+    .filter(m => m && m.value)
+    .map(m => `<div><dt>${esc(m.label)}</dt><dd>${esc(m.value)}</dd></div>`)
+    .join('');
+  const links = (r.links || []).length
+    ? r.links.map(l => `<a class="pc-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} →</a>`).join('')
+    : (r.linksEmpty ? `<span class="pc-empty">${esc(r.linksEmpty)}</span>` : '');
+
+  // The close button sits outside .modal-scroll so it stays pinned to the
+  // frame while a long record scrolls underneath it.
+  return `
+    <button class="modal-close" type="button" aria-label="Close">✕</button>
+    <div class="modal-scroll">
+      ${media}
+      <div class="modal-body">
+        ${r.eyebrow ? `<div class="modal-eyebrow">${esc(r.eyebrow)}</div>` : ''}
+        <h3 id="modalTitle">${esc(r.title || '')}</h3>
+        ${r.body ? `<p class="modal-desc">${esc(r.body)}</p>` : ''}
+        ${meta ? `<dl class="modal-meta">${meta}</dl>` : ''}
+        ${progressBlock(r.progress)}
+        ${links ? `<div class="pc-links modal-links">${links}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function openModal(record) {
+  mBox.innerHTML = renderRecord(record);
+  mBox.querySelector('.modal-scroll').scrollTop = 0;  // reopening starts at the top
+  lastFocused = document.activeElement;
+  // Locking the body removes the scrollbar, which shifts the whole page right
+  // unless its width is handed back as padding.
+  const sbw = window.innerWidth - document.documentElement.clientWidth;
+  if (sbw > 0) document.body.style.paddingRight = sbw + 'px';
+  document.body.style.overflow = 'hidden';
+  mOverlay.classList.add('open');
+  mOverlay.setAttribute('aria-hidden', 'false');
+  mBox.querySelector('.modal-close').focus();
+}
+
+function closeModal() {
+  if (!mOverlay.classList.contains('open')) return;
+  mOverlay.classList.remove('open');
+  mOverlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+  if (lastFocused && lastFocused.focus) lastFocused.focus();
+}
+
+mOverlay.addEventListener('click', e => {
+  // The box covers the middle, so a click landing on the overlay itself is
+  // necessarily outside it — no stopPropagation needed on the contents.
+  if (e.target === mOverlay || e.target.closest('.modal-close')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* Project → record. The only place project field names are mentioned, and an
+   allowlist by construction: anything else the sheet grows — the internal
+   Project Work Doc column included — can't reach the page through here. */
+function projectRecord(p) {
+  const cat = catOf(p);
+  const [g1, g2] = photoFor(cat);
+  const authors = ['co_authors', 'coauthors', 'authors']
+    .map(k => p[k])
+    .find(v => typeof v === 'string' && v.trim() && v.trim().toUpperCase() !== 'N/A');
+  return {
+    media: { g1, g2, caption: p.title },
+    eyebrow: cat,
+    title: p.title,
+    body: p.desc,
+    meta: [
+      { label: 'Year', value: p.year },
+      { label: 'Co-authors', value: authors }
+    ],
+    progress: p.completion,
+    links: p.links,
+    linksEmpty: 'no deliverables linked yet'
+  };
+}
+
 function buildGrid(projects) {
   const grid = $('grid');
   items = projects.map(p => {
@@ -829,6 +993,21 @@ function buildGrid(projects) {
             : `<span class="pc-empty">no deliverables linked yet</span>`
         }</div>
       </div>`;
+
+    const open = () => openModal(projectRecord(p));
+    el.addEventListener('click', open);
+    // Reachable without a mouse. Deliberately not role="button" — the card
+    // contains its own links, and claiming button semantics around nested
+    // interactive content reads worse to a screen reader than leaving it.
+    el.tabIndex = 0;
+    el.setAttribute('aria-haspopup', 'dialog');
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+    // A deliverable link should just follow the link, not also open the modal.
+    el.querySelectorAll('.pc-links a').forEach(a =>
+      a.addEventListener('click', e => e.stopPropagation()));
+
     grid.appendChild(el);
     return { p, el };
   });
