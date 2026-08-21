@@ -3,7 +3,7 @@
   "_categories": "Science | Education | Politics | History | Agriculture | Urban Planning | Interdisciplinary | Policy",
   "projects": [
     {
-      "title": "Assessing Global Supply Chains' vulnerabilities for 3 everyday consumer products",
+      "title": "Assessing the fragility of Global Supply Chains for 3 everyday consumer products",
       "desc": "Supply chain fragility, spatial concentration, labor inequality, environmental externalization. Three products compared using a composite Fragility Index. ArcGIS Pro + SAS Viya methods. Key findings: iPhone highest fragility (HHI driven), T-Shirt highest wage ratio, avocado highest water stress. Spatial diagnostic framework as contribution.",
       "category": "Logistics",
       "year": "2026",
@@ -11,7 +11,7 @@
       "links": []
     },
     {
-      "title": "Medicare fraud",
+      "title": "Where Medicare is working and where it isn't",
       "desc": "How do the structural incentives of the American healthcare system produce geographic concentrations of fraud, poor outcomes, and coverage gaps — and what can spatial analysis reveal about where alternative models would have the most impact?",
       "category": "Healthcare",
       "year": "2026",
