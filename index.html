@@ -107,18 +107,23 @@ h2{font-family:'Overpass',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,
    than the old side-by-side grid. The named `full` column is what lets a
    three-up photo group use the whole 1016px wrap without the prose following
    it out there — text stays on `text`, photo groups opt into `full`. */
-/* The reading column shares its left edge with the eyebrow and h2 above rather
-   than centring — every other section on the page hangs off that same axis, and
-   a centred column left the heading floating ~100px to its left. Photo groups
-   are the only thing that breaks out to the full wrap. */
-/* 820px rather than a comfortable 680: at 680 the prose ended ~220px short of
-   the photo groups' right edge, which read as a broken indent rather than a
-   margin. The type scales up with the column so the measure stays around 85
-   characters instead of stretching to 100+, and clamps back down on narrow
-   screens where the column is only ~311px wide. */
+/* The reading column is centred in the wrap and held to 680px. An earlier pass
+   widened it to 820 and pinned it left because a left-hung 680 column ended
+   ~220px short of the photo groups' right edge and read as a broken indent —
+   centring fixes that asymmetry directly, so the measure can go back to 680
+   (~70 characters) instead of buying alignment with an over-long line.
+   The equal `1fr` gutters are what centre it; `min(680px,100%)` keeps the
+   column from outgrowing the wrap on narrow screens, where both gutters
+   collapse to 0 and the prose gets the full width. Photo groups still opt into
+   `full` and are the only thing that breaks out to the whole wrap.
+   The eyebrow and h2 deliberately stay on the wrap's left edge rather than
+   centring with the prose — every other section header on the page hangs off
+   that axis. The ~168px step between the h2 and the column below it is the
+   intended result, not a stray indent. */
 .bio-body{display:grid;row-gap:44px;margin-top:56px;counter-reset:bio-plate;
   grid-template-columns:
-    [full-start text-start] minmax(0,820px) [text-end]
+    [full-start] minmax(0,1fr)
+    [text-start] min(680px,100%) [text-end]
     minmax(0,1fr) [full-end];}
 .bio-body>*{grid-column:text;}
 .bio-body>.bio-photos{grid-column:full;}
