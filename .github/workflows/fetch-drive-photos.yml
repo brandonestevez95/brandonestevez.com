@@ -1,0 +1,58 @@
+name: Fetch photos (bio + project cards)
+
+# Hourly plus the manual button. Not folded into the 15-minute sheet sync —
+# these are binary assets — but a new deliverable link in the Sheet should pick
+# up its preview image without anyone remembering to press a button. The lock
+# files make a run where nothing changed download nothing and commit nothing.
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: drive-photos
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install google-api-python-client google-auth pillow
+      - name: Fetch photos
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          # Currently stored as repo *secrets*; the vars fallback means moving
+          # them to repo variables later needs no change here.
+          BIO_PHOTOS_FOLDER_ID: ${{ vars.BIO_PHOTOS_FOLDER_ID || secrets.BIO_PHOTOS_FOLDER_ID }}
+          PROJECT_PHOTOS_FOLDER_ID: ${{ vars.PROJECT_PHOTOS_FOLDER_ID || secrets.PROJECT_PHOTOS_FOLDER_ID }}
+        # Nothing is required: without Google secrets the bio is skipped and
+        # the project cards still get their link previews.
+        run: python scripts/fetch_drive_photos.py
+      - name: Commit if changed
+        # Also after a failed fetch: the script runs bio and projects
+        # independently, so one broken section shouldn't throw away the other's
+        # work. No [skip ci]: Cloudflare honors it by not deploying, which
+        # would keep the photos off the live site. index.html is staged too
+        # because the script retargets a bio <img> when a photo isn't the
+        # extension expected.
+        if: success() || failure()
+        run: |
+          git config user.name "photos-bot"
+          git config user.email "actions@github.com"
+          # The lock files have to be committed too, or the skip never has a
+          # previous run to compare against and every run refetches everything.
+          git add assets/bio assets/projects index.html \
+            scripts/bio_photos.lock.json scripts/project_photos.lock.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "assets: sync photos"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
