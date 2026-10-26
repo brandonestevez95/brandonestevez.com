@@ -3,12 +3,25 @@
   "_categories": "Science | Education | Politics | History | Agriculture | Urban Planning | Interdisciplinary | Policy",
   "projects": [
     {
-      "title": "Assessing the fragility of Global Supply Chains for 3 everyday consumer products",
-      "desc": "Supply chain fragility, spatial concentration, labor inequality, environmental externalization. Three products compared using a composite Fragility Index. ArcGIS Pro + SAS Viya methods. Key findings: iPhone highest fragility (HHI driven), T-Shirt highest wage ratio, avocado highest water stress. Spatial diagnostic framework as contribution.",
+      "title": "Spatial Fragility Index: A Framework for Comparing Global Supply Chains",
+      "desc": "A spatial diagnostic framework for measuring how fragile a supply chain is, built on a composite Fragility Index that combines spatial concentration (HHI), labor inequality, and environmental externalization. Applied to three everyday products (an iPhone, a T-shirt, and an avocado) using ArcGIS Pro and SAS Viya, showing that each product breaks down in a different way.",
       "category": "Logistics",
       "year": "2026",
-      "completion": 10,
+      "completion": 30,
       "links": []
+    },
+    {
+      "title": "Ripe for Disaster: Where the Avocado Supply Chain Breaks",
+      "desc": "A case study of the avocado supply chain, from orchard to grocery shelf, through the lens of water stress. Avocados scored highest on environmental externalization in the Fragility Index, and this project maps where the water burden falls and how that connects to the rest of the chain. One of three product case studies under the Spatial Fragility Index framework.",
+      "category": "Agriculture",
+      "year": "2026",
+      "completion": null,
+      "links": [
+        {
+          "label": "View",
+          "url": "https://avocado.brandonestevez.com"
+        }
+      ]
     },
     {
       "title": "Where Medicare is working and where it isn't",
